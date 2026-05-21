@@ -1,5 +1,14 @@
 import { XMLParser } from "fast-xml-parser";
-import { SHITBUSTARDS_RSS_URL } from "@/lib/shared-data";
+import { SHITBUSTARDS_ORIGIN, SHITBUSTARDS_RSS_URL } from "@/lib/shared-data";
+
+const RSS_FETCH_TIMEOUT_MS = 10_000;
+const RSS_MAX_BYTES = 5_000_000;
+
+const TRUSTED_MEDIA_HOSTS = [
+  "cdn.mave.digital",
+  "cloud.mave.digital",
+  new URL(SHITBUSTARDS_ORIGIN).hostname,
+];
 
 export type Episode = {
   guid: string;
@@ -22,13 +31,29 @@ function parseDuration(raw: string | number | undefined): number {
   return parts[0] * 3600 + parts[1] * 60 + parts[2];
 }
 
+function isTrustedMediaUrl(raw: string): boolean {
+  if (!raw) return false;
+  try {
+    const url = new URL(raw.startsWith("http") ? raw : `https://cdn.mave.digital/${raw}`);
+    return url.protocol === "https:" && TRUSTED_MEDIA_HOSTS.includes(url.hostname);
+  } catch {
+    return false;
+  }
+}
+
 function normalizeImageUrl(href: string): string {
   if (!href) return "";
   let url = href.startsWith("http") ? href : `https://cdn.mave.digital/${href}`;
+  if (!isTrustedMediaUrl(url)) return "";
   if (url.includes("cdn.mave.digital") && !/_\d+\.[a-z]+$/.test(url)) {
     url = url.replace(/(\.[^./]+)$/, "_600$1");
   }
   return url;
+}
+
+function normalizeAudioUrl(raw: string): string {
+  if (!raw || !isTrustedMediaUrl(raw)) return "";
+  return raw;
 }
 
 function extractGuid(raw: unknown): string {
@@ -45,11 +70,20 @@ export async function getEpisodes(): Promise<Episode[]> {
   const res = await fetch(SHITBUSTARDS_RSS_URL, {
     next: { revalidate: 3600 },
     headers: { Accept: "application/rss+xml, application/xml, text/xml" },
+    signal: AbortSignal.timeout(RSS_FETCH_TIMEOUT_MS),
   });
 
   if (!res.ok) throw new Error(`RSS fetch failed: ${res.status}`);
 
+  const contentLength = Number(res.headers.get("content-length") ?? 0);
+  if (contentLength > RSS_MAX_BYTES) {
+    throw new Error("RSS response too large");
+  }
+
   const xml = await res.text();
+  if (xml.length > RSS_MAX_BYTES) {
+    throw new Error("RSS body too large");
+  }
 
   const parser = new XMLParser({
     ignoreAttributes: false,
@@ -82,8 +116,10 @@ export async function getEpisodes(): Promise<Episode[]> {
         ] ?? "",
       ),
     ),
-    audioUrl: String(
-      (item.enclosure as Record<string, unknown> | undefined)?.["@_url"] ?? "",
+    audioUrl: normalizeAudioUrl(
+      String(
+        (item.enclosure as Record<string, unknown> | undefined)?.["@_url"] ?? "",
+      ),
     ),
   }));
 }
