@@ -46,6 +46,7 @@ export default async function SignalPage({ params }: PageProps) {
       <SignalExperience
         backHref={locale === "ru" ? "/" : "/en"}
         backLabel={dict.plates.signal.exitLabel}
+        locale={locale}
       />
     </>
   );

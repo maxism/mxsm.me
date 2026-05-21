@@ -22,11 +22,11 @@
  *   'vertical'   — столбиком сверху вниз
  */
 
-import { MEANING_PHRASES, getPhraseRegister } from './phrases';
-
 const GLITCH_CHARS = '█▓▒░│┃╌═╔╗╚╝◻◼▪▫▸◃◦•○●⊙⊗×±∞∅∂∇∆∑∏∫░▒▓';
 
-export function createTextLayer(random, onDissolve) {
+export function createTextLayer(random, onDissolve, options = {}) {
+  const meaningPhrases = options.meaningPhrases ?? [];
+  const getPhraseRegister = options.getPhraseRegister ?? (() => 'other');
   const entries  = [];
   const ghosts   = []; // Direction 4: выгоревшие отпечатки растворившихся фраз
   let nextAutoAt = 6000 + random() * 14000;
@@ -132,7 +132,7 @@ export function createTextLayer(random, onDissolve) {
     update(dt, now, depth, mPulse) {
       if (now > nextAutoAt && depth >= 2) {
         nextAutoAt = now + 4000 + random() * 16000;
-        const p = MEANING_PHRASES[(random() * MEANING_PHRASES.length) | 0];
+        const p = meaningPhrases[(random() * meaningPhrases.length) | 0];
         addEntry(p, 0.3 + mPulse * 0.4, now);
       }
 

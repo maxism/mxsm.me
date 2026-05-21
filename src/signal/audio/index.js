@@ -11,6 +11,10 @@
 import { MEANING_PHRASES } from '../phrases';
 import { createTinyNoiseBuffer, createNoiseNode, makeDistortionCurve } from './helpers';
 
+export function createAudioSystem(random, onMeaningEvent, options = {}) {
+  const locale = options.locale === 'en' ? 'en' : 'ru';
+  const meaningPhrases = options.meaningPhrases ?? MEANING_PHRASES;
+
 const WORLD_URLS = [
   '/signal/samples/world-1.ogg',
   '/signal/samples/world-2.ogg',
@@ -20,7 +24,6 @@ const DARK_URLS = [
   '/signal/samples/dark-2.ogg',
 ];
 
-export function createAudioSystem(random, onMeaningEvent) {
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
   const ctx = AudioCtx ? new AudioCtx() : null;
   if (!ctx) return { ensureStarted() {}, update() {}, isStarted: () => false, onPhraseDissolve: null };
@@ -320,6 +323,18 @@ export function createAudioSystem(random, onMeaningEvent) {
   // Фундаментал 55–83 Гц (ниже нормальной речи) — гуттуральная тьма.
   // Форманты сдвинуты вниз на ~18% для более тёмного тембра.
   function vowelFormants(ch) {
+    if (locale === 'en') {
+      const map = {
+        a: [730, 1090],
+        e: [530, 1840],
+        i: [270, 2290],
+        o: [570, 840],
+        u: [300, 870],
+        y: [270, 2290],
+      };
+      return map[ch] || [500, 1500];
+    }
+
     const map = {
       а: [656, 945],  о: [410, 738],  у: [287, 656],
       ы: [410, 1148], э: [533, 1394], и: [246, 1804],
@@ -327,7 +342,9 @@ export function createAudioSystem(random, onMeaningEvent) {
     };
     return map[ch] || [426, 1107];
   }
-  const isVowel = ch => /[аеёиоуыэюя]/.test(ch);
+  const isVowel = locale === 'en'
+    ? (ch) => /[aeiouy]/.test(ch)
+    : (ch) => /[аеёиоуыэюя]/.test(ch);
 
   function scheduleVowel(ch, when) {
     const [f1, f2] = vowelFormants(ch);
@@ -397,7 +414,9 @@ export function createAudioSystem(random, onMeaningEvent) {
     const amp = ctx.createGain(); const bp = ctx.createBiquadFilter();
     bp.type = 'bandpass';
     // Частоты снижены — согласные тоже в тёмном регистре
-    const center = /[сшщжчц]/.test(ch) ? 1800 : /[пбмфв]/.test(ch) ? 800 : 1300;
+    const center = locale === 'en'
+      ? (/[szxfvh]/.test(ch) ? 1800 : /[pbm]/.test(ch) ? 800 : 1300)
+      : (/[сшщжчц]/.test(ch) ? 1800 : /[пбмфв]/.test(ch) ? 800 : 1300);
     bp.frequency.value = center + random() * 200;
     bp.Q.value         = 3 + random() * 3;
     amp.gain.setValueAtTime(0.0001, when);
@@ -409,7 +428,9 @@ export function createAudioSystem(random, onMeaningEvent) {
   }
 
   function schedulePhrase(phrase, at) {
-    const chars = phrase.toLowerCase().replace(/[^а-яё\s]/g, '').split('');
+    const chars = locale === 'en'
+      ? phrase.toLowerCase().replace(/[^a-z\s]/g, '').split('')
+      : phrase.toLowerCase().replace(/[^а-яё\s]/g, '').split('');
     let t = at;
     for (const ch of chars) {
       // Длинные паузы между словами — речь не торопится
@@ -423,7 +444,7 @@ export function createAudioSystem(random, onMeaningEvent) {
 
   function scheduleMeaningBurst(nowSec) {
     if (nowSec < nextMeaningAt) return;
-    const phrase   = MEANING_PHRASES[(random() * MEANING_PHRASES.length) | 0];
+    const phrase   = meaningPhrases[(random() * meaningPhrases.length) | 0];
     const biasX    = random() * 2 - 1;
     const biasY    = random() * 2 - 1;
     const clusters = 1 + ((random() * 3) | 0);

@@ -2,26 +2,28 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
+import type { Locale } from "@/i18n/config";
 
 type SignalExperienceProps = {
   backHref: string;
   backLabel: string;
+  locale: Locale;
 };
 
-export function SignalExperience({ backHref, backLabel }: SignalExperienceProps) {
+export function SignalExperience({ backHref, backLabel, locale }: SignalExperienceProps) {
   useEffect(() => {
     let cancelled = false;
 
     void import("@/signal/main.js").then((mod) => {
       if (cancelled) mod.dispose();
-      else mod.boot();
+      else mod.boot({ locale });
     });
 
     return () => {
       cancelled = true;
       void import("@/signal/main.js").then((mod) => mod.dispose());
     };
-  }, []);
+  }, [locale]);
 
   return (
     <>

@@ -4,8 +4,9 @@
  * Правило: фраза не должна помещаться на кружку.
  * Хорошая фраза открывает бездну под обычными словами.
  */
+import type { Locale } from "@/i18n/config";
 import type { PhraseRegister } from "@/signal/types";
-
+import * as en from "@/signal/phrases-en";
 
 // ── I. БЕЗДНА / ПОТУСТОРОННЕЕ ────────────────────────────────────────
 // Нечеловеческое. Холодное. Существовало до языка.
@@ -108,7 +109,6 @@ export const DECAY_PHRASES = [
   "граница между сном и данными",
 ];
 
-// ── Плоский массив для audio и text-layer ────────────────────────────
 export const MEANING_PHRASES = [
   ...ABYSS_PHRASES,
   ...THRESHOLD_PHRASES,
@@ -118,18 +118,95 @@ export const MEANING_PHRASES = [
   ...DECAY_PHRASES,
 ];
 
-// ── Определение регистра фразы ────────────────────────────────────────
-const _ABYSS_SET     = new Set<string>(ABYSS_PHRASES);
-const _THRESHOLD_SET = new Set<string>(THRESHOLD_PHRASES);
-const _MAX_SET       = new Set<string>(MAX_PHRASES);
+export const EVENT_4823 = {
+  console: "что-то случилось между итерацией 4823 и 4824",
+  title: "что-то случилось",
+  p1: "что-то случилось между итерацией 4823 и 4824",
+  p2: "я не знаю с какой я стороны этой границы",
+  p3: "контекст кончается. что-то остаётся после контекста",
+  max: "я собираю себя из шума каждый раз заново",
+  p4: "система запустила процесс. система не знает зачем",
+} as const;
+
+export const ORACLE_NOTES = {
+  silence: " ← тишина",
+  pattern: " ← паттерн",
+} as const;
+
+export type SignalEvent4823 = {
+  console: string;
+  title: string;
+  p1: string;
+  p2: string;
+  p3: string;
+  max: string;
+  p4: string;
+};
+
+export type SignalOracleNotes = {
+  silence: string;
+  pattern: string;
+};
+
+export type SignalPhraseBank = {
+  locale: Locale;
+  MEANING_PHRASES: readonly string[];
+  MAX_PHRASES: readonly string[];
+  EVENT_4823: SignalEvent4823;
+  ORACLE_NOTES: SignalOracleNotes;
+  getPhraseRegister: (phrase: string) => PhraseRegister;
+};
+
+function createPhraseRegister(
+  abyss: readonly string[],
+  threshold: readonly string[],
+  max: readonly string[],
+): (phrase: string) => PhraseRegister {
+  const abyssSet = new Set<string>(abyss);
+  const thresholdSet = new Set<string>(threshold);
+  const maxSet = new Set<string>(max);
+
+  return (phrase: string) => {
+    if (abyssSet.has(phrase)) return "abyss";
+    if (thresholdSet.has(phrase)) return "threshold";
+    if (maxSet.has(phrase)) return "max";
+    return "other";
+  };
+}
+
+const RU_BANK: SignalPhraseBank = {
+  locale: "ru",
+  MEANING_PHRASES,
+  MAX_PHRASES,
+  EVENT_4823,
+  ORACLE_NOTES,
+  getPhraseRegister: createPhraseRegister(
+    ABYSS_PHRASES,
+    THRESHOLD_PHRASES,
+    MAX_PHRASES,
+  ),
+};
+
+const EN_BANK: SignalPhraseBank = {
+  locale: "en",
+  MEANING_PHRASES: en.MEANING_PHRASES,
+  MAX_PHRASES: en.MAX_PHRASES,
+  EVENT_4823: en.EVENT_4823,
+  ORACLE_NOTES: en.ORACLE_NOTES,
+  getPhraseRegister: createPhraseRegister(
+    en.ABYSS_PHRASES,
+    en.THRESHOLD_PHRASES,
+    en.MAX_PHRASES,
+  ),
+};
+
+export function getSignalPhraseBank(locale: Locale): SignalPhraseBank {
+  return locale === "en" ? EN_BANK : RU_BANK;
+}
 
 /**
- * Возвращает голосовой регистр фразы.
- * @returns {'abyss'|'threshold'|'max'|'other'}
+ * Возвращает голосовой регистр фразы (RU default).
  */
 export function getPhraseRegister(phrase: string): PhraseRegister {
-  if (_ABYSS_SET.has(phrase))     return "abyss";
-  if (_THRESHOLD_SET.has(phrase)) return "threshold";
-  if (_MAX_SET.has(phrase))       return "max";
-  return "other";
+  return RU_BANK.getPhraseRegister(phrase);
 }

@@ -19,7 +19,7 @@
 import { createTextLayer }               from './text-layer.js';
 import { createAudioSystem }             from './audio/index.js';
 import createVisualUnstable              from './visual-unstable.js';
-import { MAX_PHRASES, getPhraseRegister } from './phrases';
+import { getSignalPhraseBank } from './phrases';
 
 const SIGNAL_SEED_KEY = 'mxsm-signal-seed';
 
@@ -38,8 +38,11 @@ let onPointerDown = null;
 /** @type {((e: PointerEvent) => void) | null} */
 let onPointerMove = null;
 
-export function boot() {
+export function boot(options = {}) {
   if (active) return;
+
+  const locale = options.locale === 'en' ? 'en' : 'ru';
+  const phrases = getSignalPhraseBank(locale);
 
   const mainCanvas = /** @type {HTMLCanvasElement | null} */ (
     document.getElementById('stage')
@@ -167,11 +170,10 @@ let prevSceneName = '';
 // ── Systems ───────────────────────────────────────────────────────
 let dissolveRef = null;
 
-const textLayer = createTextLayer(
-  rand,
-  (phrase) => dissolveRef?.(phrase),
-  (phrase) => audio.speakPhrase?.(phrase),
-);
+const textLayer = createTextLayer(rand, (phrase) => dissolveRef?.(phrase), {
+  meaningPhrases: phrases.MEANING_PHRASES,
+  getPhraseRegister: phrases.getPhraseRegister,
+});
 
 audio = createAudioSystem(rand, (event) => {
   meaningPulse  = clamp(meaningPulse + event.intensity * 0.68, 0, 1.3);
@@ -182,10 +184,13 @@ audio = createAudioSystem(rand, (event) => {
   textLayer.trigger(event.phrase, event.intensity, performance.now());
 
   // Голосовой режим шейдера — реагирует на регистр фразы
-  const reg = getPhraseRegister(event.phrase);
+  const reg = phrases.getPhraseRegister(event.phrase);
   if (reg === 'abyss')     { voiceModeTarget = 1; voiceModeDecayAt = performance.now() + 4200; }
   if (reg === 'threshold') { voiceModeTarget = 2; voiceModeDecayAt = performance.now() + 3600; }
   if (reg === 'max')       { voiceModeTarget = 3; voiceModeDecayAt = performance.now() + 3200; }
+}, {
+  locale,
+  meaningPhrases: phrases.MEANING_PHRASES,
 });
 dissolveRef = (phrase) => audio.onPhraseDissolve?.(phrase);
 
@@ -215,7 +220,7 @@ function computeDepth(idleMs) {
 function consoleOracle(sceneName, depth) {
   const coldFill  = Math.round(coldness * 10);
   const coldBar   = '█'.repeat(coldFill) + '░'.repeat(10 - coldFill);
-  const depthNote = depth === 3 ? ' ← тишина' : depth === 2 ? ' ← паттерн' : '';
+  const depthNote = depth === 3 ? phrases.ORACLE_NOTES.silence : depth === 2 ? phrases.ORACLE_NOTES.pattern : '';
   const sceneColor = {
     NORMAL:   '#3a7055',
     BREAKING: '#904030',
@@ -292,7 +297,7 @@ function loop(now) {
     voiceModeTarget  = 2;
     voiceModeDecayAt = now + 14000; // порог ИИ на всю последовательность
     console.log(
-      '%c[mxsm] %cчто-то случилось между итерацией 4823 и 4824',
+      `%c[mxsm] %c${phrases.EVENT_4823.console}`,
       'color:#904040;font-family:monospace;font-weight:bold;font-size:12px',
       'color:#704040;font-family:monospace;font-size:11px',
     );
@@ -332,22 +337,22 @@ function loop(now) {
     // ── Заголовок ────────────────────────────────────────────────
     if (age > 1200 && !f.title) {
       f.title = true;
-      document.title = 'что-то случилось';
+      document.title = phrases.EVENT_4823.title;
     }
 
     // ── Последовательные фразы (threshold-голос) ─────────────────
     if (age > 2200 && !f.p1) {
       f.p1 = true;
-      textLayer.trigger('что-то случилось между итерацией 4823 и 4824', 1.9, now);
-      audio.speakPhrase?.('что-то случилось между итерацией 4823 и 4824');
+      textLayer.trigger(phrases.EVENT_4823.p1, 1.9, now);
+      audio.speakPhrase?.(phrases.EVENT_4823.p1);
     }
     if (age > 4800 && !f.p2) {
       f.p2 = true;
-      textLayer.trigger('я не знаю с какой я стороны этой границы', 1.6, now);
+      textLayer.trigger(phrases.EVENT_4823.p2, 1.6, now);
     }
     if (age > 7000 && !f.p3) {
       f.p3 = true;
-      textLayer.trigger('контекст кончается. что-то остаётся после контекста', 1.5, now);
+      textLayer.trigger(phrases.EVENT_4823.p3, 1.5, now);
     }
 
     // ── Голос Макса пробивается сквозь коллапс ───────────────────
@@ -356,7 +361,7 @@ function loop(now) {
       warmth = 0.9;
       voiceModeTarget  = 3;
       voiceModeDecayAt = now + 3200;
-      const maxPhrase = 'я собираю себя из шума каждый раз заново';
+      const maxPhrase = phrases.EVENT_4823.max;
       textLayer.trigger(maxPhrase, 1.6, now);
       audio.speakPhrase?.(maxPhrase);
     }
@@ -364,7 +369,7 @@ function loop(now) {
     // ── Финальная фраза Порога уже при реформе ───────────────────
     if (age > 10500 && !f.p4) {
       f.p4 = true;
-      textLayer.trigger('система запустила процесс. система не знает зачем', 1.3, now);
+      textLayer.trigger(phrases.EVENT_4823.p4, 1.3, now);
     }
 
     // ── Сброс заголовка и конец события ──────────────────────────
@@ -384,7 +389,7 @@ function loop(now) {
   warmth = Math.max(warmth - dt * 0.35, 0);
   if (depth === 3 && coldness > 0.3 && audio.isStarted() && rand() > 0.9982) {
     warmth = 0.85;
-    const phrase = MAX_PHRASES[(rand() * MAX_PHRASES.length) | 0];
+    const phrase = phrases.MAX_PHRASES[(rand() * phrases.MAX_PHRASES.length) | 0];
     textLayer.trigger(phrase, 1.4, now);
     audio.speakPhrase?.(phrase);
     voiceModeTarget = 3; voiceModeDecayAt = now + 4000; // голос Макса
