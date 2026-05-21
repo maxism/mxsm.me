@@ -10,6 +10,8 @@ export const en: Dictionary = {
     ogLocale: "en_US",
   },
   masthead: {
+    name: "Max Ulianov",
+    nameGlitch: "Max Ulianov",
     langSwitch: "language",
   },
   nav: {

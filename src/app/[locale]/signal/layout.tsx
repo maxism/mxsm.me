@@ -5,5 +5,5 @@ type LayoutProps = {
 };
 
 export default function SignalLayout({ children }: LayoutProps) {
-  return children;
+  return <div className="signal-route">{children}</div>;
 }

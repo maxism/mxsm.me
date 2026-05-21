@@ -29,6 +29,8 @@ export type Dictionary = {
     ogLocale: string;
   };
   masthead: {
+    name: string;
+    nameGlitch: string;
     langSwitch: string;
   };
   nav: {

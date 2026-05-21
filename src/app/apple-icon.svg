@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" fill="none">
+  <defs>
+    <pattern id="scan" width="4" height="4" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="4" stroke="#e8e2d2" stroke-opacity="0.05"/>
+    </pattern>
+  </defs>
+  <rect width="180" height="180" fill="#060508"/>
+  <rect width="180" height="180" fill="url(#scan)" opacity="0.9"/>
+  <path stroke="#e8e2d2" stroke-opacity="0.14" stroke-width="2" d="M24 24h28v28H24z"/>
+  <path stroke="#e8e2d2" stroke-opacity="0.14" stroke-width="2" d="M156 156h-28v-28h28z"/>
+  <path stroke="#e8c547" stroke-opacity="0.24" stroke-width="1.5" d="M24 156h132"/>
+  <text x="90" y="112" text-anchor="middle" fill="#e8c547" font-family="ui-monospace,monospace" font-size="92" font-weight="500" opacity="0.14">¼</text>
+  <text x="90" y="112" text-anchor="middle" fill="#e8e2d2" font-family="ui-monospace,monospace" font-size="92" font-weight="500">¼</text>
+  <line x1="0" y1="78" x2="180" y2="78" stroke="#e8c547" stroke-opacity="0.2" stroke-width="1.5"/>
+</svg>

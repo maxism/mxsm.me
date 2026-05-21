@@ -586,7 +586,8 @@ main { position: relative; z-index: 2; }
 .sig-stage-hit {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 3;
+  cursor: pointer;
 }
 .sig-stage-ui {
   position: absolute;
@@ -599,12 +600,8 @@ main { position: relative; z-index: 2; }
   padding: clamp(20px, 4vh, 40px) var(--gutter);
   pointer-events: none;
 }
-.sig-stage-ui .plate-head,
-.sig-stage-ui .plate-head [data-glitch] {
-  pointer-events: auto;
-}
-.sig-stage-ui .plate-head {
-  overflow: visible;
+.sig-stage-ui * {
+  pointer-events: none;
 }
 .plate-signal .plate-head {
   margin: 0;

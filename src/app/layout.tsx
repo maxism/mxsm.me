@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { AnalyticsRouteTracker } from "@/components/analytics/AnalyticsRouteTracker";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { YandexMetrika } from "@/components/analytics/YandexMetrika";
+import { DynamicFavicon } from "@/components/effects/DynamicFavicon";
 import { TimePalette } from "@/components/effects/TimePalette";
 import { timePaletteInitScript } from "@/lib/time-palette";
 import "./globals.css";
@@ -49,6 +50,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: timePaletteInitScript() }}
         />
         <TimePalette />
+        <DynamicFavicon />
         {children}
         <GoogleAnalytics />
         <YandexMetrika />

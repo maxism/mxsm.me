@@ -10,6 +10,8 @@ export const ru: Dictionary = {
     ogLocale: "ru_RU",
   },
   masthead: {
+    name: "Макс Ульянов",
+    nameGlitch: "Макс Ульянов",
     langSwitch: "language",
   },
   nav: {

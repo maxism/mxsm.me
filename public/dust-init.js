@@ -4,6 +4,7 @@
 
   var active = false;
   var rafId = 0;
+  var bootRafId = 0;
   var onResize = null;
   var onMouseMove = null;
   var onTouchMove = null;
@@ -38,6 +39,7 @@
 
     if (!gl) {
       console.error("[dust-init] WebGL unavailable");
+      active = false;
       return;
     }
 
@@ -105,7 +107,10 @@
 
     var vs = compile(gl.VERTEX_SHADER, VERT);
     var fs = compile(gl.FRAGMENT_SHADER, FRAG);
-    if (!vs || !fs) return;
+    if (!vs || !fs) {
+      active = false;
+      return;
+    }
 
     var prog = gl.createProgram();
     gl.attachShader(prog, vs);
@@ -113,6 +118,7 @@
     gl.linkProgram(prog);
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
       console.error("[dust-init]", gl.getProgramInfoLog(prog));
+      active = false;
       return;
     }
 
@@ -209,6 +215,7 @@
       rafId = global.requestAnimationFrame(tick);
     }
     onScroll();
+    active = true;
     tick();
   }
 
@@ -216,21 +223,22 @@
     if (active) return;
     if (global.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (!global.mxsmPalette) {
-      global.requestAnimationFrame(boot);
+      bootRafId = global.requestAnimationFrame(boot);
       return;
     }
     var cnv = document.getElementById("dust");
     if (!cnv) {
-      global.requestAnimationFrame(boot);
+      bootRafId = global.requestAnimationFrame(boot);
       return;
     }
-    if (cnv.dataset.ready === "1") return;
-    active = true;
+    if (cnv.dataset.ready === "1" && active) return;
+    delete cnv.dataset.ready;
     init(cnv);
   }
 
   function dispose() {
-    if (!active) return;
+    global.cancelAnimationFrame(bootRafId);
+    bootRafId = 0;
     active = false;
     global.cancelAnimationFrame(rafId);
     rafId = 0;

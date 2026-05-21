@@ -28,7 +28,10 @@ export function SignalExperience({ backHref, backLabel }: SignalExperienceProps)
       <nav className="signal-exit" aria-label="exit signal">
         <Link href={backHref}>{backLabel}</Link>
       </nav>
-      <canvas id="stage" aria-hidden="true" />
+      <div className="signal-stage">
+        <canvas id="room-layer" aria-hidden="true" />
+        <canvas id="stage" aria-hidden="true" />
+      </div>
     </>
   );
 }

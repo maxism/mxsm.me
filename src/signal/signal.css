@@ -1,19 +1,21 @@
-html,
-body {
-  margin: 0;
-  width: 100%;
-  height: 100%;
+/* Scoped to /signal — never target html/body (leaks on client navigation back to home) */
+.signal-route {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
   overflow: hidden;
   background: #000;
   color: #000;
 }
 
-body {
-  position: relative;
+.signal-route .signal-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
 }
 
-#room-layer,
-#stage {
+.signal-route #room-layer,
+.signal-route #stage {
   position: fixed;
   inset: 0;
   width: 100vw;
@@ -21,11 +23,11 @@ body {
   display: block;
 }
 
-#room-layer {
+.signal-route #room-layer {
   z-index: 0;
 }
 
-#stage {
+.signal-route #stage {
   z-index: 1;
   image-rendering: pixelated;
   cursor: none;

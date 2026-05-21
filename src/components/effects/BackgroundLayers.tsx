@@ -26,8 +26,13 @@ function loadScript(src: string) {
 /** Canvas + scan/grain; dust-init.js (palette-runtime loaded in root layout) */
 export function BackgroundLayers() {
   useEffect(() => {
+    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
+
     loadScript("/dust-init.js")
-      .then(() => window.mxsmDust?.boot())
+      .then(() => {
+        requestAnimationFrame(() => window.mxsmDust?.boot());
+      })
       .catch((err) => console.error("[background]", err));
 
     return () => window.mxsmDust?.dispose();

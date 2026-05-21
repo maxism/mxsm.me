@@ -82,10 +82,27 @@ if (!ctx2d) {
   return;
 }
 
-roomLayer = document.createElement('canvas');
-roomLayer.id     = 'room-layer';
-roomLayer.setAttribute('aria-hidden', 'true');
-document.body.insertBefore(roomLayer, mainCanvas);
+roomLayer = document.getElementById('room-layer');
+if (!roomLayer) {
+  roomLayer = document.createElement('canvas');
+  roomLayer.id = 'room-layer';
+  roomLayer.setAttribute('aria-hidden', 'true');
+  const host = mainCanvas.parentNode;
+  if (host) {
+    host.insertBefore(roomLayer, mainCanvas);
+  } else {
+    document.body.appendChild(roomLayer);
+  }
+} else {
+  const gl = roomLayer.getContext('webgl2');
+  if (gl?.isContextLost?.()) {
+    const fresh = document.createElement('canvas');
+    fresh.id = 'room-layer';
+    fresh.setAttribute('aria-hidden', 'true');
+    roomLayer.replaceWith(fresh);
+    roomLayer = fresh;
+  }
+}
 
 webglRoom = createVisualUnstable(roomLayer);
 
@@ -446,12 +463,7 @@ export function dispose() {
   onPointerDown = null;
   onPointerMove = null;
 
-  if (roomLayer) {
-    const gl = roomLayer.getContext('webgl2');
-    gl?.getExtension('WEBGL_lose_context')?.loseContext();
-    roomLayer.remove();
-    roomLayer = null;
-  }
+  roomLayer = null;
 
   if (audio?.dispose) audio.dispose();
   audio = null;

@@ -20,7 +20,9 @@ export function Masthead({ locale, dict }: MastheadProps) {
           MU·2026
         </Link>
         <Link href={homeHref} className="m-id">
-          <GlitchText as="span" text="Max Ulianov" />
+          <GlitchText as="span" text={dict.masthead.nameGlitch}>
+            {dict.masthead.name}
+          </GlitchText>
         </Link>
         <div
           className="lang"

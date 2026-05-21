@@ -30,10 +30,6 @@ export async function generateMetadata({ params }: PageProps) {
       title: dict.signalPage.title,
       description: dict.signalPage.ogDescription,
     },
-    icons: {
-      icon: "/signal-favicon.png",
-      apple: "/signal-favicon.png",
-    },
   });
 }
 
