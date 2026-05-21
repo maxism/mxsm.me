@@ -54,7 +54,7 @@ Deploy as a standard Next.js app (Vercel, Node, etc.).
 
 - Dynamic OG: `app/[locale]/(site)/opengraph-image.tsx`, `app/[locale]/signal/opengraph-image.tsx`
 - `app/sitemap.ts`, `app/robots.ts` — use `SITE_ORIGIN` from `NEXT_PUBLIC_SITE_URL`
-- `app/icon.svg` — favicon
+- `app/icon.png`, `app/apple-icon.png` — favicon (from `public/signal-favicon.png`, signal slash)
 
 ## Signal
 
