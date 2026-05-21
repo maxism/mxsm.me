@@ -37,7 +37,7 @@ export function useGlitch() {
     );
 
     const heads = document.querySelectorAll(
-      ".plate-h [data-glitch], .m-id[data-glitch]",
+      ".plate-h [data-glitch], .m-id [data-glitch], .mono [data-glitch]",
     );
     const interval = window.setInterval(() => {
       if (heads.length === 0) return;
