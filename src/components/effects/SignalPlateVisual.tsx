@@ -28,27 +28,36 @@ export function SignalPlateVisual({ href, ctaHint }: SignalPlateVisualProps) {
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    const canvas = canvasRef.current;
+    const glOpts = {
+      alpha: true,
+      antialias: false,
+      premultipliedAlpha: false,
+      preserveDrawingBuffer: true,
+    } as const;
+
+    const getGl = (el: HTMLCanvasElement) =>
+      (el.getContext("webgl", glOpts) ??
+        el.getContext("experimental-webgl", glOpts)) as WebGLRenderingContext | null;
+
+    let canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gl =
-      canvas.getContext("webgl", {
-        alpha: true,
-        antialias: false,
-        premultipliedAlpha: false,
-        preserveDrawingBuffer: true,
-      }) ??
-      canvas.getContext("experimental-webgl", {
-        alpha: true,
-        antialias: false,
-        premultipliedAlpha: false,
-        preserveDrawingBuffer: true,
-      });
-    if (!gl) return;
+    let webgl = getGl(canvas);
+    let prog = webgl ? createProgram(webgl, SIGNAL_PLATE_VS, SIGNAL_PLATE_FS) : null;
 
-    const webgl = gl as WebGLRenderingContext;
-    const prog = createProgram(webgl, SIGNAL_PLATE_VS, SIGNAL_PLATE_FS);
-    if (!prog || !bindFullscreenQuad(webgl, prog)) return;
+    // After loseContext (e.g. previous unmount) the same canvas may not compile again.
+    if ((!webgl || !prog) && canvas.parentNode) {
+      const fresh = document.createElement("canvas");
+      fresh.className = canvas.className;
+      fresh.setAttribute("aria-hidden", "true");
+      canvas.replaceWith(fresh);
+      canvasRef.current = fresh;
+      canvas = fresh;
+      webgl = getGl(canvas);
+      prog = webgl ? createProgram(webgl, SIGNAL_PLATE_VS, SIGNAL_PLATE_FS) : null;
+    }
+
+    if (!webgl || !prog || !bindFullscreenQuad(webgl, prog)) return;
 
     const uRes = webgl.getUniformLocation(prog, "u_res");
     const uT = webgl.getUniformLocation(prog, "u_t");
@@ -118,7 +127,6 @@ export function SignalPlateVisual({ href, ctaHint }: SignalPlateVisualProps) {
       running = false;
       cancelAnimationFrame(frame);
       ro.disconnect();
-      webgl.getExtension("WEBGL_lose_context")?.loseContext();
     };
   }, []);
 

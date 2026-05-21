@@ -8,7 +8,10 @@ export function compileShader(
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error(gl.getShaderInfoLog(shader));
+    const log = gl.getShaderInfoLog(shader)?.trim();
+    if (log && process.env.NODE_ENV === "development") {
+      console.warn("[webgl] shader compile:", log);
+    }
     return null;
   }
   return shader;
@@ -29,7 +32,10 @@ export function createProgram(
   gl.attachShader(prog, fs);
   gl.linkProgram(prog);
   if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-    console.error(gl.getProgramInfoLog(prog));
+    const log = gl.getProgramInfoLog(prog)?.trim();
+    if (log && process.env.NODE_ENV === "development") {
+      console.warn("[webgl] program link:", log);
+    }
     return null;
   }
   return prog;
