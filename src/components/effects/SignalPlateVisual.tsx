@@ -29,14 +29,12 @@ const SIGNAL_SEED_KEY = "mxsm-signal-seed";
 type SignalPlateVisualProps = {
   href: string;
   seed: number;
-  cta: string;
   ctaHint: string;
 };
 
 export function SignalPlateVisual({
   href,
   seed,
-  cta,
   ctaHint,
 }: SignalPlateVisualProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -169,25 +167,20 @@ export function SignalPlateVisual({
   }, []);
 
   return (
-    <div className="sig-stage">
+    <>
       <canvas
         ref={canvasRef}
         className="sig-stage-canvas"
         aria-hidden="true"
       />
-      <div className="sig-stage-core">
-        <Link
-          href={href}
-          className="sig-portal"
-          aria-label={`${cta} — ${ctaHint}`}
-          onClick={() => {
-            sessionStorage.setItem(SIGNAL_SEED_KEY, String(seed));
-          }}
-        >
-          <span className="sig-portal-label">{cta}</span>
-        </Link>
-        <p className="sig-hint sig-hint--stage">{ctaHint}</p>
-      </div>
-    </div>
+      <Link
+        href={href}
+        className="sig-stage-hit"
+        aria-label={ctaHint}
+        onClick={() => {
+          sessionStorage.setItem(SIGNAL_SEED_KEY, String(seed));
+        }}
+      />
+    </>
   );
 }

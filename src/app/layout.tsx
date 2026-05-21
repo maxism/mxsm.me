@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { JetBrains_Mono, Spectral } from "next/font/google";
 import { headers } from "next/headers";
 import { Suspense } from "react";
@@ -43,6 +44,7 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body>
+        <Script src="/palette-runtime.js" strategy="beforeInteractive" />
         <script
           dangerouslySetInnerHTML={{ __html: timePaletteInitScript() }}
         />

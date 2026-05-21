@@ -5,7 +5,6 @@ import { SignalPlateVisual } from "@/components/effects/SignalPlateVisual";
 type SignalPlateStageProps = {
   href: string;
   seed: number;
-  cta: string;
   ctaHint: string;
 };
 

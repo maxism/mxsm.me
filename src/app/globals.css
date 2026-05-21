@@ -157,6 +157,17 @@ main { position: relative; z-index: 2; }
 
 .plate-head { display: flex; flex-direction: column; gap: 14px; }
 .plate-head .title-block { margin-bottom: 28px; align-self: flex-start; }
+.plate-head--center {
+  align-items: center;
+  text-align: center;
+}
+.plate-head--center .title-block {
+  align-self: center;
+}
+.plate-head--center .plate-h {
+  margin-left: auto;
+  margin-right: auto;
+}
 .plate-h {
   font-family: var(--serif); font-weight: 200;
   font-size: clamp(48px, 9vw, 132px);
@@ -533,45 +544,20 @@ main { position: relative; z-index: 2; }
 .plate-inverted .ghost-glyph { color: var(--bg); opacity: 0.05; }
 .plate-inverted .plate-h::first-letter { color: var(--hot); }
 
-.sig-quote {
-  margin: 0 0 56px;
-  display: flex; flex-direction: column; gap: 6px;
-  font-family: var(--serif); font-weight: 200;
-  font-size: clamp(36px, 7vw, 96px);
-  line-height: 0.98; letter-spacing: -0.035em;
-  color: var(--ink); max-width: 16ch;
-}
-.sig-line { display: block; }
-.sig-it { font-style: italic; color: rgba(10,9,7,0.55); }
-
-.sig-meta {
-  list-style: none; padding: 0; margin: 0;
-  display: grid; gap: 0;
-  border-top: 1px solid var(--ink-2);
-  max-width: 760px;
-}
-.sig-meta li {
-  display: grid; grid-template-columns: 100px 1fr; gap: 20px;
-  align-items: baseline;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--rule);
-}
-.sm-k {
-  font-family: var(--mono); font-size: 9px; letter-spacing: 0.22em;
-  text-transform: uppercase; color: var(--ink-3);
-}
-.sm-v {
-  font-family: var(--mono); font-size: 12px; color: var(--ink);
+.plate-signal {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 0;
+  display: block;
+  overflow: hidden;
 }
 
 .sig-stage {
   position: relative;
-  margin-top: clamp(40px, 6vh, 72px);
-  min-height: clamp(300px, 44vh, 520px);
-  display: grid;
-  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
   overflow: hidden;
-  border: 1px solid var(--rule);
   background: #060508;
 }
 .sig-stage-canvas {
@@ -579,69 +565,52 @@ main { position: relative; z-index: 2; }
   inset: 0;
   width: 100%;
   height: 100%;
+  display: block;
   pointer-events: none;
 }
-.sig-stage-core {
-  position: relative;
+.sig-stage-hit {
+  position: absolute;
+  inset: 0;
   z-index: 1;
+}
+.sig-stage-ui {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  padding: 24px;
-}
-.sig-portal {
-  display: inline-flex;
-  align-items: center;
   justify-content: center;
-  min-width: min(92vw, 420px);
-  padding: clamp(32px, 6vw, 56px) clamp(48px, 10vw, 88px);
-  font-family: var(--mono);
-  font-size: clamp(12px, 1.4vw, 14px);
-  font-weight: 400;
-  letter-spacing: 0.28em;
-  text-transform: lowercase;
+  padding: clamp(20px, 4vh, 40px) var(--gutter);
+  pointer-events: none;
+}
+.sig-stage-ui .plate-head,
+.sig-stage-ui .plate-head [data-glitch] {
+  pointer-events: auto;
+}
+.sig-stage-ui .plate-head {
+  overflow: visible;
+}
+.plate-signal .plate-head {
+  margin: 0;
+  gap: clamp(10px, 2vh, 18px);
+}
+.plate-signal .plate-head .title-block {
+  margin-bottom: clamp(12px, 2.5vh, 24px);
+}
+.plate-signal .plate-h {
+  margin: 0;
+  font-size: clamp(40px, 8vw, 108px);
   color: #e8e2d2;
-  background: rgba(6, 5, 8, 0.72);
-  border: 1px solid rgba(232, 226, 210, 0.14);
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.5),
-    0 0 24px rgba(var(--hot-rgb), 0.08);
-  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
-  animation: sig-portal-idle 5.5s ease-in-out infinite;
 }
-.sig-portal:hover {
-  border-color: rgba(var(--hot-rgb), 0.45);
-  transform: translateY(-3px);
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.45),
-    0 0 48px rgba(var(--hot-rgb), 0.22),
-    0 0 80px rgba(var(--hot-rgb), 0.1);
-  animation: none;
+.plate-signal .plate-h::first-letter { color: var(--hot); }
+.plate-signal .title-block.inv {
+  background: rgba(6, 5, 8, 0.55);
+  border-color: rgba(232, 226, 210, 0.12);
 }
-.sig-portal-label {
-  position: relative;
-  z-index: 1;
-}
-@keyframes sig-portal-idle {
-  0%, 82%, 100% {
-    box-shadow:
-      0 0 0 1px rgba(0, 0, 0, 0.5),
-      0 0 20px rgba(var(--hot-rgb), 0.06);
-  }
-  88% {
-    box-shadow:
-      0 0 0 1px rgba(0, 0, 0, 0.4),
-      0 0 56px rgba(var(--hot-rgb), 0.35),
-      0 0 100px rgba(var(--hot-rgb), 0.12);
-    border-color: rgba(var(--hot-rgb), 0.35);
-  }
-  92% {
-    box-shadow:
-      0 0 0 1px rgba(0, 0, 0, 0.5),
-      0 0 24px rgba(var(--hot-rgb), 0.1);
-  }
-}
+.plate-signal .title-block.inv .tb-k { color: rgba(232, 226, 210, 0.45); }
+.plate-signal .title-block.inv .tb-v { color: rgba(232, 226, 210, 0.88); }
+
 .sig-hint {
   font-family: var(--mono);
   font-size: 10px;
@@ -650,11 +619,13 @@ main { position: relative; z-index: 2; }
   max-width: 28ch;
 }
 .sig-hint--stage {
-  margin: 18px 0 0;
+  position: absolute;
+  left: 50%;
+  bottom: clamp(16px, 3vh, 28px);
+  transform: translateX(-50%);
+  margin: 0;
+  text-align: center;
   color: rgba(232, 226, 210, 0.45);
-}
-@media (prefers-reduced-motion: reduce) {
-  .sig-portal { animation: none; }
 }
 
 /* ─── PLATE 06 · contact ───────────────────────────── */
@@ -831,5 +802,9 @@ main { position: relative; z-index: 2; }
   .role { grid-template-columns: 1fr; }
   .role-spine { flex-direction: row; align-items: center; border-right: none; border-bottom: 1px solid var(--rule); padding: 0 0 14px; }
   .role-bar { min-height: 1px; height: 12px; }
-  .sig-quote { font-size: clamp(32px, 11vw, 56px); }
+  .plate-signal {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 0;
+  }
 }

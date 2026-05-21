@@ -1,4 +1,4 @@
-/* mxsm.me — background dust (vanilla WebGL, no React dependency) */
+/* mxsm.me — background dust shader (uses mxsmPalette for time-of-day colors) */
 (function () {
   "use strict";
 
@@ -13,6 +13,17 @@
       document.body.insertBefore(cnv, document.body.firstChild);
     }
     return cnv;
+  }
+
+  function palette() {
+    if (window.mxsmPalette) return window.mxsmPalette.at();
+    return {
+      dustBgLo: [0.04, 0.035, 0.028],
+      dustBgHi: [0.16, 0.14, 0.1],
+      dustWarm: [0.1, 0.06, 0.02],
+      dustMote: [0.9, 0.8, 0.6],
+      dustGlow: [0.16, 0.12, 0.05],
+    };
   }
 
   function init() {
@@ -44,8 +55,11 @@
       "uniform vec2 u_mouse;\n" +
       "uniform float u_t;\n" +
       "uniform float u_scroll;\n" +
+      "uniform vec3 u_bgLo;\n" +
+      "uniform vec3 u_bgHi;\n" +
       "uniform vec3 u_warm;\n" +
       "uniform vec3 u_mote;\n" +
+      "uniform vec3 u_glow;\n" +
       "float hash(vec2 p) { p = fract(p*vec2(123.34, 456.21)); p += dot(p, p+45.32); return fract(p.x*p.y); }\n" +
       "float noise(vec2 p) {\n" +
       "  vec2 i = floor(p), f = fract(p);\n" +
@@ -64,7 +78,7 @@
       "  vec2 d = uv - mouse;\n" +
       "  float r = length(d) + 0.0001;\n" +
       "  float pull = 0.05 / r;\n" +
-      "  vec2 warp = uv + normalize(d) * pull * 0.04;\n" +
+      "vec2 warp = uv + normalize(d) * pull * 0.04;\n" +
       "  vec2 p = warp * 2.4;\n" +
       "  p.y += u_t * 0.04 + u_scroll * 0.6;\n" +
       "  p.x += sin(u_t*0.13) * 0.2;\n" +
@@ -73,13 +87,11 @@
       "  float n3 = noise(warp * 60.0 + u_t*0.4);\n" +
       "  float dust = pow(n1, 1.8) * 0.65 + n2*0.15 + n3*0.06;\n" +
       "  float motes = smoothstep(0.78, 0.84, n2) * (0.4 + 0.6*sin(u_t*2.0 + uv.x*30.0));\n" +
-      "  vec3 base = mix(vec3(0.04, 0.035, 0.028), vec3(0.16, 0.14, 0.10), dust);\n" +
-      "  vec3 warmTint = max(u_warm, vec3(0.10, 0.06, 0.02));\n" +
-      "  vec3 moteTint = max(u_mote, vec3(0.9, 0.8, 0.6));\n" +
-      "  base += warmTint * pow(dust, 4.0);\n" +
-      "  base += moteTint * motes * 0.18;\n" +
+      "  vec3 base = mix(u_bgLo, u_bgHi, dust);\n" +
+      "  base += u_warm * pow(dust, 4.0);\n" +
+      "  base += u_mote * motes * 0.22;\n" +
       "  float mg = smoothstep(0.35, 0.0, r);\n" +
-      "  base += vec3(0.16, 0.12, 0.05) * mg * 0.6;\n" +
+      "  base += u_glow * mg * 0.65;\n" +
       "  float v = 1.0 - 0.55*length(uv);\n" +
       "  base *= v;\n" +
       "  base = max(base, 0.0);\n" +
@@ -125,31 +137,13 @@
     var uMouse = gl.getUniformLocation(prog, "u_mouse");
     var uT = gl.getUniformLocation(prog, "u_t");
     var uScroll = gl.getUniformLocation(prog, "u_scroll");
+    var uBgLo = gl.getUniformLocation(prog, "u_bgLo");
+    var uBgHi = gl.getUniformLocation(prog, "u_bgHi");
     var uWarm = gl.getUniformLocation(prog, "u_warm");
     var uMote = gl.getUniformLocation(prog, "u_mote");
+    var uGlow = gl.getUniformLocation(prog, "u_glow");
 
     var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-
-    function palette() {
-      var warm = [0.1, 0.06, 0.02];
-      var mote = [0.9, 0.8, 0.6];
-      var rgb = getComputedStyle(document.documentElement)
-        .getPropertyValue("--hot-rgb")
-        .trim();
-      if (rgb) {
-        var p = rgb.split(",").map(function (n) {
-          return (parseFloat(n) / 255) * 0.35;
-        });
-        if (p.length === 3 && p.every(function (n) { return !isNaN(n); })) {
-          warm = [
-            warm[0] * 0.55 + p[0],
-            warm[1] * 0.55 + p[1],
-            warm[2] * 0.55 + p[2],
-          ];
-        }
-      }
-      return { warm: warm, mote: mote };
-    }
 
     function fit() {
       cnv.width = Math.max(1, Math.floor(window.innerWidth * dpr));
@@ -190,19 +184,28 @@
     window.addEventListener("scroll", updateScroll, { passive: true });
 
     var t0 = performance.now();
+
+    function applyPal(pal) {
+      if (window.mxsmPalette) window.mxsmPalette.applyCss(pal);
+      if (uBgLo) gl.uniform3f(uBgLo, pal.dustBgLo[0], pal.dustBgLo[1], pal.dustBgLo[2]);
+      if (uBgHi) gl.uniform3f(uBgHi, pal.dustBgHi[0], pal.dustBgHi[1], pal.dustBgHi[2]);
+      if (uWarm) gl.uniform3f(uWarm, pal.dustWarm[0], pal.dustWarm[1], pal.dustWarm[2]);
+      if (uMote) gl.uniform3f(uMote, pal.dustMote[0], pal.dustMote[1], pal.dustMote[2]);
+      if (uGlow) gl.uniform3f(uGlow, pal.dustGlow[0], pal.dustGlow[1], pal.dustGlow[2]);
+    }
+
     function tick() {
       mx += (tmx - mx) * 0.08;
       my += (tmy - my) * 0.08;
       var pal = palette();
       gl.useProgram(prog);
-      gl.clearColor(0.04, 0.035, 0.028, 1);
+      gl.clearColor(pal.dustBgLo[0], pal.dustBgLo[1], pal.dustBgLo[2], 1);
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.uniform2f(uRes, cnv.width, cnv.height);
       gl.uniform2f(uMouse, mx * dpr, my * dpr);
       gl.uniform1f(uT, (performance.now() - t0) / 1000);
       gl.uniform1f(uScroll, scrollAmt);
-      if (uWarm) gl.uniform3f(uWarm, pal.warm[0], pal.warm[1], pal.warm[2]);
-      if (uMote) gl.uniform3f(uMote, pal.mote[0], pal.mote[1], pal.mote[2]);
+      applyPal(pal);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       cnv.dataset.ready = "1";
       requestAnimationFrame(tick);
@@ -212,6 +215,10 @@
   }
 
   function boot() {
+    if (!window.mxsmPalette) {
+      requestAnimationFrame(boot);
+      return;
+    }
     var cnv = document.getElementById("dust");
     if (!cnv) {
       requestAnimationFrame(boot);

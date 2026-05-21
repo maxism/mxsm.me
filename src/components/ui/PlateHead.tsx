@@ -11,6 +11,7 @@ type PlateHeadProps = {
   inverted?: boolean;
   cyrillic?: boolean;
   href?: string;
+  centered?: boolean;
 };
 
 export function PlateHead({
@@ -22,6 +23,7 @@ export function PlateHead({
   inverted,
   cyrillic,
   href,
+  centered,
 }: PlateHeadProps) {
   const headingClass = `plate-h${cyrillic ? " cyr" : ""}`;
 
@@ -43,7 +45,7 @@ export function PlateHead({
   );
 
   return (
-    <header className="plate-head">
+    <header className={`plate-head${centered ? " plate-head--center" : ""}`}>
       <TitleBlock rows={rows} inverted={inverted} />
       {heading}
     </header>
