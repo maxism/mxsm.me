@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { SignalExperience } from "@/components/signal/SignalExperience";
 import { SignalSeoFallback } from "@/components/signal/SignalSeoFallback";
 import {
@@ -9,6 +10,10 @@ import {
   type Locale,
 } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
+import {
+  creativeWorkJsonLd,
+  signalBreadcrumbJsonLd,
+} from "@/i18n/json-ld";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -71,6 +76,9 @@ export default async function SignalPage({ params }: PageProps) {
 
   return (
     <>
+      <JsonLd
+        data={[creativeWorkJsonLd(locale), signalBreadcrumbJsonLd(locale)]}
+      />
       <SignalSeoFallback content={dict.signalPage.seo} />
       <SignalExperience
         backHref={localePath(locale)}

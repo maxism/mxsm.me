@@ -106,6 +106,10 @@ export function paletteAt(date = new Date()): TimePalette {
   const burst = hslToRgb((h + 8) % 360, Math.min(88, s + 6), l + 4);
   const warm = hslToRgb(h, s * 0.55, l * 0.42);
   const mote = hslToRgb((h + 40) % 360, s * 0.35, Math.min(92, l + 28));
+  const classicWarm: [number, number, number] = [0.1, 0.06, 0.02];
+  const classicMote: [number, number, number] = [0.9, 0.8, 0.6];
+  const warmRgb = warm.map((n) => n / 255) as [number, number, number];
+  const moteRgb = mote.map((n) => n / 255) as [number, number, number];
 
   return {
     hot: rgbToHex(hotTriplet),
@@ -113,9 +117,21 @@ export function paletteAt(date = new Date()): TimePalette {
     hotTriplet,
     chemBorder: border.map((n) => n / 255) as [number, number, number],
     chemHot: burst.map((n) => n / 255) as [number, number, number],
-    dustWarm: warm.map((n) => n / 255) as [number, number, number],
-    dustMote: mote.map((n) => n / 255) as [number, number, number],
+    dustWarm: warmRgb.map((v, i) => v * 0.45 + classicWarm[i] * 0.55) as [
+      number,
+      number,
+      number,
+    ],
+    dustMote: moteRgb.map((v, i) => v * 0.35 + classicMote[i] * 0.65) as [
+      number,
+      number,
+      number,
+    ],
   };
+}
+
+export function getLivePalette(): TimePalette {
+  return paletteAt();
 }
 
 /** Inline script body for layout — avoids flash before hydration */

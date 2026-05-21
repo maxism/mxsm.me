@@ -22,9 +22,13 @@ import createVisualUnstable              from './visual-unstable.js';
 import { MAX_PHRASES, getPhraseRegister } from './phrases.js';
 
 // ── Seed ─────────────────────────────────────────────────────────
+const SIGNAL_SEED_KEY = 'mxsm-signal-seed';
 const urlSeed = new URLSearchParams(window.location.search).get('seed');
+const storedSeed = sessionStorage.getItem(SIGNAL_SEED_KEY);
 const seed    = Number.isFinite(Number(urlSeed))
   ? Number(urlSeed)
+  : Number.isFinite(Number(storedSeed))
+  ? Number(storedSeed)
   : Math.floor(Math.random() * 2147483646) + 1;
 
 function mulberry32(a) {

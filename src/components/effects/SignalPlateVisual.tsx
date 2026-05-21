@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
-import { getLivePalette } from "@/components/effects/TimePalette";
+import { useLayoutEffect, useRef } from "react";
+import { getLivePalette } from "@/lib/time-palette";
 import {
   SIGNAL_PLATE_FS,
   SIGNAL_PLATE_VS,
@@ -24,20 +24,24 @@ function compileShader(
   return shader;
 }
 
+const SIGNAL_SEED_KEY = "mxsm-signal-seed";
+
 type SignalPlateVisualProps = {
   href: string;
+  seed: number;
   cta: string;
   ctaHint: string;
 };
 
 export function SignalPlateVisual({
   href,
+  seed,
   cta,
   ctaHint,
 }: SignalPlateVisualProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -45,12 +49,11 @@ export function SignalPlateVisual({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    if (reducedMotion) return;
-
     const gl = canvas.getContext("webgl", {
       alpha: true,
       antialias: false,
       premultipliedAlpha: false,
+      preserveDrawingBuffer: true,
     });
     if (!gl) return;
 
@@ -63,6 +66,10 @@ export function SignalPlateVisual({
     gl.attachShader(prog, vs);
     gl.attachShader(prog, fs);
     gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      console.error("[signal-plate] program link:", gl.getProgramInfoLog(prog));
+      return;
+    }
     gl.useProgram(prog);
 
     const buf = gl.createBuffer();
@@ -73,6 +80,7 @@ export function SignalPlateVisual({
       gl.STATIC_DRAW,
     );
     const loc = gl.getAttribLocation(prog, "p");
+    if (loc < 0) return;
     gl.enableVertexAttribArray(loc);
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
@@ -100,11 +108,14 @@ export function SignalPlateVisual({
     };
     fit();
 
+    let running = true;
+
     const tick = () => {
+      if (!running) return;
       const now = performance.now();
       const t = (now - t0) / 1000;
 
-      if (now - lastBurst > 2800 + Math.random() * 2200) {
+      if (!reducedMotion && now - lastBurst > 2800 + Math.random() * 2200) {
         flash = 1;
         flashDecay = 1;
         lastBurst = now;
@@ -112,21 +123,33 @@ export function SignalPlateVisual({
       flashDecay *= 0.92;
       flash = Math.max(flash * 0.88, flashDecay);
 
+      gl.useProgram(prog);
+      gl.clearColor(0, 0, 0.03, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+
       const pal = getLivePalette();
-      gl.uniform2f(uRes, canvas.width, canvas.height);
-      gl.uniform1f(uT, t);
-      gl.uniform3f(uBorder, ...pal.chemBorder);
-      gl.uniform3f(uHot, ...pal.chemHot);
-      gl.uniform1f(uFlash, flash);
+      if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+      if (uT) gl.uniform1f(uT, t);
+      if (uBorder) gl.uniform3f(uBorder, ...pal.chemBorder);
+      if (uHot) gl.uniform3f(uHot, ...pal.chemHot);
+      if (uFlash) gl.uniform1f(uFlash, flash);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      frame = requestAnimationFrame(tick);
+
+      if (!reducedMotion) {
+        frame = requestAnimationFrame(tick);
+      }
     };
 
-    const ro = new ResizeObserver(fit);
+    const ro = new ResizeObserver(() => {
+      fit();
+      tick();
+    });
     ro.observe(canvas);
+    fit();
     tick();
 
     return () => {
+      running = false;
       cancelAnimationFrame(frame);
       ro.disconnect();
     };
@@ -144,6 +167,9 @@ export function SignalPlateVisual({
           href={href}
           className="sig-portal"
           aria-label={`${cta} — ${ctaHint}`}
+          onClick={() => {
+            sessionStorage.setItem(SIGNAL_SEED_KEY, String(seed));
+          }}
         >
           <span className="sig-portal-label">{cta}</span>
         </Link>

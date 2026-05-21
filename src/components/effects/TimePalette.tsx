@@ -19,7 +19,3 @@ export function TimePalette() {
 
   return null;
 }
-
-export function getLivePalette(): TimePalette {
-  return paletteAt();
-}

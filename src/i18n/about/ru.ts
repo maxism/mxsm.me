@@ -2,7 +2,7 @@ import type { AboutContent } from "@/i18n/about/types";
 
 export const aboutRu: AboutContent = {
   meta: {
-    title: "about — Max Ulianov",
+    title: "Макс Ульянов — about · CTO MTS.ai",
     description:
       "Макс Ульянов: CTO MTS.ai, со-основатель Untitled Team, подкаст Шитбастардс, mxsm/signal. Москва. 15+ лет в инжиниринге и оргстроительстве.",
     ogDescription:

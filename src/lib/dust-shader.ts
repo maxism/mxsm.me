@@ -43,8 +43,10 @@ void main() {
   float motes = smoothstep(0.78, 0.84, n2) * (0.4 + 0.6*sin(u_t*2.0 + uv.x*30.0));
 
   vec3 base = mix(vec3(0.04, 0.035, 0.028), vec3(0.16, 0.14, 0.10), dust);
-  base += u_warm * pow(dust, 4.0);
-  base += u_mote * motes * 0.18;
+  vec3 warmTint = max(u_warm, vec3(0.10, 0.06, 0.02));
+  vec3 moteTint = max(u_mote, vec3(0.9, 0.8, 0.6));
+  base += warmTint * pow(dust, 4.0);
+  base += moteTint * motes * 0.18;
 
   float mg = smoothstep(0.35, 0.0, r);
   base += vec3(0.16, 0.12, 0.05) * mg * 0.6;

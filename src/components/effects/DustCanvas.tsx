@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { getLivePalette } from "@/components/effects/TimePalette";
+import { useLayoutEffect, useRef } from "react";
 import { DUST_FRAGMENT_SHADER, DUST_VERTEX_SHADER } from "@/lib/dust-shader";
+import { getLivePalette } from "@/lib/time-palette";
 
 function compileShader(
   gl: WebGLRenderingContext,
@@ -14,7 +14,7 @@ function compileShader(
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error(gl.getShaderInfoLog(shader));
+    console.error("[dust] shader compile:", gl.getShaderInfoLog(shader));
     return null;
   }
   return shader;
@@ -23,21 +23,24 @@ function compileShader(
 export function DustCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useEffect(() => {
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (reducedMotion) return;
-
+  useLayoutEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
     const gl = canvas.getContext("webgl", {
-      alpha: true,
+      alpha: false,
       antialias: false,
       premultipliedAlpha: false,
+      preserveDrawingBuffer: true,
     });
-    if (!gl) return;
+    if (!gl) {
+      console.error("[dust] WebGL context unavailable");
+      return;
+    }
 
     const vs = compileShader(gl, gl.VERTEX_SHADER, DUST_VERTEX_SHADER);
     const fs = compileShader(gl, gl.FRAGMENT_SHADER, DUST_FRAGMENT_SHADER);
@@ -48,6 +51,10 @@ export function DustCanvas() {
     gl.attachShader(prog, vs);
     gl.attachShader(prog, fs);
     gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      console.error("[dust] program link:", gl.getProgramInfoLog(prog));
+      return;
+    }
     gl.useProgram(prog);
 
     const buf = gl.createBuffer();
@@ -58,6 +65,10 @@ export function DustCanvas() {
       gl.STATIC_DRAW,
     );
     const loc = gl.getAttribLocation(prog, "p");
+    if (loc < 0) {
+      console.error("[dust] attribute p not found");
+      return;
+    }
     gl.enableVertexAttribArray(loc);
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
@@ -71,8 +82,8 @@ export function DustCanvas() {
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
     const fit = () => {
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
+      canvas.width = Math.max(1, window.innerWidth * dpr);
+      canvas.height = Math.max(1, window.innerHeight * dpr);
       gl.viewport(0, 0, canvas.width, canvas.height);
     };
     fit();
@@ -104,19 +115,29 @@ export function DustCanvas() {
 
     const t0 = performance.now();
     let frame = 0;
+    let running = true;
 
-    const tick = () => {
+    const draw = (time: number) => {
+      if (!running) return;
       mx += (tmx - mx) * 0.08;
       my += (tmy - my) * 0.08;
+
+      gl.useProgram(prog);
+      gl.clearColor(0.04, 0.035, 0.028, 1);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+
       const pal = getLivePalette();
-      gl.uniform2f(uRes, canvas.width, canvas.height);
-      gl.uniform2f(uMouse, mx * dpr, my * dpr);
-      gl.uniform1f(uT, (performance.now() - t0) / 1000);
-      gl.uniform1f(uScroll, scrollAmt);
-      gl.uniform3f(uWarm, ...pal.dustWarm);
-      gl.uniform3f(uMote, ...pal.dustMote);
+      if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+      if (uMouse) gl.uniform2f(uMouse, mx * dpr, my * dpr);
+      if (uT) gl.uniform1f(uT, (time - t0) / 1000);
+      if (uScroll) gl.uniform1f(uScroll, scrollAmt);
+      if (uWarm) gl.uniform3f(uWarm, ...pal.dustWarm);
+      if (uMote) gl.uniform3f(uMote, ...pal.dustMote);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      frame = requestAnimationFrame(tick);
+
+      if (!reducedMotion) {
+        frame = requestAnimationFrame(draw);
+      }
     };
 
     window.addEventListener("resize", fit);
@@ -124,9 +145,10 @@ export function DustCanvas() {
     window.addEventListener("touchmove", onTouch, { passive: true });
     window.addEventListener("scroll", updateScroll, { passive: true });
     updateScroll();
-    tick();
+    draw(performance.now());
 
     return () => {
+      running = false;
       cancelAnimationFrame(frame);
       window.removeEventListener("resize", fit);
       window.removeEventListener("mousemove", onMouse);

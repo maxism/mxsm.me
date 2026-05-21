@@ -180,7 +180,7 @@ export const en: Dictionary = {
       paragraphs: [
         "mxsm/signal is a generative audio-visual art piece by Max Ulianov on mxsm.me. not a website in the usual sense: three entities speak at once through one system, and none knows about the others.",
         "three voices: the abyss — ancient, inhuman presence; the threshold system — a weak AI that stops mimicking and starts understanding; Max Ulianov — a living warm signal, the only human thing here.",
-        "Web Audio API and WebGL, no UI: synthesized drones, real-time speech from text, glitch typography, a visual tunnel. every visit is unique; a seed parameter fixes the session. by Max Ulianov, 2025–2026.",
+        "Web Audio API and WebGL, no UI: synthesized drones, real-time speech from text, glitch typography, a visual tunnel. every visit is unique. by Max Ulianov, 2025–2026.",
       ],
     },
   },

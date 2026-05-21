@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AboutPage } from "@/components/about/AboutPage";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { getAboutContent } from "@/i18n/about/get-about";
 import { isLocale, localeAboutPath, type Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/get-dictionary";
+import { aboutBreadcrumbJsonLd, profilePageJsonLd } from "@/i18n/json-ld";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -15,6 +18,7 @@ export async function generateMetadata({
   if (!isLocale(raw)) return {};
   const locale = raw as Locale;
   const content = getAboutContent(locale);
+  const dict = getDictionary(locale);
   const canonical = localeAboutPath(locale);
 
   return {
@@ -29,12 +33,17 @@ export async function generateMetadata({
       },
     },
     openGraph: {
+      type: "profile",
+      siteName: "mxsm.me",
+      locale: dict.meta.ogLocale,
+      url: canonical,
       title: content.meta.title,
       description: content.meta.ogDescription,
-      url: canonical,
     },
     twitter: {
       card: "summary_large_image",
+      site: "@maxism",
+      creator: "@maxism",
       title: content.meta.title,
       description: content.meta.ogDescription,
     },
@@ -49,8 +58,13 @@ export default async function AboutRoute({ params }: PageProps) {
   const content = getAboutContent(locale);
 
   return (
-    <main id="main">
-      <AboutPage content={content} locale={locale} />
-    </main>
+    <>
+      <JsonLd
+        data={[profilePageJsonLd(locale), aboutBreadcrumbJsonLd(locale)]}
+      />
+      <main id="main">
+        <AboutPage content={content} locale={locale} />
+      </main>
+    </>
   );
 }

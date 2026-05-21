@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { SiteChrome } from "@/components/effects/SiteChrome";
 import { Footer } from "@/components/layout/Footer";
 import { Masthead } from "@/components/layout/Masthead";
 import { isLocale, localePath, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { personJsonLd, podcastJsonLd } from "@/i18n/json-ld";
+import {
+  personJsonLd,
+  podcastJsonLd,
+  webSiteJsonLd,
+} from "@/i18n/json-ld";
+import { SHITBUSTARDS_RSS_URL } from "@/lib/shared-data";
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -33,6 +39,9 @@ export async function generateMetadata({
         ru: "/",
         en: "/en",
         "x-default": "/",
+      },
+      types: {
+        "application/rss+xml": SHITBUSTARDS_RSS_URL,
       },
     },
     openGraph: {
@@ -65,17 +74,8 @@ export default async function SiteLayout({ children, params }: LayoutProps) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(personJsonLd(locale)),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(podcastJsonLd(locale)),
-        }}
+      <JsonLd
+        data={[personJsonLd(locale), webSiteJsonLd(locale), podcastJsonLd(locale)]}
       />
       <SiteChrome />
       <Masthead locale={locale} dict={dict} />

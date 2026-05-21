@@ -12,7 +12,7 @@ type PlateSignalProps = {
 export function PlateSignal({ dict, locale, seed }: PlateSignalProps) {
   const p = dict.plates.signal;
   const [line1, line2, line3] = p.quote;
-  const href = `${localeSignalPath(locale)}?seed=${seed}`;
+  const href = localeSignalPath(locale);
 
   return (
     <section
@@ -43,7 +43,7 @@ export function PlateSignal({ dict, locale, seed }: PlateSignalProps) {
         ))}
       </ul>
 
-      <SignalPlateVisual href={href} cta={p.cta} ctaHint={p.ctaHint} />
+      <SignalPlateVisual href={href} seed={seed} cta={p.cta} ctaHint={p.ctaHint} />
     </section>
   );
 }
