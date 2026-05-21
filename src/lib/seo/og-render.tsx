@@ -97,6 +97,7 @@ function homeOgElement(locale: Locale) {
           </div>
           <div
             style={{
+              display: "flex",
               fontSize: 72,
               fontWeight: 200,
               letterSpacing: "-0.04em",
@@ -104,7 +105,8 @@ function homeOgElement(locale: Locale) {
               maxWidth: 900,
             }}
           >
-            <span style={{ color: OG.hot }}>Max</span> Ulianov
+            <span style={{ color: OG.hot }}>Max</span>
+            <span> Ulianov</span>
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -198,6 +200,7 @@ function aboutOgElement(locale: Locale) {
           </div>
           <div
             style={{
+              display: "flex",
               fontSize: 68,
               fontWeight: 200,
               letterSpacing: "-0.04em",
@@ -206,7 +209,7 @@ function aboutOgElement(locale: Locale) {
             }}
           >
             <span style={{ color: OG.hot }}>/</span>
-            {" about"}
+            <span> about</span>
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -271,6 +274,7 @@ function signalOgElement(locale: Locale) {
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div
             style={{
+              display: "flex",
               fontSize: 11,
               letterSpacing: "0.22em",
               color: "rgba(10, 9, 7, 0.45)",
@@ -284,6 +288,7 @@ function signalOgElement(locale: Locale) {
           </div>
           <div
             style={{
+              display: "flex",
               fontSize: 64,
               fontWeight: 200,
               letterSpacing: "-0.04em",
@@ -291,7 +296,7 @@ function signalOgElement(locale: Locale) {
             }}
           >
             <span style={{ color: OG.hot }}>/</span>
-            {" signal"}
+            <span> signal</span>
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
