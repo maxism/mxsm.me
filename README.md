@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3030](http://localhost:3030).
 
 Optional: copy `.env.example` → `.env.local` and set `NEXT_PUBLIC_SITE_URL` for canonical URLs in dev.
 
