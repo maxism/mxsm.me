@@ -1,4 +1,4 @@
-import { SignalPlateVisual } from "@/components/effects/SignalPlateVisual";
+import { SignalPlateStage } from "@/components/effects/SignalPlateStage";
 import { PlateHead } from "@/components/ui/PlateHead";
 import { localeSignalPath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
@@ -43,7 +43,7 @@ export function PlateSignal({ dict, locale, seed }: PlateSignalProps) {
         ))}
       </ul>
 
-      <SignalPlateVisual href={href} seed={seed} cta={p.cta} ctaHint={p.ctaHint} />
+      <SignalPlateStage href={href} seed={seed} cta={p.cta} ctaHint={p.ctaHint} />
     </section>
   );
 }

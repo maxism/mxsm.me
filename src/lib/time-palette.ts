@@ -1,5 +1,8 @@
 /** Palette keyed to local time-of-day — one mood-coherent spectrum for the site. */
 
+/** TEST ONLY: full 24h spectrum loop duration (ms). Enable with ?paletteTest=1 */
+export const PALETTE_TEST_CYCLE_MS = 30_000;
+
 export type TimePalette = {
   /** Accent hex, e.g. #e8c547 */
   hot: string;
@@ -80,6 +83,27 @@ function rgbToHex([r, g, b]: [number, number, number]): string {
   return `#${[r, g, b].map((n) => n.toString(16).padStart(2, "0")).join("")}`;
 }
 
+let paletteTestStartMs: number | null = null;
+
+export function isPaletteTestMode(): boolean {
+  if (process.env.NEXT_PUBLIC_PALETTE_TEST === "true") return true;
+  if (typeof window !== "undefined") {
+    return new URLSearchParams(window.location.search).has("paletteTest");
+  }
+  return false;
+}
+
+/** 0–24 virtual hour for palette stops */
+export function getPaletteHour(nowMs = Date.now()): number {
+  if (!isPaletteTestMode()) {
+    const d = new Date(nowMs);
+    return d.getHours() + d.getMinutes() / 60 + d.getSeconds() / 3600;
+  }
+  if (paletteTestStartMs === null) paletteTestStartMs = nowMs;
+  const elapsed = (nowMs - paletteTestStartMs) % PALETTE_TEST_CYCLE_MS;
+  return (elapsed / PALETTE_TEST_CYCLE_MS) * 24;
+}
+
 function sampleHsl(hour: number): { h: number; s: number; l: number } {
   const h = ((hour % 24) + 24) % 24;
   for (let i = 0; i < STOPS.length - 1; i++) {
@@ -97,9 +121,8 @@ function sampleHsl(hour: number): { h: number; s: number; l: number } {
   return { h: STOPS[0].h, s: STOPS[0].s, l: STOPS[0].l };
 }
 
-export function paletteAt(date = new Date()): TimePalette {
-  const hour =
-    date.getHours() + date.getMinutes() / 60 + date.getSeconds() / 3600;
+export function paletteAt(nowMs = Date.now()): TimePalette {
+  const hour = getPaletteHour(nowMs);
   const { h, s, l } = sampleHsl(hour);
   const hotTriplet = hslToRgb(h, s, l);
   const border = hslToRgb((h + 168) % 360, Math.min(78, s + 8), l - 6);
@@ -136,5 +159,5 @@ export function getLivePalette(): TimePalette {
 
 /** Inline script body for layout — avoids flash before hydration */
 export function timePaletteInitScript(): string {
-  return `(function(){try{var d=new Date();var h=d.getHours()+d.getMinutes()/60;var stops=[{hour:0,h:228,s:48,l:52},{hour:4,h:248,s:42,l:48},{hour:6,h:198,s:58,l:50},{hour:8,h:48,s:76,l:59},{hour:12,h:44,s:74,l:57},{hour:16,h:32,s:78,l:54},{hour:19,h:14,s:82,l:52},{hour:21,h:292,s:48,l:56},{hour:23,h:235,s:46,l:50},{hour:24,h:228,s:48,l:52}];var a=stops[0],b=stops[1],t=0;for(var i=0;i<stops.length-1;i++){if(h>=stops[i].hour&&h<stops[i+1].hour){a=stops[i];b=stops[i+1];t=(h-a.hour)/(b.hour-a.hour);break}}var lh=a.h+((b.h-a.h+540)%360-180)*t;lh=(lh+360)%360;var ls=a.s+(b.s-a.s)*t;var ll=a.l+(b.l-a.l)*t;var c=((1-Math.abs(2*ll/100-1))*ls)/100,x=c*(1-Math.abs((lh/60)%2-1)),m=ll/100-c/2,r=0,g=0,bl=0;if(lh<60){r=c;g=x}else if(lh<120){r=x;g=c}else if(lh<180){g=c;bl=x}else if(lh<240){g=x;bl=c}else if(lh<300){r=x;bl=c}else{r=c;bl=x}var R=Math.round((r+m)*255),G=Math.round((g+m)*255),B=Math.round((bl+m)*255);var el=document.documentElement;el.style.setProperty('--hot','#'+[R,G,B].map(function(n){return n.toString(16).padStart(2,'0')}).join(''));el.style.setProperty('--hot-rgb',R+', '+G+', '+B)}catch(e){}})();`;
+  return `(function(){try{var test=/[?&]paletteTest(?:=1)?(?:&|$)/.test(location.search);var h=test?((performance.now()%${PALETTE_TEST_CYCLE_MS})/${PALETTE_TEST_CYCLE_MS})*24:(function(){var d=new Date();return d.getHours()+d.getMinutes()/60})();var stops=[{hour:0,h:228,s:48,l:52},{hour:4,h:248,s:42,l:48},{hour:6,h:198,s:58,l:50},{hour:8,h:48,s:76,l:59},{hour:12,h:44,s:74,l:57},{hour:16,h:32,s:78,l:54},{hour:19,h:14,s:82,l:52},{hour:21,h:292,s:48,l:56},{hour:23,h:235,s:46,l:50},{hour:24,h:228,s:48,l:52}];var a=stops[0],b=stops[1],t=0;for(var i=0;i<stops.length-1;i++){if(h>=stops[i].hour&&h<stops[i+1].hour){a=stops[i];b=stops[i+1];t=(h-a.hour)/(b.hour-a.hour);break}}var lh=a.h+((b.h-a.h+540)%360-180)*t;lh=(lh+360)%360;var ls=a.s+(b.s-a.s)*t;var ll=a.l+(b.l-a.l)*t;var c=((1-Math.abs(2*ll/100-1))*ls)/100,x=c*(1-Math.abs((lh/60)%2-1)),m=ll/100-c/2,r=0,g=0,bl=0;if(lh<60){r=c;g=x}else if(lh<120){r=x;g=c}else if(lh<180){g=c;bl=x}else if(lh<240){g=x;bl=c}else if(lh<300){r=x;bl=c}else{r=c;bl=x}var R=Math.round((r+m)*255),G=Math.round((g+m)*255),B=Math.round((bl+m)*255);var el=document.documentElement;el.style.setProperty('--hot','#'+[R,G,B].map(function(n){return n.toString(16).padStart(2,'0')}).join(''));el.style.setProperty('--hot-rgb',R+', '+G+', '+B);if(test)el.dataset.paletteTest='1'}catch(e){}})();`;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { DUST_FRAGMENT_SHADER, DUST_VERTEX_SHADER } from "@/lib/dust-shader";
 import { getLivePalette } from "@/lib/time-palette";
 
@@ -23,7 +23,7 @@ function compileShader(
 export function DustCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -31,60 +31,69 @@ export function DustCanvas() {
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    const gl = canvas.getContext("webgl", {
-      alpha: false,
-      antialias: false,
-      premultipliedAlpha: false,
-      preserveDrawingBuffer: true,
-    });
+    const gl =
+      canvas.getContext("webgl", {
+        alpha: false,
+        antialias: false,
+        premultipliedAlpha: false,
+        preserveDrawingBuffer: true,
+      }) ??
+      canvas.getContext("experimental-webgl", {
+        alpha: false,
+        antialias: false,
+        premultipliedAlpha: false,
+        preserveDrawingBuffer: true,
+      });
+
     if (!gl) {
       console.error("[dust] WebGL context unavailable");
       return;
     }
 
-    const vs = compileShader(gl, gl.VERTEX_SHADER, DUST_VERTEX_SHADER);
-    const fs = compileShader(gl, gl.FRAGMENT_SHADER, DUST_FRAGMENT_SHADER);
+    const webgl = gl as WebGLRenderingContext;
+
+    const vs = compileShader(webgl, webgl.VERTEX_SHADER, DUST_VERTEX_SHADER);
+    const fs = compileShader(webgl, webgl.FRAGMENT_SHADER, DUST_FRAGMENT_SHADER);
     if (!vs || !fs) return;
 
-    const prog = gl.createProgram();
+    const prog = webgl.createProgram();
     if (!prog) return;
-    gl.attachShader(prog, vs);
-    gl.attachShader(prog, fs);
-    gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-      console.error("[dust] program link:", gl.getProgramInfoLog(prog));
+    webgl.attachShader(prog, vs);
+    webgl.attachShader(prog, fs);
+    webgl.linkProgram(prog);
+    if (!webgl.getProgramParameter(prog, webgl.LINK_STATUS)) {
+      console.error("[dust] program link:", webgl.getProgramInfoLog(prog));
       return;
     }
-    gl.useProgram(prog);
 
-    const buf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
+    const buf = webgl.createBuffer();
+    webgl.bindBuffer(webgl.ARRAY_BUFFER, buf);
+    webgl.bufferData(
+      webgl.ARRAY_BUFFER,
       new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
-      gl.STATIC_DRAW,
+      webgl.STATIC_DRAW,
     );
-    const loc = gl.getAttribLocation(prog, "p");
+    const loc = webgl.getAttribLocation(prog, "p");
     if (loc < 0) {
       console.error("[dust] attribute p not found");
       return;
     }
-    gl.enableVertexAttribArray(loc);
-    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    webgl.enableVertexAttribArray(loc);
+    webgl.vertexAttribPointer(loc, 2, webgl.FLOAT, false, 0, 0);
 
-    const uRes = gl.getUniformLocation(prog, "u_res");
-    const uMouse = gl.getUniformLocation(prog, "u_mouse");
-    const uT = gl.getUniformLocation(prog, "u_t");
-    const uScroll = gl.getUniformLocation(prog, "u_scroll");
-    const uWarm = gl.getUniformLocation(prog, "u_warm");
-    const uMote = gl.getUniformLocation(prog, "u_mote");
+    const uRes = webgl.getUniformLocation(prog, "u_res");
+    const uMouse = webgl.getUniformLocation(prog, "u_mouse");
+    const uT = webgl.getUniformLocation(prog, "u_t");
+    const uScroll = webgl.getUniformLocation(prog, "u_scroll");
+    const uWarm = webgl.getUniformLocation(prog, "u_warm");
+    const uMote = webgl.getUniformLocation(prog, "u_mote");
 
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
     const fit = () => {
-      canvas.width = Math.max(1, window.innerWidth * dpr);
-      canvas.height = Math.max(1, window.innerHeight * dpr);
-      gl.viewport(0, 0, canvas.width, canvas.height);
+      canvas.width = Math.max(1, Math.floor(window.innerWidth * dpr));
+      canvas.height = Math.max(1, Math.floor(window.innerHeight * dpr));
+      webgl.viewport(0, 0, canvas.width, canvas.height);
     };
     fit();
 
@@ -122,18 +131,20 @@ export function DustCanvas() {
       mx += (tmx - mx) * 0.08;
       my += (tmy - my) * 0.08;
 
-      gl.useProgram(prog);
-      gl.clearColor(0.04, 0.035, 0.028, 1);
-      gl.clear(gl.COLOR_BUFFER_BIT);
+      webgl.useProgram(prog);
+      webgl.clearColor(0.04, 0.035, 0.028, 1);
+      webgl.clear(webgl.COLOR_BUFFER_BIT);
 
       const pal = getLivePalette();
-      if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
-      if (uMouse) gl.uniform2f(uMouse, mx * dpr, my * dpr);
-      if (uT) gl.uniform1f(uT, (time - t0) / 1000);
-      if (uScroll) gl.uniform1f(uScroll, scrollAmt);
-      if (uWarm) gl.uniform3f(uWarm, ...pal.dustWarm);
-      if (uMote) gl.uniform3f(uMote, ...pal.dustMote);
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      if (uRes) webgl.uniform2f(uRes, canvas.width, canvas.height);
+      if (uMouse) webgl.uniform2f(uMouse, mx * dpr, my * dpr);
+      if (uT) webgl.uniform1f(uT, (time - t0) / 1000);
+      if (uScroll) webgl.uniform1f(uScroll, scrollAmt);
+      if (uWarm) webgl.uniform3f(uWarm, ...pal.dustWarm);
+      if (uMote) webgl.uniform3f(uMote, ...pal.dustMote);
+      webgl.drawArrays(webgl.TRIANGLE_STRIP, 0, 4);
+
+      canvas.dataset.ready = "1";
 
       if (!reducedMotion) {
         frame = requestAnimationFrame(draw);
@@ -154,6 +165,8 @@ export function DustCanvas() {
       window.removeEventListener("mousemove", onMouse);
       window.removeEventListener("touchmove", onTouch);
       window.removeEventListener("scroll", updateScroll);
+      const lose = webgl.getExtension("WEBGL_lose_context");
+      lose?.loseContext();
     };
   }, []);
 

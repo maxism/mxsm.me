@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { BackgroundLayers } from "@/components/effects/BackgroundLayers";
 import { SiteChrome } from "@/components/effects/SiteChrome";
 import { Footer } from "@/components/layout/Footer";
 import { Masthead } from "@/components/layout/Masthead";
@@ -77,6 +78,7 @@ export default async function SiteLayout({ children, params }: LayoutProps) {
       <JsonLd
         data={[personJsonLd(locale), webSiteJsonLd(locale), podcastJsonLd(locale)]}
       />
+      <BackgroundLayers />
       <SiteChrome />
       <Masthead locale={locale} dict={dict} />
       {children}

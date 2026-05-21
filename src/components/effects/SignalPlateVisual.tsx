@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { getLivePalette } from "@/lib/time-palette";
 import {
   SIGNAL_PLATE_FS,
@@ -41,7 +41,7 @@ export function SignalPlateVisual({
 }: SignalPlateVisualProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -49,49 +49,60 @@ export function SignalPlateVisual({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gl = canvas.getContext("webgl", {
-      alpha: true,
-      antialias: false,
-      premultipliedAlpha: false,
-      preserveDrawingBuffer: true,
-    });
+    const gl =
+      canvas.getContext("webgl", {
+        alpha: true,
+        antialias: false,
+        premultipliedAlpha: false,
+        preserveDrawingBuffer: true,
+      }) ??
+      canvas.getContext("experimental-webgl", {
+        alpha: true,
+        antialias: false,
+        premultipliedAlpha: false,
+        preserveDrawingBuffer: true,
+      });
     if (!gl) return;
 
-    const vs = compileShader(gl, gl.VERTEX_SHADER, SIGNAL_PLATE_VS);
-    const fs = compileShader(gl, gl.FRAGMENT_SHADER, SIGNAL_PLATE_FS);
+    const webgl = gl as WebGLRenderingContext;
+
+    const vs = compileShader(webgl, webgl.VERTEX_SHADER, SIGNAL_PLATE_VS);
+    const fs = compileShader(webgl, webgl.FRAGMENT_SHADER, SIGNAL_PLATE_FS);
     if (!vs || !fs) return;
 
-    const prog = gl.createProgram();
+    const prog = webgl.createProgram();
     if (!prog) return;
-    gl.attachShader(prog, vs);
-    gl.attachShader(prog, fs);
-    gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-      console.error("[signal-plate] program link:", gl.getProgramInfoLog(prog));
+    webgl.attachShader(prog, vs);
+    webgl.attachShader(prog, fs);
+    webgl.linkProgram(prog);
+    if (!webgl.getProgramParameter(prog, webgl.LINK_STATUS)) {
+      console.error(
+        "[signal-plate] program link:",
+        webgl.getProgramInfoLog(prog),
+      );
       return;
     }
-    gl.useProgram(prog);
 
-    const buf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
+    const buf = webgl.createBuffer();
+    webgl.bindBuffer(webgl.ARRAY_BUFFER, buf);
+    webgl.bufferData(
+      webgl.ARRAY_BUFFER,
       new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
-      gl.STATIC_DRAW,
+      webgl.STATIC_DRAW,
     );
-    const loc = gl.getAttribLocation(prog, "p");
+    const loc = webgl.getAttribLocation(prog, "p");
     if (loc < 0) return;
-    gl.enableVertexAttribArray(loc);
-    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    webgl.enableVertexAttribArray(loc);
+    webgl.vertexAttribPointer(loc, 2, webgl.FLOAT, false, 0, 0);
 
-    const uRes = gl.getUniformLocation(prog, "u_res");
-    const uT = gl.getUniformLocation(prog, "u_t");
-    const uBorder = gl.getUniformLocation(prog, "u_border");
-    const uHot = gl.getUniformLocation(prog, "u_hot");
-    const uFlash = gl.getUniformLocation(prog, "u_flash");
+    const uRes = webgl.getUniformLocation(prog, "u_res");
+    const uT = webgl.getUniformLocation(prog, "u_t");
+    const uBorder = webgl.getUniformLocation(prog, "u_border");
+    const uHot = webgl.getUniformLocation(prog, "u_hot");
+    const uFlash = webgl.getUniformLocation(prog, "u_flash");
 
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    webgl.enable(webgl.BLEND);
+    webgl.blendFunc(webgl.SRC_ALPHA, webgl.ONE_MINUS_SRC_ALPHA);
 
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     const t0 = performance.now();
@@ -104,7 +115,7 @@ export function SignalPlateVisual({
       const rect = canvas.getBoundingClientRect();
       canvas.width = Math.max(1, rect.width * dpr);
       canvas.height = Math.max(1, rect.height * dpr);
-      gl.viewport(0, 0, canvas.width, canvas.height);
+      webgl.viewport(0, 0, canvas.width, canvas.height);
     };
     fit();
 
@@ -123,17 +134,17 @@ export function SignalPlateVisual({
       flashDecay *= 0.92;
       flash = Math.max(flash * 0.88, flashDecay);
 
-      gl.useProgram(prog);
-      gl.clearColor(0, 0, 0.03, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
+      webgl.useProgram(prog);
+      webgl.clearColor(0, 0, 0.03, 0);
+      webgl.clear(webgl.COLOR_BUFFER_BIT);
 
       const pal = getLivePalette();
-      if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
-      if (uT) gl.uniform1f(uT, t);
-      if (uBorder) gl.uniform3f(uBorder, ...pal.chemBorder);
-      if (uHot) gl.uniform3f(uHot, ...pal.chemHot);
-      if (uFlash) gl.uniform1f(uFlash, flash);
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      if (uRes) webgl.uniform2f(uRes, canvas.width, canvas.height);
+      if (uT) webgl.uniform1f(uT, t);
+      if (uBorder) webgl.uniform3f(uBorder, ...pal.chemBorder);
+      if (uHot) webgl.uniform3f(uHot, ...pal.chemHot);
+      if (uFlash) webgl.uniform1f(uFlash, flash);
+      webgl.drawArrays(webgl.TRIANGLE_STRIP, 0, 4);
 
       if (!reducedMotion) {
         frame = requestAnimationFrame(tick);
@@ -152,6 +163,8 @@ export function SignalPlateVisual({
       running = false;
       cancelAnimationFrame(frame);
       ro.disconnect();
+      const lose = webgl.getExtension("WEBGL_lose_context");
+      lose?.loseContext();
     };
   }, []);
 
