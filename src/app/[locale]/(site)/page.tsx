@@ -2,7 +2,12 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { HomePlates } from "@/components/plates/HomePlates";
 import { resolveLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { personJsonLd, podcastJsonLd } from "@/i18n/json-ld";
+import {
+  personJsonLd,
+  podcastEpisodeJsonLd,
+  podcastJsonLd,
+} from "@/i18n/json-ld";
+import { getEpisodes } from "@/lib/episodes";
 import { getPodcastHomeData } from "@/lib/podcast-home";
 import { buildPageMetadata, pageAlternates } from "@/lib/seo/metadata";
 
@@ -35,11 +40,20 @@ export async function generateMetadata({ params }: PageProps) {
 export default async function HomePage({ params }: PageProps) {
   const locale = await resolveLocale(params);
   const dict = getDictionary(locale);
-  const podcast = await getPodcastHomeData(locale, dict);
+  const [podcast, episodes] = await Promise.all([
+    getPodcastHomeData(locale, dict),
+    getEpisodes().catch(() => []),
+  ]);
 
   return (
     <>
-      <JsonLd data={[personJsonLd(locale), podcastJsonLd(locale)]} />
+      <JsonLd
+        data={[
+          personJsonLd(locale),
+          podcastJsonLd(locale),
+          ...podcastEpisodeJsonLd(episodes),
+        ]}
+      />
       <main id="main">
         <HomePlates dict={dict} locale={locale} podcast={podcast} />
       </main>

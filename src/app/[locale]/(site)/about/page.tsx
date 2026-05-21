@@ -2,7 +2,11 @@ import { AboutPage } from "@/components/about/AboutPage";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getAboutContent } from "@/i18n/about/get-about";
 import { resolveLocale } from "@/i18n/config";
-import { aboutBreadcrumbJsonLd, profilePageJsonLd } from "@/i18n/json-ld";
+import {
+  aboutBreadcrumbJsonLd,
+  personJsonLd,
+  profilePageJsonLd,
+} from "@/i18n/json-ld";
 import { buildPageMetadata, pageAlternates } from "@/lib/seo/metadata";
 
 type PageProps = {
@@ -36,7 +40,11 @@ export default async function AboutRoute({ params }: PageProps) {
   return (
     <>
       <JsonLd
-        data={[profilePageJsonLd(locale), aboutBreadcrumbJsonLd(locale)]}
+        data={[
+          personJsonLd(locale),
+          profilePageJsonLd(locale),
+          aboutBreadcrumbJsonLd(locale),
+        ]}
       />
       <main id="main">
         <AboutPage content={content} locale={locale} />

@@ -1,6 +1,7 @@
 import type { Locale } from "@/i18n/config";
 import { getAboutContent } from "@/i18n/about/get-about";
 import { getDictionary } from "@/i18n/get-dictionary";
+import type { Episode } from "@/lib/episodes";
 import { SHITBUSTARDS_RSS_URL } from "@/lib/shared-data";
 import {
   PERSON_ID,
@@ -11,12 +12,24 @@ import {
   localeSignalAbsoluteUrl,
 } from "@/lib/seo/site-url";
 
+const PODCAST_EPISODE_LIMIT = 5;
+
+function personOgImage(locale: Locale): string {
+  return absoluteUrl(`/og/${locale}/about`);
+}
+
+function stripHtml(raw: string): string {
+  return raw.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
 type BreadcrumbItem = {
   name: string;
   url: string;
 };
 
 export function personJsonLd(locale: Locale) {
+  const about = getAboutContent(locale);
+
   return {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -24,6 +37,8 @@ export function personJsonLd(locale: Locale) {
     name: "Max Ulianov",
     alternateName: ["Макс Ульянов", "maxism"],
     url: localeAbsoluteUrl(locale),
+    description: about.meta.description,
+    image: personOgImage(locale),
     jobTitle: "Chief Technology Officer",
     address: {
       "@type": "PostalAddress",
@@ -61,6 +76,7 @@ export function personJsonLd(locale: Locale) {
       "Engineering effectiveness",
     ],
     email: "mailto:m@mxsm.me",
+    mainEntityOfPage: localeAboutAbsoluteUrl(locale),
   };
 }
 
@@ -93,6 +109,31 @@ export function podcastJsonLd(locale: Locale) {
       { "@type": "Person", name: "Mike Zharchev" },
     ],
   };
+}
+
+export function podcastEpisodeJsonLd(episodes: readonly Episode[]) {
+  return episodes.slice(0, PODCAST_EPISODE_LIMIT).map((episode) => {
+    const description = stripHtml(episode.description);
+
+    return {
+      "@context": "https://schema.org",
+      "@type": "PodcastEpisode",
+      name: episode.title,
+      datePublished: episode.publishDate.toISOString(),
+      ...(description ? { description: description.slice(0, 500) } : {}),
+      ...(episode.audioUrl ? { associatedMedia: episode.audioUrl } : {}),
+      ...(episode.durationSec > 0
+        ? { duration: `PT${episode.durationSec}S` }
+        : {}),
+      partOfSeries: {
+        "@type": "PodcastSeries",
+        name: "ШИТБАСТАРДС",
+        alternateName: "SHITBUSTARDS",
+        url: "https://shitbustards.ru/",
+        webFeed: SHITBUSTARDS_RSS_URL,
+      },
+    };
+  });
 }
 
 export function profilePageJsonLd(locale: Locale) {
