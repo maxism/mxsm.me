@@ -7,6 +7,7 @@ type PlateHeadProps = {
   title: string;
   titleGlitch: string;
   titleId: string;
+  as?: "h1" | "h2";
   inverted?: boolean;
   cyrillic?: boolean;
   href?: string;
@@ -17,6 +18,7 @@ export function PlateHead({
   title,
   titleGlitch,
   titleId,
+  as: Heading = "h2",
   inverted,
   cyrillic,
   href,
@@ -24,7 +26,7 @@ export function PlateHead({
   const headingClass = `plate-h${cyrillic ? " cyr" : ""}`;
 
   const heading = href ? (
-    <h2 className={headingClass} id={titleId}>
+    <Heading className={headingClass} id={titleId}>
       <a href={href} rel="noopener noreferrer">
         <GlitchText as="span" text={titleGlitch}>
           {title}
@@ -33,11 +35,11 @@ export function PlateHead({
           ↗
         </span>
       </a>
-    </h2>
+    </Heading>
   ) : (
-    <h2 className={headingClass} id={titleId}>
+    <Heading className={headingClass} id={titleId}>
       <GlitchText text={titleGlitch}>{title}</GlitchText>
-    </h2>
+    </Heading>
   );
 
   return (

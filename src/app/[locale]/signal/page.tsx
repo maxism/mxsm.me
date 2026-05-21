@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SignalExperience } from "@/components/signal/SignalExperience";
+import { SignalSeoFallback } from "@/components/signal/SignalSeoFallback";
 import {
   isLocale,
   localePath,
@@ -69,9 +70,12 @@ export default async function SignalPage({ params }: PageProps) {
   const dict = getDictionary(locale);
 
   return (
-    <SignalExperience
-      backHref={localePath(locale)}
-      backLabel={dict.plates.signal.exitLabel}
-    />
+    <>
+      <SignalSeoFallback content={dict.signalPage.seo} />
+      <SignalExperience
+        backHref={localePath(locale)}
+        backLabel={dict.plates.signal.exitLabel}
+      />
+    </>
   );
 }

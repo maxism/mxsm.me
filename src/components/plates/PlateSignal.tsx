@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { SignalPlateVisual } from "@/components/effects/SignalPlateVisual";
 import { PlateHead } from "@/components/ui/PlateHead";
 import { localeSignalPath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
@@ -43,16 +43,7 @@ export function PlateSignal({ dict, locale, seed }: PlateSignalProps) {
         ))}
       </ul>
 
-      <p className="sig-enter">
-        <Link
-          href={href}
-          className="sig-cta"
-          aria-label={`${p.cta} — ${p.ctaHint}`}
-        >
-          {p.cta}
-        </Link>
-        <span className="sig-hint">{p.ctaHint}</span>
-      </p>
+      <SignalPlateVisual href={href} cta={p.cta} ctaHint={p.ctaHint} />
     </section>
   );
 }

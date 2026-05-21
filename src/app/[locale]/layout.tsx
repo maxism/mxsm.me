@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
-import { HtmlLang } from "@/components/i18n/HtmlLang";
-import { isLocale, locales, type Locale } from "@/i18n/config";
+import { isLocale, locales } from "@/i18n/config";
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -15,12 +14,5 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   const { locale: raw } = await params;
   if (!isLocale(raw)) notFound();
 
-  const locale = raw as Locale;
-
-  return (
-    <>
-      <HtmlLang locale={locale} />
-      {children}
-    </>
-  );
+  return children;
 }

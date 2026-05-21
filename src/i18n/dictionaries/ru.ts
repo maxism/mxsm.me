@@ -2,11 +2,11 @@ import type { Dictionary } from "@/i18n/types";
 
 export const ru: Dictionary = {
   meta: {
-    title: "Max Ulianov — CTO @ MTS.ai, co-founder Untitled Team",
+    title: "Макс Ульянов — CTO MTS.ai, co-founder Untitled Team",
     description:
-      "Макс Ульянов. CTO в MTS.ai, со-основатель Untitled Team. Подкаст Шитбастардс. Арт-объект mxsm/signal. Москва, 2026.",
+      "Макс Ульянов (Max Ulianov). CTO в MTS.ai, со-основатель Untitled Team. Подкаст Шитбастардс. Арт-объект mxsm/signal. Москва, 2026.",
     ogDescription:
-      "чертёж одного человека: cto mts.ai, untitled team, подкаст шитбастардс, mxsm/signal.",
+      "чертёж одного человека: макс ульянов, cto mts.ai, untitled team, подкаст шитбастардс, mxsm/signal.",
     ogLocale: "ru_RU",
   },
   masthead: {
@@ -14,6 +14,7 @@ export const ru: Dictionary = {
   },
   nav: {
     primary: "primary",
+    about: "about",
   },
   plates: {
     identity: {
@@ -174,9 +175,18 @@ export const ru: Dictionary = {
     title: "mxsm / signal",
     description: "сигнал пришёл из того места, куда не отправляли",
     ogDescription: "сигнал пришёл из того места, куда не отправляли",
+    seo: {
+      title: "mxsm / signal",
+      paragraphs: [
+        "mxsm/signal — генеративный аудио-визуальный арт-объект Макса Ульянова на mxsm.me. это не сайт в привычном смысле: три сущности говорят одновременно через одну систему, и ни одна не знает про остальных.",
+        "три голоса: бездна — древнее нечеловеческое присутствие; система на пороге — слабый ИИ, который перестаёт имитировать и начинает понимать; Макс Ульянов — живой тёплый сигнал, единственное человеческое в этом пространстве.",
+        "Web Audio API и WebGL, без UI: синтезированные дроны, речь по тексту в реальном времени, глитч-типографика, визуальный тоннель. каждый визит уникален; параметр seed фиксирует сессию. автор — Max Ulianov, 2025–2026.",
+      ],
+    },
   },
   footer: {
     copyright: "© 2026 Max Ulianov",
+    home: "главная",
     about: "about",
   },
 };

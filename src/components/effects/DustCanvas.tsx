@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { getLivePalette } from "@/components/effects/TimePalette";
 import { DUST_FRAGMENT_SHADER, DUST_VERTEX_SHADER } from "@/lib/dust-shader";
 
 function compileShader(
@@ -64,6 +65,8 @@ export function DustCanvas() {
     const uMouse = gl.getUniformLocation(prog, "u_mouse");
     const uT = gl.getUniformLocation(prog, "u_t");
     const uScroll = gl.getUniformLocation(prog, "u_scroll");
+    const uWarm = gl.getUniformLocation(prog, "u_warm");
+    const uMote = gl.getUniformLocation(prog, "u_mote");
 
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
@@ -105,10 +108,13 @@ export function DustCanvas() {
     const tick = () => {
       mx += (tmx - mx) * 0.08;
       my += (tmy - my) * 0.08;
+      const pal = getLivePalette();
       gl.uniform2f(uRes, canvas.width, canvas.height);
       gl.uniform2f(uMouse, mx * dpr, my * dpr);
       gl.uniform1f(uT, (performance.now() - t0) / 1000);
       gl.uniform1f(uScroll, scrollAmt);
+      gl.uniform3f(uWarm, ...pal.dustWarm);
+      gl.uniform3f(uMote, ...pal.dustMote);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       frame = requestAnimationFrame(tick);
     };

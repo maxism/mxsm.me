@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { GlitchText } from "@/components/ui/GlitchText";
-import { localePath, type Locale } from "@/i18n/config";
+import { localeAboutPath, localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 import { navPlates } from "@/lib/shared-data";
 
@@ -10,11 +10,18 @@ type MastheadProps = {
 };
 
 export function Masthead({ locale, dict }: MastheadProps) {
+  const homeHref = localePath(locale);
+  const aboutHref = localeAboutPath(locale);
+
   return (
     <header className="mast" role="banner">
       <div className="mast-l">
-        <span className="m-ref">MU·2026</span>
-        <GlitchText as="span" text="Max Ulianov" className="m-id" />
+        <Link href={homeHref} className="m-ref">
+          MU·2026
+        </Link>
+        <Link href={homeHref} className="m-id">
+          <GlitchText as="span" text="Max Ulianov" />
+        </Link>
         <div
           className="lang"
           role="group"
@@ -42,6 +49,7 @@ export function Masthead({ locale, dict }: MastheadProps) {
         </div>
       </div>
       <nav className="mast-r" aria-label={dict.nav.primary}>
+        <Link href={aboutHref}>{dict.nav.about}</Link>
         {navPlates.map((item) => (
           <a key={item.href} href={item.href}>
             {item.label}

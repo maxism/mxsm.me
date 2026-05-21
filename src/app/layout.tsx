@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Spectral } from "next/font/google";
+import { headers } from "next/headers";
+import { Suspense } from "react";
+import { AnalyticsRouteTracker } from "@/components/analytics/AnalyticsRouteTracker";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { YandexMetrika } from "@/components/analytics/YandexMetrika";
+import { TimePalette } from "@/components/effects/TimePalette";
+import { timePaletteInitScript } from "@/lib/time-palette";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -23,21 +28,31 @@ const jetbrains = JetBrains_Mono({
   display: "swap",
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
+  const lang = headersList.get("x-mxsm-locale") === "en" ? "en" : "ru";
+
   return (
     <html
-      lang="ru"
+      lang={lang}
       className={`${spectral.variable} ${jetbrains.variable}`}
       suppressHydrationWarning
     >
       <body>
+        <script
+          dangerouslySetInnerHTML={{ __html: timePaletteInitScript() }}
+        />
+        <TimePalette />
         {children}
         <GoogleAnalytics />
         <YandexMetrika />
+        <Suspense fallback={null}>
+          <AnalyticsRouteTracker />
+        </Suspense>
       </body>
     </html>
   );

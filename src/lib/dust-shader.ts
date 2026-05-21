@@ -6,6 +6,8 @@ uniform vec2 u_res;
 uniform vec2 u_mouse;
 uniform float u_t;
 uniform float u_scroll;
+uniform vec3 u_warm;
+uniform vec3 u_mote;
 
 float hash(vec2 p) { p = fract(p*vec2(123.34, 456.21)); p += dot(p, p+45.32); return fract(p.x*p.y); }
 float noise(vec2 p) {
@@ -41,8 +43,8 @@ void main() {
   float motes = smoothstep(0.78, 0.84, n2) * (0.4 + 0.6*sin(u_t*2.0 + uv.x*30.0));
 
   vec3 base = mix(vec3(0.04, 0.035, 0.028), vec3(0.16, 0.14, 0.10), dust);
-  base += vec3(0.10, 0.06, 0.02) * pow(dust, 4.0);
-  base += vec3(0.9, 0.8, 0.6) * motes * 0.18;
+  base += u_warm * pow(dust, 4.0);
+  base += u_mote * motes * 0.18;
 
   float mg = smoothstep(0.35, 0.0, r);
   base += vec3(0.16, 0.12, 0.05) * mg * 0.6;

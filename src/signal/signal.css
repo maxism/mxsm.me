@@ -61,6 +61,54 @@ body {
 }
 
 .signal-exit a:hover {
-  color: #e8c547;
-  border-color: rgba(232, 197, 71, 0.45);
+  color: var(--hot, #e8c547);
+  border-color: rgba(var(--hot-rgb, 232, 197, 71), 0.45);
+}
+
+.signal-seo {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  max-width: 36rem;
+  margin: 0;
+  padding: 18px 20px 22px;
+  pointer-events: none;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.88) 0%,
+    rgba(0, 0, 0, 0.45) 72%,
+    transparent 100%
+  );
+  font-family: ui-monospace, monospace;
+  font-size: 10px;
+  line-height: 1.55;
+  letter-spacing: 0.04em;
+  color: rgba(232, 226, 210, 0.42);
+}
+
+.signal-seo h1 {
+  margin: 0 0 8px;
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: lowercase;
+  color: rgba(232, 226, 210, 0.58);
+}
+
+.signal-seo p {
+  margin: 0 0 6px;
+}
+
+.signal-seo p:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+  .signal-seo {
+    max-width: none;
+    padding: 14px 16px 18px;
+    font-size: 9px;
+  }
 }

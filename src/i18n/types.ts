@@ -33,6 +33,7 @@ export type Dictionary = {
   };
   nav: {
     primary: string;
+    about: string;
   };
   plates: {
     identity: {
@@ -85,9 +86,14 @@ export type Dictionary = {
     title: string;
     description: string;
     ogDescription: string;
+    seo: {
+      title: string;
+      paragraphs: readonly string[];
+    };
   };
   footer: {
     copyright: string;
+    home: string;
     about: string;
   };
 };

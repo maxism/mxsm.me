@@ -44,6 +44,7 @@ export function AboutPage({ content, locale }: AboutPageProps) {
         title={plate.heading}
         titleGlitch={plate.headingGlitch}
         titleId="about-h"
+        as="h1"
       />
 
       <p className="about-lede">{plate.lede}</p>
