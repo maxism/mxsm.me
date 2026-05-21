@@ -1,16 +1,17 @@
 import { PlateHead } from "@/components/ui/PlateHead";
 import { GlitchText } from "@/components/ui/GlitchText";
 import type { Dictionary } from "@/i18n/types";
-import type { PodcastListEpisode } from "@/lib/podcast-list";
+import type { PodcastHomeData } from "@/lib/podcast-home";
 import { SHITBUSTARDS_ORIGIN, podcastPlatforms } from "@/lib/shared-data";
 
 type PlatePodcastProps = {
   dict: Dictionary;
-  episodes: PodcastListEpisode[];
+  podcast: PodcastHomeData;
 };
 
-export function PlatePodcast({ dict, episodes }: PlatePodcastProps) {
+export function PlatePodcast({ dict, podcast }: PlatePodcastProps) {
   const p = dict.plates.podcast;
+  const { episodes, meta, ticker, foot } = podcast;
 
   return (
     <section
@@ -21,13 +22,13 @@ export function PlatePodcast({ dict, episodes }: PlatePodcastProps) {
       <div className="ticker" aria-hidden="true">
         <div className="ticker-track">
           {Array.from({ length: 4 }).map((_, i) => (
-            <span key={i}>{p.ticker}</span>
+            <span key={i}>{ticker}</span>
           ))}
         </div>
       </div>
 
       <PlateHead
-        rows={p.meta}
+        rows={meta}
         title={p.heading}
         titleGlitch={p.headingGlitch}
         titleId="h-04"
@@ -60,7 +61,7 @@ export function PlatePodcast({ dict, episodes }: PlatePodcastProps) {
               </li>
             ))}
           </ul>
-          <span className="pod-foot">{p.foot}</span>
+          <span className="pod-foot">{foot}</span>
         </aside>
 
         <ol className="ep-list">

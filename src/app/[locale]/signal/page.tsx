@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SignalExperience } from "@/components/signal/SignalExperience";
-import { isLocale, localeSignalPath, type Locale } from "@/i18n/config";
+import {
+  isLocale,
+  localePath,
+  localeSignalPath,
+  type Locale,
+} from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 
 type PageProps = {
@@ -33,17 +38,18 @@ export async function generateMetadata({
     },
     openGraph: {
       type: "website",
+      siteName: "mxsm.me",
       locale: dict.meta.ogLocale,
       url: canonical,
       title: dict.signalPage.title,
       description: dict.signalPage.ogDescription,
-      images: [{ url: "/og.png", width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
+      site: "@maxism",
+      creator: "@maxism",
       title: dict.signalPage.title,
       description: dict.signalPage.ogDescription,
-      images: ["/og.png"],
     },
     icons: {
       icon: "/signal-favicon.png",
@@ -59,5 +65,13 @@ export default async function SignalPage({ params }: PageProps) {
   const { locale: raw } = await params;
   if (!isLocale(raw)) notFound();
 
-  return <SignalExperience />;
+  const locale = raw as Locale;
+  const dict = getDictionary(locale);
+
+  return (
+    <SignalExperience
+      backHref={localePath(locale)}
+      backLabel={dict.plates.signal.exitLabel}
+    />
+  );
 }

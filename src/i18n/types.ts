@@ -56,10 +56,11 @@ export type Dictionary = {
       items: ArchiveItem[];
     };
     podcast: {
-      meta: TitleBlockRow[];
+      metaFallback: TitleBlockRow[];
       heading: string;
       headingGlitch: string;
       ticker: string;
+      tickerBrand: string;
       onAir: string;
       foot: string;
       ghostGlyph: string;
@@ -71,6 +72,8 @@ export type Dictionary = {
       quote: [string, string, string];
       metaRows: TitleBlockRow[];
       cta: string;
+      ctaHint: string;
+      exitLabel: string;
     };
     contact: {
       meta: TitleBlockRow[];
@@ -85,5 +88,6 @@ export type Dictionary = {
   };
   footer: {
     copyright: string;
+    about: string;
   };
 };

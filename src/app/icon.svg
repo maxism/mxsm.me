@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <rect width="32" height="32" fill="#0a0907"/>
+  <path stroke="rgba(232,226,210,0.2)" stroke-width="1" d="M6 6h5v5H6zM21 21h5v5h-5z"/>
+  <text x="16" y="21" text-anchor="middle" fill="#e8e2d2" font-family="ui-monospace, monospace" font-size="9" letter-spacing="0.12em">MU</text>
+</svg>

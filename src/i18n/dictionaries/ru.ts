@@ -126,7 +126,7 @@ export const ru: Dictionary = {
       ],
     },
     podcast: {
-      meta: [
+      metaFallback: [
         { key: "PLATE", value: "04 · ШИТБАСТАРДС" },
         { key: "WITH", value: "mike zharchev" },
         { key: "ON AIR", value: "since mar 2024 · S2" },
@@ -134,6 +134,7 @@ export const ru: Dictionary = {
       heading: "/\u2009шитбастардс",
       headingGlitch: "// шитбастардс",
       ticker: "★ ON AIR · ШИТБАСТАРДС · S2 · WITH MIKE ZHARCHEV ·\u00a0",
+      tickerBrand: "ШИТБАСТАРДС",
       onAir: "ON AIR",
       foot: "с m. zharchev, с марта 2024",
       ghostGlyph: "Ш",
@@ -157,6 +158,8 @@ export const ru: Dictionary = {
         { key: "depth", value: "i. void · ii. pattern · iii. voice" },
       ],
       cta: "войти в signal ↗",
+      ctaHint: "полный экран · звук · клик или движение",
+      exitLabel: "← mxsm",
     },
     contact: {
       meta: [
@@ -174,5 +177,6 @@ export const ru: Dictionary = {
   },
   footer: {
     copyright: "© 2026 Max Ulianov",
+    about: "about",
   },
 };

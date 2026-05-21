@@ -21,3 +21,8 @@ export function localeHref(locale: Locale, hash?: string): string {
 export function localeSignalPath(locale: Locale): string {
   return locale === defaultLocale ? "/signal" : "/en/signal";
 }
+
+/** Public path to the long-form about page. */
+export function localeAboutPath(locale: Locale): string {
+  return locale === defaultLocale ? "/about" : "/en/about";
+}

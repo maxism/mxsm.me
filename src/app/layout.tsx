@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Spectral } from "next/font/google";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { YandexMetrika } from "@/components/analytics/YandexMetrika";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -32,7 +34,11 @@ export default function RootLayout({
       className={`${spectral.variable} ${jetbrains.variable}`}
       suppressHydrationWarning
     >
-      <body>{children}</body>
+      <body>
+        {children}
+        <GoogleAnalytics />
+        <YandexMetrika />
+      </body>
     </html>
   );
 }

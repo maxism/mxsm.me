@@ -37,15 +37,18 @@ export async function generateMetadata({
     },
     openGraph: {
       type: "website",
+      siteName: "mxsm.me",
       locale: dict.meta.ogLocale,
       url: canonical,
       title: dict.meta.title,
       description: dict.meta.ogDescription,
-      images: [{ url: "/og.png", width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
+      site: "@maxism",
       creator: "@maxism",
+      title: dict.meta.title,
+      description: dict.meta.ogDescription,
     },
     other: {
       "color-scheme": "dark",
@@ -77,7 +80,7 @@ export default async function SiteLayout({ children, params }: LayoutProps) {
       <SiteChrome />
       <Masthead locale={locale} dict={dict} />
       {children}
-      <Footer dict={dict} />
+      <Footer dict={dict} locale={locale} />
     </>
   );
 }

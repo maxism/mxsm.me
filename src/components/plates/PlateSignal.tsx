@@ -6,11 +6,13 @@ import type { Dictionary } from "@/i18n/types";
 type PlateSignalProps = {
   dict: Dictionary;
   locale: Locale;
+  seed: number;
 };
 
-export function PlateSignal({ dict, locale }: PlateSignalProps) {
+export function PlateSignal({ dict, locale, seed }: PlateSignalProps) {
   const p = dict.plates.signal;
   const [line1, line2, line3] = p.quote;
+  const href = `${localeSignalPath(locale)}?seed=${seed}`;
 
   return (
     <section
@@ -42,9 +44,14 @@ export function PlateSignal({ dict, locale }: PlateSignalProps) {
       </ul>
 
       <p className="sig-enter">
-        <Link href={localeSignalPath(locale)} className="sig-cta">
+        <Link
+          href={href}
+          className="sig-cta"
+          aria-label={`${p.cta} — ${p.ctaHint}`}
+        >
           {p.cta}
         </Link>
+        <span className="sig-hint">{p.ctaHint}</span>
       </p>
     </section>
   );

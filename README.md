@@ -38,6 +38,15 @@ npm start
 
 Static export is not enabled yet; deploy as a standard Next.js app (Vercel, Node, etc.).
 
+## SEO / OG
+
+- Dynamic OG images: `app/[locale]/(site)/opengraph-image.tsx`, `app/[locale]/signal/opengraph-image.tsx`
+- `app/sitemap.ts` — `/`, `/en`, `/signal`, `/en/signal`
+- `app/robots.ts` — allows crawl + sitemap URL
+- `app/icon.svg` — favicon (MU + crosshairs)
+
+After deploy, check previews: Facebook Sharing Debugger, Telegram link paste, `https://mxsm.me/sitemap.xml`.
+
 ## Signal
 
 Generative art lives at `/signal` (RU) and `/en/signal` (EN metadata, same experience). Sources are bundled from `src/signal/` via a client entry; samples are served from `public/signal/samples/`.

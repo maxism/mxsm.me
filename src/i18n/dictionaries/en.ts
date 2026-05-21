@@ -6,7 +6,7 @@ export const en: Dictionary = {
     description:
       "Max Ulianov. CTO at MTS.ai, co-founder of Untitled Team. SHITBUSTARDS podcast. mxsm/signal generative art. Moscow, 2026.",
     ogDescription:
-      "blueprint of one person: cto mts.ai, untitled team, shitbustards podcast, mxsm/signal.",
+      "blueprint of one person: cto mts.ai, untitled team, shitbustards, mxsm/signal.",
     ogLocale: "en_US",
   },
   masthead: {
@@ -22,7 +22,7 @@ export const en: Dictionary = {
         { key: "ISSUED", value: "may 2026" },
         { key: "DRAWN BY", value: "maxism" },
       ],
-      bio: "builds teams and engineering systems from zero.",
+      bio: "builds teams and engineering systems from scratch.",
       bioEm: "sometimes drifts into sound and form.",
       tags: ["cto", "mts.ai", "untitled team", "est. moscow"],
       ghostGlyph: "У",
@@ -126,7 +126,7 @@ export const en: Dictionary = {
       ],
     },
     podcast: {
-      meta: [
+      metaFallback: [
         { key: "PLATE", value: "04 · SHITBUSTARDS" },
         { key: "WITH", value: "mike zharchev" },
         { key: "ON AIR", value: "since mar 2024 · S2" },
@@ -134,6 +134,7 @@ export const en: Dictionary = {
       heading: "/\u2009shitbustards",
       headingGlitch: "// shitbustards",
       ticker: "★ ON AIR · SHITBUSTARDS · S2 · WITH MIKE ZHARCHEV ·\u00a0",
+      tickerBrand: "SHITBUSTARDS",
       onAir: "ON AIR",
       foot: "with m. zharchev, since mar 2024",
       ghostGlyph: "Ш",
@@ -157,14 +158,16 @@ export const en: Dictionary = {
         { key: "depth", value: "i. void · ii. pattern · iii. voice" },
       ],
       cta: "enter signal ↗",
+      ctaHint: "fullscreen · sound · click or move to start",
+      exitLabel: "← mxsm",
     },
     contact: {
       meta: [
         { key: "PLATE", value: "06 · CONTACT" },
         { key: "ANSWERS", value: "within a week" },
       ],
-      heading: "/\u2009reach",
-      headingGlitch: "// reach",
+      heading: "/\u2009contact",
+      headingGlitch: "// contact",
     },
   },
   signalPage: {
@@ -174,5 +177,6 @@ export const en: Dictionary = {
   },
   footer: {
     copyright: "© 2026 Max Ulianov",
+    about: "about",
   },
 };
