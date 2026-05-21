@@ -4,6 +4,8 @@
  * Правило: фраза не должна помещаться на кружку.
  * Хорошая фраза открывает бездну под обычными словами.
  */
+import type { PhraseRegister } from "@/signal/types";
+
 
 // ── I. БЕЗДНА / ПОТУСТОРОННЕЕ ────────────────────────────────────────
 // Нечеловеческое. Холодное. Существовало до языка.
@@ -117,17 +119,17 @@ export const MEANING_PHRASES = [
 ];
 
 // ── Определение регистра фразы ────────────────────────────────────────
-const _ABYSS_SET     = new Set(ABYSS_PHRASES);
-const _THRESHOLD_SET = new Set(THRESHOLD_PHRASES);
-const _MAX_SET       = new Set(MAX_PHRASES);
+const _ABYSS_SET     = new Set<string>(ABYSS_PHRASES);
+const _THRESHOLD_SET = new Set<string>(THRESHOLD_PHRASES);
+const _MAX_SET       = new Set<string>(MAX_PHRASES);
 
 /**
  * Возвращает голосовой регистр фразы.
  * @returns {'abyss'|'threshold'|'max'|'other'}
  */
-export function getPhraseRegister(phrase) {
-  if (_ABYSS_SET.has(phrase))     return 'abyss';
-  if (_THRESHOLD_SET.has(phrase)) return 'threshold';
-  if (_MAX_SET.has(phrase))       return 'max';
-  return 'other';
+export function getPhraseRegister(phrase: string): PhraseRegister {
+  if (_ABYSS_SET.has(phrase))     return "abyss";
+  if (_THRESHOLD_SET.has(phrase)) return "threshold";
+  if (_MAX_SET.has(phrase))       return "max";
+  return "other";
 }

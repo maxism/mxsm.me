@@ -8,8 +8,8 @@
  * Обе загружаются заранее при старте AudioContext.
  */
 
-import { MEANING_PHRASES } from '../phrases.js';
-import { createTinyNoiseBuffer, createNoiseNode, makeDistortionCurve } from './helpers.js';
+import { MEANING_PHRASES } from '../phrases';
+import { createTinyNoiseBuffer, createNoiseNode, makeDistortionCurve } from './helpers';
 
 const WORLD_URLS = [
   '/signal/samples/world-1.ogg',

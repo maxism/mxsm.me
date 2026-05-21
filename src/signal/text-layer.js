@@ -22,8 +22,7 @@
  *   'vertical'   — столбиком сверху вниз
  */
 
-import { MEANING_PHRASES }    from './phrases.js';
-import { getPhraseRegister }  from './phrases.js';
+import { MEANING_PHRASES, getPhraseRegister } from './phrases';
 
 const GLITCH_CHARS = '█▓▒░│┃╌═╔╗╚╝◻◼▪▫▸◃◦•○●⊙⊗×±∞∅∂∇∆∑∏∫░▒▓';
 

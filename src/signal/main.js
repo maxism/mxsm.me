@@ -19,7 +19,7 @@
 import { createTextLayer }               from './text-layer.js';
 import { createAudioSystem }             from './audio/index.js';
 import createVisualUnstable              from './visual-unstable.js';
-import { MAX_PHRASES, getPhraseRegister } from './phrases.js';
+import { MAX_PHRASES, getPhraseRegister } from './phrases';
 
 const SIGNAL_SEED_KEY = 'mxsm-signal-seed';
 
