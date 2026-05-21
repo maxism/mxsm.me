@@ -1,28 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 type SignalExperienceProps = {
   backHref: string;
   backLabel: string;
 };
 
-/**
- * Boots the generative signal runtime (WebGL + Web Audio).
- * Entry module attaches canvases and runs its own rAF loop.
- */
 export function SignalExperience({ backHref, backLabel }: SignalExperienceProps) {
-  const booted = useRef(false);
-
   useEffect(() => {
-    if (booted.current) return;
-    booted.current = true;
+    let cancelled = false;
 
-    void import("@/signal/main.js");
+    void import("@/signal/main.js").then((mod) => {
+      if (cancelled) mod.dispose();
+      else mod.boot();
+    });
 
     return () => {
-      booted.current = false;
+      cancelled = true;
+      void import("@/signal/main.js").then((mod) => mod.dispose());
     };
   }, []);
 

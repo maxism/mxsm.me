@@ -577,5 +577,13 @@ export function createAudioSystem(random, onMeaningEvent) {
       scheduleDarkSample(t + ctx.baseLatency);
       scheduleTunnelPulse(t + ctx.baseLatency);
     },
+    dispose() {
+      try {
+        coldDrone.stop();
+      } catch (_) { /* noop */ }
+      if (ctx && ctx.state !== 'closed') {
+        void ctx.close();
+      }
+    },
   };
 }

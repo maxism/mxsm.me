@@ -1,6 +1,6 @@
 import type { Locale } from "@/i18n/config";
 import type { Episode } from "@/lib/episodes";
-import { formatDuration, generateSlug, getEpisodes } from "@/lib/episodes";
+import { formatDuration, generateSlug } from "@/lib/episodes";
 import { SHITBUSTARDS_ORIGIN } from "@/lib/shared-data";
 
 export type PodcastListEpisode = {
@@ -46,10 +46,3 @@ export function toPodcastListEpisodes(
   }));
 }
 
-export async function getPodcastListEpisodes(
-  locale: Locale,
-  limit = LIST_LIMIT,
-): Promise<PodcastListEpisode[]> {
-  const episodes = await getEpisodes();
-  return toPodcastListEpisodes(episodes, locale, limit);
-}

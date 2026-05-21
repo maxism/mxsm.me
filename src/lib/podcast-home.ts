@@ -2,10 +2,7 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 import type { Episode } from "@/lib/episodes";
 import { getEpisodes } from "@/lib/episodes";
-import {
-  type PodcastListEpisode,
-  toPodcastListEpisodes,
-} from "@/lib/podcast-list";
+import { toPodcastListEpisodes, type PodcastListEpisode } from "@/lib/podcast-list";
 import type { TitleBlockRow } from "@/lib/shared-data";
 
 const LIST_LIMIT = 6;
@@ -42,37 +39,38 @@ function getFeedStats(episodes: Episode[]) {
   };
 }
 
+function interpolate(template: string, vars: Record<string, string | number>) {
+  return template.replace(/\{(\w+)\}/g, (_, key: string) =>
+    String(vars[key] ?? ""),
+  );
+}
+
 function buildMeta(
   stats: ReturnType<typeof getFeedStats>,
   locale: Locale,
+  dict: Dictionary,
 ): TitleBlockRow[] {
   const since = formatSinceMonthYear(stats.oldest, locale);
-  const seasonLabel = `S${stats.maxSeason}`;
-
-  if (locale === "ru") {
-    return [
-      { key: "PLATE", value: "04 · ШИТБАСТАРДС" },
-      { key: "WITH", value: "mike zharchev" },
-      { key: "EPISODES", value: `${stats.count} · ${seasonLabel}` },
-      { key: "ON AIR", value: `since ${since}` },
-    ];
-  }
-
+  const p = dict.plates.podcast;
   return [
-    { key: "PLATE", value: "04 · SHITBUSTARDS" },
-    { key: "WITH", value: "mike zharchev" },
-    { key: "EPISODES", value: `${stats.count} eps · ${seasonLabel}` },
-    { key: "ON AIR", value: `since ${since}` },
+    { key: "PLATE", value: p.metaPlate },
+    { key: "WITH", value: p.metaWith },
+    {
+      key: "EPISODES",
+      value: interpolate(p.metaEpisodes, {
+        count: stats.count,
+        season: stats.maxSeason,
+      }),
+    },
+    {
+      key: "ON AIR",
+      value: interpolate(p.metaOnAir, { since }),
+    },
   ];
 }
 
 function buildTicker(brand: string, season: number): string {
   return `★ ON AIR · ${brand} · S${season} · WITH MIKE ZHARCHEV ·\u00a0`;
-}
-
-function buildFoot(since: string, locale: Locale): string {
-  if (locale === "ru") return `с m. zharchev, с ${since}`;
-  return `with m. zharchev, since ${since}`;
 }
 
 export async function getPodcastHomeData(
@@ -86,9 +84,9 @@ export async function getPodcastHomeData(
 
     return {
       episodes: toPodcastListEpisodes(raw, locale, LIST_LIMIT),
-      meta: buildMeta(stats, locale),
+      meta: buildMeta(stats, locale, dict),
       ticker: buildTicker(dict.plates.podcast.tickerBrand, stats.maxSeason),
-      foot: buildFoot(since, locale),
+      foot: interpolate(dict.plates.podcast.footTemplate, { since }),
     };
   } catch {
     const p = dict.plates.podcast;

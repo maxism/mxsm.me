@@ -21,8 +21,34 @@ import { createAudioSystem }             from './audio/index.js';
 import createVisualUnstable              from './visual-unstable.js';
 import { MAX_PHRASES, getPhraseRegister } from './phrases.js';
 
-// ── Seed ─────────────────────────────────────────────────────────
 const SIGNAL_SEED_KEY = 'mxsm-signal-seed';
+
+let active = false;
+let rafId = 0;
+/** @type {HTMLCanvasElement | null} */
+let roomLayer = null;
+/** @type {ReturnType<typeof createVisualUnstable> | null} */
+let webglRoom = null;
+/** @type {ReturnType<typeof createAudioSystem> | null} */
+let audio = null;
+/** @type {(() => void) | null} */
+let onResize = null;
+/** @type {(() => void) | null} */
+let onPointerDown = null;
+/** @type {((e: PointerEvent) => void) | null} */
+let onPointerMove = null;
+
+export function boot() {
+  if (active) return;
+
+  const mainCanvas = /** @type {HTMLCanvasElement | null} */ (
+    document.getElementById('stage')
+  );
+  if (!mainCanvas) return;
+
+  active = true;
+
+// ── Seed ─────────────────────────────────────────────────────────
 const urlSeed = new URLSearchParams(window.location.search).get('seed');
 const storedSeed = sessionStorage.getItem(SIGNAL_SEED_KEY);
 const seed    = Number.isFinite(Number(urlSeed))
@@ -50,18 +76,21 @@ function devicePixelRatioForPerf() {
   return isIOS ? Math.min(2, dpr) : Math.min(2.25, dpr);
 }
 
-const mainCanvas = /** @type {HTMLCanvasElement} */ (document.getElementById('stage'));
-const ctx2d      = mainCanvas.getContext('2d', { alpha: true });
+const ctx2d = mainCanvas.getContext('2d', { alpha: true });
+if (!ctx2d) {
+  active = false;
+  return;
+}
 
-const roomLayer  = document.createElement('canvas');
+roomLayer = document.createElement('canvas');
 roomLayer.id     = 'room-layer';
 roomLayer.setAttribute('aria-hidden', 'true');
 document.body.insertBefore(roomLayer, mainCanvas);
 
-const webglRoom = createVisualUnstable(roomLayer);
+webglRoom = createVisualUnstable(roomLayer);
 
 let w = 0, h = 0;
-function resize() {
+onResize = function resize() {
   currentDpr = devicePixelRatioForPerf();
   w = Math.floor(window.innerWidth  * currentDpr);
   h = Math.floor(window.innerHeight * currentDpr);
@@ -72,9 +101,9 @@ function resize() {
   roomLayer.style.width  = `${window.innerWidth}px`;
   roomLayer.style.height = `${window.innerHeight}px`;
   webglRoom.resize(w, h, currentDpr);
-}
-resize();
-window.addEventListener('resize', resize);
+};
+onResize();
+window.addEventListener('resize', onResize);
 
 // ── Global state ─────────────────────────────────────────────────
 let t0                = performance.now();
@@ -127,7 +156,7 @@ const textLayer = createTextLayer(
   (phrase) => audio.speakPhrase?.(phrase),
 );
 
-const audio = createAudioSystem(rand, (event) => {
+audio = createAudioSystem(rand, (event) => {
   meaningPulse  = clamp(meaningPulse + event.intensity * 0.68, 0, 1.3);
   meaningHalo   = clamp(meaningHalo  + event.intensity * 0.95, 0, 1.5);
   meaningFlash  = clamp(meaningFlash + event.intensity * 1.1,  0, 2.0);
@@ -144,16 +173,17 @@ const audio = createAudioSystem(rand, (event) => {
 dissolveRef = (phrase) => audio.onPhraseDissolve?.(phrase);
 
 // ── Input ────────────────────────────────────────────────────────
-window.addEventListener('pointerdown', () => {
+onPointerDown = () => {
   audio.ensureStarted();
   lastInteractionAt = performance.now();
-}, { passive: true });
-
-window.addEventListener('pointermove', (e) => {
+};
+onPointerMove = (e) => {
   targetX = clamp(e.clientX / window.innerWidth,  0, 1);
   targetY = clamp(e.clientY / window.innerHeight, 0, 1);
   lastMoveAt = lastInteractionAt = performance.now();
-}, { passive: true });
+};
+window.addEventListener('pointerdown', onPointerDown, { passive: true });
+window.addEventListener('pointermove', onPointerMove, { passive: true });
 
 // ── Depth ─────────────────────────────────────────────────────────
 function computeDepth(idleMs) {
@@ -233,6 +263,7 @@ function drawEdgeMarks() {
 
 // ── Main loop ─────────────────────────────────────────────────────
 function loop(now) {
+  if (!active) return;
   frameCount++;
   const dt = Math.min((now - t0) / 1000, 0.1);
   t0 = now;
@@ -396,7 +427,35 @@ function loop(now) {
     targetX = rand(); targetY = rand();
   }
 
-  requestAnimationFrame(loop);
+  rafId = requestAnimationFrame(loop);
 }
 
-requestAnimationFrame(loop);
+rafId = requestAnimationFrame(loop);
+}
+
+export function dispose() {
+  if (!active) return;
+  active = false;
+  cancelAnimationFrame(rafId);
+  rafId = 0;
+
+  if (onResize) window.removeEventListener('resize', onResize);
+  if (onPointerDown) window.removeEventListener('pointerdown', onPointerDown);
+  if (onPointerMove) window.removeEventListener('pointermove', onPointerMove);
+  onResize = null;
+  onPointerDown = null;
+  onPointerMove = null;
+
+  if (roomLayer) {
+    const gl = roomLayer.getContext('webgl2');
+    gl?.getExtension('WEBGL_lose_context')?.loseContext();
+    roomLayer.remove();
+    roomLayer = null;
+  }
+
+  if (audio?.dispose) audio.dispose();
+  audio = null;
+  webglRoom = null;
+
+  document.title = 'mxsm';
+}

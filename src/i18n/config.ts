@@ -1,3 +1,5 @@
+import { notFound } from "next/navigation";
+
 export const locales = ["ru", "en"] as const;
 export type Locale = (typeof locales)[number];
 
@@ -7,7 +9,14 @@ export function isLocale(value: string): value is Locale {
   return locales.includes(value as Locale);
 }
 
-/** Public URL path for a locale (default locale has no prefix). */
+export async function resolveLocale(
+  params: Promise<{ locale: string }>,
+): Promise<Locale> {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  return locale;
+}
+
 export function localePath(locale: Locale): string {
   return locale === defaultLocale ? "/" : "/en";
 }
@@ -17,12 +26,10 @@ export function localeHref(locale: Locale, hash?: string): string {
   return hash ? `${base}${hash}` : base;
 }
 
-/** Public path to the signal experience. */
 export function localeSignalPath(locale: Locale): string {
   return locale === defaultLocale ? "/signal" : "/en/signal";
 }
 
-/** Public path to the long-form about page. */
 export function localeAboutPath(locale: Locale): string {
   return locale === defaultLocale ? "/about" : "/en/about";
 }

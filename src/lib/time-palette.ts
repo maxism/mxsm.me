@@ -1,45 +1,25 @@
-/** Palette keyed to local time-of-day — one mood-coherent spectrum for the site. */
+/** Site palette — full 24h spectrum loops on a fixed cycle (production default). */
 
-/** TEST ONLY: full 24h spectrum loop duration (ms). Enable with ?paletteTest=1 */
-export const PALETTE_TEST_CYCLE_MS = 30_000;
+import paletteData from "@/lib/palette-stops.json";
 
-export type TimePalette = {
-  /** Accent hex, e.g. #e8c547 */
-  hot: string;
-  /** For rgba() / box-shadow: "232, 197, 71" */
-  hotRgb: string;
-  hotTriplet: [number, number, number];
-  /** Chem “border” tint (signal plate, dust cool highlights) */
-  chemBorder: [number, number, number];
-  /** Chem “hot spot” burst */
-  chemHot: [number, number, number];
-  /** Dust background (clear + base mix low) */
-  dustBgLo: [number, number, number];
-  /** Dust background (base mix high) */
-  dustBgHi: [number, number, number];
-  /** Dust warm lift in shader */
-  dustWarm: [number, number, number];
-  /** Dust mote sparkle */
-  dustMote: [number, number, number];
-  /** Mouse glow on dust */
-  dustGlow: [number, number, number];
-};
+export const PALETTE_CYCLE_MS = paletteData.cycleMs;
 
 type HslStop = { hour: number; h: number; s: number; l: number };
 
-/** 24h loop — wraps at midnight */
-const STOPS: HslStop[] = [
-  { hour: 0, h: 228, s: 48, l: 52 },
-  { hour: 4, h: 248, s: 42, l: 48 },
-  { hour: 6, h: 198, s: 58, l: 50 },
-  { hour: 8, h: 48, s: 76, l: 59 },
-  { hour: 12, h: 44, s: 74, l: 57 },
-  { hour: 16, h: 32, s: 78, l: 54 },
-  { hour: 19, h: 14, s: 82, l: 52 },
-  { hour: 21, h: 292, s: 48, l: 56 },
-  { hour: 23, h: 235, s: 46, l: 50 },
-  { hour: 24, h: 228, s: 48, l: 52 },
-];
+const STOPS: HslStop[] = paletteData.stops;
+
+export type TimePalette = {
+  hot: string;
+  hotRgb: string;
+  hotTriplet: [number, number, number];
+  chemBorder: [number, number, number];
+  chemHot: [number, number, number];
+  dustBgLo: [number, number, number];
+  dustBgHi: [number, number, number];
+  dustWarm: [number, number, number];
+  dustMote: [number, number, number];
+  dustGlow: [number, number, number];
+};
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -89,21 +69,8 @@ function rgbToHex([r, g, b]: [number, number, number]): string {
   return `#${[r, g, b].map((n) => n.toString(16).padStart(2, "0")).join("")}`;
 }
 
-export function isPaletteTestMode(): boolean {
-  if (process.env.NEXT_PUBLIC_PALETTE_TEST === "true") return true;
-  if (typeof window !== "undefined") {
-    return new URLSearchParams(window.location.search).has("paletteTest");
-  }
-  return false;
-}
-
-/** 0–24 virtual hour for palette stops */
 export function getPaletteHour(nowMs = Date.now()): number {
-  if (!isPaletteTestMode()) {
-    const d = new Date(nowMs);
-    return d.getHours() + d.getMinutes() / 60 + d.getSeconds() / 3600;
-  }
-  return ((nowMs % PALETTE_TEST_CYCLE_MS) / PALETTE_TEST_CYCLE_MS) * 24;
+  return ((nowMs % PALETTE_CYCLE_MS) / PALETTE_CYCLE_MS) * 24;
 }
 
 function sampleHsl(hour: number): { h: number; s: number; l: number } {
@@ -150,7 +117,6 @@ export function getLivePalette(): TimePalette {
   return paletteAt();
 }
 
-/** Inline boot — uses palette-runtime.js when loaded (beforeInteractive in layout) */
 export function timePaletteInitScript(): string {
   return `(function(){try{var m=window.mxsmPalette;if(m){m.applyCss(m.at());return}}catch(e){}})();`;
 }

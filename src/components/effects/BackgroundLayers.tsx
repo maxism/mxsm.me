@@ -2,6 +2,12 @@
 
 import { useEffect } from "react";
 
+declare global {
+  interface Window {
+    mxsmDust?: { boot: () => void; dispose: () => void };
+  }
+}
+
 function loadScript(src: string) {
   return new Promise<void>((resolve, reject) => {
     if (document.querySelector('script[src="' + src + '"]')) {
@@ -17,12 +23,14 @@ function loadScript(src: string) {
   });
 }
 
-/** Canvas + scan/grain; palette-runtime.js + dust-init.js drive WebGL colors */
+/** Canvas + scan/grain; dust-init.js (palette-runtime loaded in root layout) */
 export function BackgroundLayers() {
   useEffect(() => {
-    loadScript("/palette-runtime.js")
-      .then(() => loadScript("/dust-init.js"))
+    loadScript("/dust-init.js")
+      .then(() => window.mxsmDust?.boot())
       .catch((err) => console.error("[background]", err));
+
+    return () => window.mxsmDust?.dispose();
   }, []);
 
   return (

@@ -1,22 +1,13 @@
 "use client";
 
 import { useLayoutEffect } from "react";
-import {
-  isPaletteTestMode,
-  paletteAt,
-  type TimePalette,
-} from "@/lib/time-palette";
+import { paletteAt, type TimePalette } from "@/lib/time-palette";
 
 declare global {
   interface Window {
     mxsmPalette?: {
-      at: (nowMs?: number) => TimePalette & {
-        dustBgLo: [number, number, number];
-        dustBgHi: [number, number, number];
-        dustGlow: [number, number, number];
-      };
+      at: (nowMs?: number) => TimePalette;
       applyCss: (p: TimePalette) => void;
-      isTest: () => boolean;
     };
   }
 }
@@ -45,11 +36,11 @@ function applyPalette(p: TimePalette) {
   }
 }
 
+/** CSS fallback on /signal; on site pages dust-init owns palette updates */
 export function TimePalette() {
   useLayoutEffect(() => {
-    const test = isPaletteTestMode();
-
     const tick = () => {
+      if (document.getElementById("dust")?.dataset.ready === "1") return;
       const p =
         typeof window !== "undefined" && window.mxsmPalette
           ? window.mxsmPalette.at()
@@ -58,18 +49,7 @@ export function TimePalette() {
     };
 
     tick();
-
-    if (test) {
-      let frame = 0;
-      const loop = () => {
-        tick();
-        frame = requestAnimationFrame(loop);
-      };
-      frame = requestAnimationFrame(loop);
-      return () => cancelAnimationFrame(frame);
-    }
-
-    const id = window.setInterval(tick, 60_000);
+    const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
   }, []);
 

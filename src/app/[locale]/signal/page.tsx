@@ -1,59 +1,32 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { SignalExperience } from "@/components/signal/SignalExperience";
 import { SignalSeoFallback } from "@/components/signal/SignalSeoFallback";
-import {
-  isLocale,
-  localePath,
-  localeSignalPath,
-  type Locale,
-} from "@/i18n/config";
+import { resolveLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
-import {
-  creativeWorkJsonLd,
-  signalBreadcrumbJsonLd,
-} from "@/i18n/json-ld";
+import { creativeWorkJsonLd, signalBreadcrumbJsonLd } from "@/i18n/json-ld";
+import { buildPageMetadata, pageAlternates } from "@/lib/seo/metadata";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
-  const { locale: raw } = await params;
-  if (!isLocale(raw)) return {};
-  const locale = raw as Locale;
+export async function generateMetadata({ params }: PageProps) {
+  const locale = await resolveLocale(params);
   const dict = getDictionary(locale);
-  const canonical = localeSignalPath(locale);
+  const { canonical, languages } = pageAlternates(
+    locale,
+    "/signal",
+    "/en/signal",
+  );
 
-  return {
-    metadataBase: new URL("https://mxsm.me"),
+  return buildPageMetadata({
+    locale,
     title: dict.signalPage.title,
     description: dict.signalPage.description,
-    authors: [{ name: "Max Ulianov" }],
-    robots: "index,follow",
-    alternates: {
-      canonical,
-      languages: {
-        ru: "/signal",
-        en: "/en/signal",
-        "x-default": "/signal",
-      },
-    },
+    canonical,
+    languages,
+    ogPage: "signal",
     openGraph: {
-      type: "website",
-      siteName: "mxsm.me",
-      locale: dict.meta.ogLocale,
-      url: canonical,
-      title: dict.signalPage.title,
-      description: dict.signalPage.ogDescription,
-    },
-    twitter: {
-      card: "summary_large_image",
-      site: "@maxism",
-      creator: "@maxism",
       title: dict.signalPage.title,
       description: dict.signalPage.ogDescription,
     },
@@ -61,17 +34,11 @@ export async function generateMetadata({
       icon: "/signal-favicon.png",
       apple: "/signal-favicon.png",
     },
-    other: {
-      "color-scheme": "dark",
-    },
-  };
+  });
 }
 
 export default async function SignalPage({ params }: PageProps) {
-  const { locale: raw } = await params;
-  if (!isLocale(raw)) notFound();
-
-  const locale = raw as Locale;
+  const locale = await resolveLocale(params);
   const dict = getDictionary(locale);
 
   return (
@@ -81,7 +48,7 @@ export default async function SignalPage({ params }: PageProps) {
       />
       <SignalSeoFallback content={dict.signalPage.seo} />
       <SignalExperience
-        backHref={localePath(locale)}
+        backHref={locale === "ru" ? "/" : "/en"}
         backLabel={dict.plates.signal.exitLabel}
       />
     </>

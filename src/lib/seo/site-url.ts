@@ -5,12 +5,12 @@ import {
   type Locale,
 } from "@/i18n/config";
 
-export const SITE_ORIGIN = "https://mxsm.me";
+export const SITE_ORIGIN =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://mxsm.me";
 
 export const PERSON_ID = `${SITE_ORIGIN}/#person`;
 export const WEBSITE_ID = `${SITE_ORIGIN}/#website`;
 
-/** Absolute public URL for a path segment (e.g. `/`, `/en/about`). */
 export function absoluteUrl(path: string): string {
   return path === "/" ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}${path}`;
 }

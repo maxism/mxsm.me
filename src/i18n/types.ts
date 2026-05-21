@@ -41,6 +41,7 @@ export type Dictionary = {
       bio: string;
       bioEm: string;
       tags: string[];
+      aboutLink: string;
       ghostGlyph: string;
     };
     currently: {
@@ -58,6 +59,11 @@ export type Dictionary = {
     };
     podcast: {
       metaFallback: TitleBlockRow[];
+      metaPlate: string;
+      metaWith: string;
+      metaEpisodes: string;
+      metaOnAir: string;
+      footTemplate: string;
       heading: string;
       headingGlitch: string;
       ticker: string;

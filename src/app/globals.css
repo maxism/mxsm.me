@@ -269,6 +269,21 @@ main { position: relative; z-index: 2; }
   transition: color .15s, border-color .15s;
 }
 .tags li:hover { color: var(--hot); border-color: var(--hot); }
+.hero-about {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: lowercase;
+  color: var(--ink-2);
+  padding: 5px 10px;
+  border: 1px solid var(--rule);
+  transition: color 0.15s, border-color 0.15s, background 0.12s;
+}
+.hero-about:hover {
+  color: var(--bg);
+  background: var(--hot);
+  border-color: var(--hot);
+}
 .coord {
   font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em;
   color: var(--ink-3);

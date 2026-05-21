@@ -1,60 +1,36 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { AboutPage } from "@/components/about/AboutPage";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getAboutContent } from "@/i18n/about/get-about";
-import { isLocale, localeAboutPath, type Locale } from "@/i18n/config";
-import { getDictionary } from "@/i18n/get-dictionary";
+import { resolveLocale } from "@/i18n/config";
 import { aboutBreadcrumbJsonLd, profilePageJsonLd } from "@/i18n/json-ld";
+import { buildPageMetadata, pageAlternates } from "@/lib/seo/metadata";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
-  const { locale: raw } = await params;
-  if (!isLocale(raw)) return {};
-  const locale = raw as Locale;
+export async function generateMetadata({ params }: PageProps) {
+  const locale = await resolveLocale(params);
   const content = getAboutContent(locale);
-  const dict = getDictionary(locale);
-  const canonical = localeAboutPath(locale);
+  const { canonical, languages } = pageAlternates(locale, "/about", "/en/about");
 
-  return {
+  return buildPageMetadata({
+    locale,
     title: content.meta.title,
     description: content.meta.description,
-    alternates: {
-      canonical,
-      languages: {
-        ru: "/about",
-        en: "/en/about",
-        "x-default": "/about",
-      },
-    },
+    canonical,
+    languages,
+    ogPage: "about",
     openGraph: {
+      title: content.meta.title,
+      description: content.meta.ogDescription,
       type: "profile",
-      siteName: "mxsm.me",
-      locale: dict.meta.ogLocale,
-      url: canonical,
-      title: content.meta.title,
-      description: content.meta.ogDescription,
     },
-    twitter: {
-      card: "summary_large_image",
-      site: "@maxism",
-      creator: "@maxism",
-      title: content.meta.title,
-      description: content.meta.ogDescription,
-    },
-  };
+  });
 }
 
 export default async function AboutRoute({ params }: PageProps) {
-  const { locale: raw } = await params;
-  if (!isLocale(raw)) notFound();
-
-  const locale = raw as Locale;
+  const locale = await resolveLocale(params);
   const content = getAboutContent(locale);
 
   return (

@@ -26,6 +26,7 @@ export const ru: Dictionary = {
       bio: "строит команды и инженерные системы с нуля.",
       bioEm: "иногда отвлекается на звук и форму.",
       tags: ["cto", "mts.ai", "untitled team", "est. moscow"],
+      aboutLink: "about ↗",
       ghostGlyph: "У",
     },
     currently: {
@@ -127,6 +128,11 @@ export const ru: Dictionary = {
       ],
     },
     podcast: {
+      metaPlate: "04 · ШИТБАСТАРДС",
+      metaWith: "mike zharchev",
+      metaEpisodes: "{count} · S{season}",
+      metaOnAir: "since {since}",
+      footTemplate: "с m. zharchev, с {since}",
       metaFallback: [
         { key: "PLATE", value: "04 · ШИТБАСТАРДС" },
         { key: "WITH", value: "mike zharchev" },

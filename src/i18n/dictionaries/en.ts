@@ -26,6 +26,7 @@ export const en: Dictionary = {
       bio: "builds teams and engineering systems from scratch.",
       bioEm: "sometimes drifts into sound and form.",
       tags: ["cto", "mts.ai", "untitled team", "est. moscow"],
+      aboutLink: "about ↗",
       ghostGlyph: "У",
     },
     currently: {
@@ -127,6 +128,11 @@ export const en: Dictionary = {
       ],
     },
     podcast: {
+      metaPlate: "04 · SHITBUSTARDS",
+      metaWith: "mike zharchev",
+      metaEpisodes: "{count} eps · S{season}",
+      metaOnAir: "since {since}",
+      footTemplate: "with m. zharchev, since {since}",
       metaFallback: [
         { key: "PLATE", value: "04 · SHITBUSTARDS" },
         { key: "WITH", value: "mike zharchev" },

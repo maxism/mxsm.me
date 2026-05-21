@@ -11,23 +11,35 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+Optional: copy `.env.example` → `.env.local` and set `NEXT_PUBLIC_SITE_URL` for canonical URLs in dev.
+
 ## Structure
 
 | Path | Role |
 |------|------|
-| `src/app/` | Layout, metadata, global styles |
-| `src/components/plates/` | Six content blocks (01–06) |
-| `src/components/ui/` | TitleBlock, PlateHead, GlitchText |
-| `src/components/effects/` | Dust shader, scan/grain overlays |
+| `src/app/` | Root layout, metadata, global styles |
+| `src/app/[locale]/(site)/` | Home + about (dust background, plates) |
+| `src/app/[locale]/signal/` | Full-screen signal experience (separate layout) |
+| `src/components/plates/` | Content blocks (01–06); plate 05 = signal stage |
+| `src/components/effects/` | `BackgroundLayers`, `SignalPlateVisual`, `TimePalette` |
+| `public/palette-runtime.js` | Generated palette cycle for browser (`npm run build:palette`) |
+| `public/dust-init.js` | Background WebGL dust (`window.mxsmDust`) |
+| `src/lib/palette-stops.json` | Single source for palette stops + cycle duration |
+| `src/lib/time-palette.ts` | TS palette API (`paletteAt`, `getLivePalette`) |
 | `src/i18n/dictionaries/` | RU / EN copy |
-| `src/i18n/config.ts` | Locales, URL helpers |
 | `src/middleware.ts` | `/` → ru, `/en` → en (rewrite) |
-| `src/lib/shared-data.ts` | Locale-neutral links (nav, contacts, RSS URL) |
-| `src/lib/episodes.ts` | RSS fetch + parse (from shitbustards.ru) |
-| `src/lib/podcast-list.ts` | Top episodes for plate 04 |
-| `src/signal/` | mxsm/signal runtime (WebGL + Web Audio) |
-| `public/signal/samples/` | Audio samples for signal |
-| `legacy/` | Original static `site.html` / `.css` / `.js` |
+| `src/signal/` | mxsm/signal runtime (`boot` / `dispose`) |
+| `legacy/` | Original static site archive |
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Dev server |
+| `npm run build:palette` | Regenerate `public/palette-runtime.js` from `palette-stops.json` |
+| `npm run build` | Runs `build:palette`, then `next build` |
+| `npm run lint` | ESLint on `src/` (excludes `src/signal/`) |
+| `npm test` | Vitest unit tests |
 
 ## Build
 
@@ -36,19 +48,16 @@ npm run build
 npm start
 ```
 
-Static export is not enabled yet; deploy as a standard Next.js app (Vercel, Node, etc.).
+Deploy as a standard Next.js app (Vercel, Node, etc.).
 
 ## SEO / OG
 
-- Dynamic OG images: `app/[locale]/(site)/opengraph-image.tsx`, `app/[locale]/signal/opengraph-image.tsx`
-- `app/sitemap.ts` — `/`, `/en`, `/signal`, `/en/signal`
-- `app/robots.ts` — allows crawl + sitemap URL
-- `app/icon.svg` — favicon (MU + crosshairs)
-
-After deploy, check previews: Facebook Sharing Debugger, Telegram link paste, `https://mxsm.me/sitemap.xml`.
+- Dynamic OG: `app/[locale]/(site)/opengraph-image.tsx`, `app/[locale]/signal/opengraph-image.tsx`
+- `app/sitemap.ts`, `app/robots.ts` — use `SITE_ORIGIN` from `NEXT_PUBLIC_SITE_URL`
+- `app/icon.svg` — favicon
 
 ## Signal
 
-Generative art lives at `/signal` (RU) and `/en/signal` (EN metadata, same experience). Sources are bundled from `src/signal/` via a client entry; samples are served from `public/signal/samples/`.
+Generative art at `/signal` and `/en/signal`. Client entry `src/signal/main.js` exports `boot()` / `dispose()`; home plate stores seed in `sessionStorage` on click.
 
-Original Vite project archived at `../mxsm.me experimets/` (optional reference).
+Samples: `public/signal/samples/`.

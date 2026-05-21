@@ -1,12 +1,15 @@
+import Link from "next/link";
 import { GlitchText } from "@/components/ui/GlitchText";
 import { TitleBlock } from "@/components/ui/TitleBlock";
+import { localeAboutPath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 
 type PlateIdentityProps = {
   dict: Dictionary;
+  locale: Locale;
 };
 
-export function PlateIdentity({ dict }: PlateIdentityProps) {
+export function PlateIdentity({ dict, locale }: PlateIdentityProps) {
   const p = dict.plates.identity;
 
   return (
@@ -34,6 +37,9 @@ export function PlateIdentity({ dict }: PlateIdentityProps) {
             <li key={tag}>{tag}</li>
           ))}
         </ul>
+        <Link href={localeAboutPath(locale)} className="hero-about">
+          {p.aboutLink}
+        </Link>
       </div>
     </section>
   );

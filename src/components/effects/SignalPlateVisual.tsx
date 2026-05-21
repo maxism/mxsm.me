@@ -1,43 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getLivePalette } from "@/lib/time-palette";
 import {
   SIGNAL_PLATE_FS,
   SIGNAL_PLATE_VS,
 } from "@/lib/signal-plate-shader";
-
-function compileShader(
-  gl: WebGLRenderingContext,
-  type: number,
-  source: string,
-): WebGLShader | null {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error(gl.getShaderInfoLog(shader));
-    return null;
-  }
-  return shader;
-}
+import { createProgram } from "@/lib/webgl/create-program";
+import { bindFullscreenQuad } from "@/lib/webgl/fullscreen-quad";
 
 const SIGNAL_SEED_KEY = "mxsm-signal-seed";
 
 type SignalPlateVisualProps = {
   href: string;
-  seed: number;
   ctaHint: string;
 };
 
-export function SignalPlateVisual({
-  href,
-  seed,
-  ctaHint,
-}: SignalPlateVisualProps) {
+export function SignalPlateVisual({ href, ctaHint }: SignalPlateVisualProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [seed] = useState(
+    () => Math.floor(Math.random() * 2147483646) + 1,
+  );
 
   useEffect(() => {
     const reducedMotion = window.matchMedia(
@@ -63,35 +47,8 @@ export function SignalPlateVisual({
     if (!gl) return;
 
     const webgl = gl as WebGLRenderingContext;
-
-    const vs = compileShader(webgl, webgl.VERTEX_SHADER, SIGNAL_PLATE_VS);
-    const fs = compileShader(webgl, webgl.FRAGMENT_SHADER, SIGNAL_PLATE_FS);
-    if (!vs || !fs) return;
-
-    const prog = webgl.createProgram();
-    if (!prog) return;
-    webgl.attachShader(prog, vs);
-    webgl.attachShader(prog, fs);
-    webgl.linkProgram(prog);
-    if (!webgl.getProgramParameter(prog, webgl.LINK_STATUS)) {
-      console.error(
-        "[signal-plate] program link:",
-        webgl.getProgramInfoLog(prog),
-      );
-      return;
-    }
-
-    const buf = webgl.createBuffer();
-    webgl.bindBuffer(webgl.ARRAY_BUFFER, buf);
-    webgl.bufferData(
-      webgl.ARRAY_BUFFER,
-      new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
-      webgl.STATIC_DRAW,
-    );
-    const loc = webgl.getAttribLocation(prog, "p");
-    if (loc < 0) return;
-    webgl.enableVertexAttribArray(loc);
-    webgl.vertexAttribPointer(loc, 2, webgl.FLOAT, false, 0, 0);
+    const prog = createProgram(webgl, SIGNAL_PLATE_VS, SIGNAL_PLATE_FS);
+    if (!prog || !bindFullscreenQuad(webgl, prog)) return;
 
     const uRes = webgl.getUniformLocation(prog, "u_res");
     const uT = webgl.getUniformLocation(prog, "u_t");
@@ -161,8 +118,7 @@ export function SignalPlateVisual({
       running = false;
       cancelAnimationFrame(frame);
       ro.disconnect();
-      const lose = webgl.getExtension("WEBGL_lose_context");
-      lose?.loseContext();
+      webgl.getExtension("WEBGL_lose_context")?.loseContext();
     };
   }, []);
 

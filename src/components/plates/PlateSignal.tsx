@@ -1,4 +1,4 @@
-import { SignalPlateStage } from "@/components/effects/SignalPlateStage";
+import { SignalPlateVisual } from "@/components/effects/SignalPlateVisual";
 import { PlateHead } from "@/components/ui/PlateHead";
 import { localeSignalPath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
@@ -6,10 +6,9 @@ import type { Dictionary } from "@/i18n/types";
 type PlateSignalProps = {
   dict: Dictionary;
   locale: Locale;
-  seed: number;
 };
 
-export function PlateSignal({ dict, locale, seed }: PlateSignalProps) {
+export function PlateSignal({ dict, locale }: PlateSignalProps) {
   const p = dict.plates.signal;
   const href = localeSignalPath(locale);
 
@@ -20,7 +19,7 @@ export function PlateSignal({ dict, locale, seed }: PlateSignalProps) {
       aria-labelledby="h-05"
     >
       <div className="sig-stage">
-        <SignalPlateStage href={href} seed={seed} ctaHint={p.ctaHint} />
+        <SignalPlateVisual href={href} ctaHint={p.ctaHint} />
         <div className="sig-stage-ui">
           <PlateHead
             rows={p.meta}

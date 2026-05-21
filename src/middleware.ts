@@ -7,6 +7,7 @@ export function middleware(request: NextRequest) {
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
+    pathname.startsWith("/og/") ||
     pathname.includes(".")
   ) {
     return NextResponse.next();
@@ -35,6 +36,15 @@ export function middleware(request: NextRequest) {
 
   const response = NextResponse.rewrite(url);
   response.headers.set("x-mxsm-locale", locale);
+
+  const isSignalPath =
+    pathnameWithoutLocale === "/signal" ||
+    pathnameWithoutLocale.startsWith("/signal/");
+
+  if (isSignalPath && request.nextUrl.searchParams.has("seed")) {
+    response.headers.set("X-Robots-Tag", "noindex, follow");
+  }
+
   return response;
 }
 

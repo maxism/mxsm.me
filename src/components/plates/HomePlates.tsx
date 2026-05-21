@@ -14,22 +14,16 @@ type HomePlatesProps = {
   dict: Dictionary;
   locale: Locale;
   podcast: PodcastHomeData;
-  signalSeed: number;
 };
 
-export function HomePlates({
-  dict,
-  locale,
-  podcast,
-  signalSeed,
-}: HomePlatesProps) {
+export function HomePlates({ dict, locale, podcast }: HomePlatesProps) {
   return (
     <>
-      <PlateIdentity dict={dict} />
+      <PlateIdentity dict={dict} locale={locale} />
       <PlateCurrently dict={dict} />
       <PlateArchive dict={dict} />
       <PlatePodcast dict={dict} podcast={podcast} />
-      <PlateSignal dict={dict} locale={locale} seed={signalSeed} />
+      <PlateSignal dict={dict} locale={locale} />
       <PlateContact dict={dict} />
     </>
   );
