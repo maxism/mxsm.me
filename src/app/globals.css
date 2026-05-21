@@ -178,6 +178,7 @@ main { position: relative; z-index: 2; }
 }
 .plate-h::first-letter { color: var(--hot); }
 .plate-h.cyr { font-feature-settings: 'liga' 1; }
+.plate-h [data-glitch] { display: block; }
 
 /* ─── HERO / plate 01 ──────────────────────────────── */
 .plate-hero {

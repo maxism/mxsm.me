@@ -17,8 +17,8 @@ export function PlateIdentity({ dict, locale }: PlateIdentityProps) {
       <TitleBlock rows={p.meta} />
 
       <h1 className="mono" id="h-01">
-        <GlitchText as="span" text="Max Ulianov" className="mono-lat">
-          Max Ulianov<span className="comma">,</span>
+        <GlitchText as="span" text={dict.masthead.nameGlitch} className="mono-lat">
+          {dict.masthead.name}<span className="comma">,</span>
         </GlitchText>
         <span className="bio">
           {p.bio}
