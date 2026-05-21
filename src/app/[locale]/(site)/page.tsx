@@ -46,7 +46,7 @@ export default async function HomePage({ params }: PageProps) {
       <JsonLd
         data={[
           personJsonLd(locale),
-          podcastJsonLd(locale),
+          podcastJsonLd(),
           ...podcastEpisodeJsonLd(podcast.rawEpisodes),
         ]}
       />

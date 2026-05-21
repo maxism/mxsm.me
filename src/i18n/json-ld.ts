@@ -102,7 +102,7 @@ export function webSiteJsonLd(locale: Locale) {
   };
 }
 
-export function podcastJsonLd(locale: Locale) {
+export function podcastJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "PodcastSeries",
