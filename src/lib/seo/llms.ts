@@ -99,22 +99,36 @@ export function buildHomeText(locale: Locale): string {
 }
 
 export function buildLlmsFullTxt(): string {
-  const ru = formatAboutAsMarkdown(getAboutContent("ru"), localeAboutAbsoluteUrl("ru"));
-  const en = formatAboutAsMarkdown(getAboutContent("en"), localeAboutAbsoluteUrl("en"));
+  const ruAbout = formatAboutAsMarkdown(getAboutContent("ru"), localeAboutAbsoluteUrl("ru"));
+  const enAbout = formatAboutAsMarkdown(getAboutContent("en"), localeAboutAbsoluteUrl("en"));
+  const ruHome = formatHomeText(getDictionary("ru"), "ru");
+  const enHome = formatHomeText(getDictionary("en"), "en");
 
   return [
     "# Max Ulianov — full profile export (mxsm.me)",
     "",
-    "Machine-readable about pages for AI agents and search systems.",
+    "Machine-readable export for AI agents and search systems.",
     `Site: ${SITE_ORIGIN}`,
     "",
     "---",
     "",
-    ru.trim(),
+    ruAbout.trim(),
     "",
     "---",
     "",
-    en.trim(),
+    enAbout.trim(),
+    "",
+    "---",
+    "",
+    "## Home page — RU",
+    "",
+    ruHome.trim(),
+    "",
+    "---",
+    "",
+    "## Home page — EN",
+    "",
+    enHome.trim(),
     "",
   ].join("\n");
 }

@@ -7,7 +7,6 @@ import {
   podcastEpisodeJsonLd,
   podcastJsonLd,
 } from "@/i18n/json-ld";
-import { getEpisodes } from "@/lib/episodes";
 import { getPodcastHomeData } from "@/lib/podcast-home";
 import { buildPageMetadata, pageAlternates } from "@/lib/seo/metadata";
 
@@ -40,10 +39,7 @@ export async function generateMetadata({ params }: PageProps) {
 export default async function HomePage({ params }: PageProps) {
   const locale = await resolveLocale(params);
   const dict = getDictionary(locale);
-  const [podcast, episodes] = await Promise.all([
-    getPodcastHomeData(locale, dict),
-    getEpisodes().catch(() => []),
-  ]);
+  const podcast = await getPodcastHomeData(locale, dict);
 
   return (
     <>
@@ -51,7 +47,7 @@ export default async function HomePage({ params }: PageProps) {
         data={[
           personJsonLd(locale),
           podcastJsonLd(locale),
-          ...podcastEpisodeJsonLd(episodes),
+          ...podcastEpisodeJsonLd(podcast.rawEpisodes),
         ]}
       />
       <main id="main">

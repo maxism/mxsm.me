@@ -20,6 +20,7 @@ export type Episode = {
   episodeNumber: number;
   imageUrl: string;
   audioUrl: string;
+  url: string;
 };
 
 function parseDuration(raw: string | number | undefined): number {
@@ -121,6 +122,7 @@ export async function getEpisodes(): Promise<Episode[]> {
         (item.enclosure as Record<string, unknown> | undefined)?.["@_url"] ?? "",
       ),
     ),
+    url: String(item.link ?? ""),
   }));
 }
 

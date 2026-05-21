@@ -13,6 +13,16 @@ export function generateStaticParams() {
 export default async function LocaleLayout({ children, params }: LayoutProps) {
   const { locale: raw } = await params;
   if (!isLocale(raw)) notFound();
+  const locale = raw;
 
-  return children;
+  return (
+    <>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `document.documentElement.lang="${locale}";`,
+        }}
+      />
+      {children}
+    </>
+  );
 }

@@ -29,7 +29,7 @@ export const en: Dictionary = {
       bioEm: "sometimes drifts into sound and form.",
       tags: ["cto", "mts.ai", "untitled team", "est. moscow"],
       aboutLink: "about ↗",
-      ghostGlyph: "У",
+      ghostGlyph: "M",
     },
     currently: {
       meta: [

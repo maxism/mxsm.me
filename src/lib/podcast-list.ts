@@ -10,7 +10,7 @@ export type PodcastListEpisode = {
   href: string;
 };
 
-const LIST_LIMIT = 6;
+export const LIST_LIMIT = 6;
 
 function formatEpisodeMeta(
   date: Date,

@@ -2,13 +2,12 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 import type { Episode } from "@/lib/episodes";
 import { getEpisodes } from "@/lib/episodes";
-import { toPodcastListEpisodes, type PodcastListEpisode } from "@/lib/podcast-list";
+import { LIST_LIMIT, toPodcastListEpisodes, type PodcastListEpisode } from "@/lib/podcast-list";
 import type { TitleBlockRow } from "@/lib/shared-data";
-
-const LIST_LIMIT = 6;
 
 export type PodcastHomeData = {
   episodes: PodcastListEpisode[];
+  rawEpisodes: Episode[];
   meta: TitleBlockRow[];
   ticker: string;
   foot: string;
@@ -83,6 +82,7 @@ export async function getPodcastHomeData(
     const since = formatSinceMonthYear(stats.oldest, locale);
 
     return {
+      rawEpisodes: raw,
       episodes: toPodcastListEpisodes(raw, locale, LIST_LIMIT),
       meta: buildMeta(stats, locale, dict),
       ticker: buildTicker(dict.plates.podcast.tickerBrand, stats.maxSeason),
@@ -91,6 +91,7 @@ export async function getPodcastHomeData(
   } catch {
     const p = dict.plates.podcast;
     return {
+      rawEpisodes: [],
       episodes: [],
       meta: p.metaFallback,
       ticker: p.ticker,

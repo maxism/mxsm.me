@@ -1,6 +1,6 @@
 import Script from "next/script";
 
-const COUNTER_ID = 109337094;
+const COUNTER_ID = Number(process.env.NEXT_PUBLIC_YM_ID ?? 109337094);
 
 export function YandexMetrika() {
   return (

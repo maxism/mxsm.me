@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cracks — mxsm experiment</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;background:#000;overflow:hidden}
+  canvas{position:fixed;inset:0;width:100%;height:100%}
+  #hud{
+    position:fixed;bottom:1.5rem;right:1.5rem;
+    font:11px/1.6 monospace;color:rgba(255,255,255,.28);
+    text-align:right;pointer-events:none;user-select:none;
+    letter-spacing:.04em;
+  }
+  #hud b{color:rgba(255,255,255,.55)}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">
+  <b>CRACKS</b> — mxsm experiment<br>
+  click · move mouse<br>
+  <span id="info"></span>
+</div>
+<script>
+(function(){
+"use strict";
+
+/* ── Шейдеры ──────────────────────────────────────────────────────── */
+const VS = `#version 300 es
+layout(location=0) in vec2 aPos;
+out vec2 vUv;
+void main(){ vUv=aPos*0.5+0.5; gl_Position=vec4(aPos,0.0,1.0); }
+`;
+
+const FS_WALL = `#version 300 es
+precision highp float;
+in vec2 vUv;
+uniform vec2  uRes;
+uniform float uTime;
+uniform vec2  uPointer;
+uniform float uCrackAge;
+uniform float uPulse;
+uniform float uLightPhase;
+uniform float uColdness;
+uniform float uWarmth;
+out vec4 o;
+
+float h1(float n){ return fract(n*127.1*fract(n*0.3183)); }
+vec2  h2(vec2 p){
+  p=vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3)));
+  return fract(sin(p)*43758.545);
+}
+float noise(vec2 p){
+  vec2 i=floor(p),f=fract(p);
+  f=f*f*(3.0-2.0*f);
+  float a=h1(dot(i,          vec2(1.0,57.0)));
+  float b=h1(dot(i+vec2(1,0),vec2(1.0,57.0)));
+  float c=h1(dot(i+vec2(0,1),vec2(1.0,57.0)));
+  float d=h1(dot(i+vec2(1,1),vec2(1.0,57.0)));
+  return mix(mix(a,b,f.x),mix(c,d,f.x),f.y);
+}
+float fbm(vec2 p){
+  float v=0.0,a=0.5;
+  for(int i=0;i<5;i++){v+=a*noise(p);p=p*2.03+vec2(7.1,3.4);a*=0.5;}
+  return v;
+}
+vec2 voronoi(vec2 p){
+  vec2 ip=floor(p),fp=fract(p);
+  float f1=1e9,f2=1e9;
+  for(int j=-2;j<=2;j++) for(int i=-2;i<=2;i++){
+    vec2 g=vec2(float(i),float(j));
+    vec2 r=g+h2(ip+g)-fp;
+    float d=dot(r,r);
+    if(d<f1){f2=f1;f1=d;}else if(d<f2){f2=d;}
+  }
+  return vec2(sqrt(f1),sqrt(f2));
+}
+float edgeDist(vec2 p,float scale){
+  vec2 v=voronoi(p*scale); return v.y-v.x;
+}
+vec2 crackField(vec2 p){
+  float nw=noise(p*6.0+vec2(1.3,2.7));
+  float age1=smoothstep(0.00,0.38,uCrackAge);
+  float e1=edgeDist(p,2.5);
+  float c1=(1.0-smoothstep(0.0,(0.024+nw*0.010)*age1,e1))*age1;
+  float age2=smoothstep(0.25,0.62,uCrackAge);
+  float e2=edgeDist(p*vec2(1.3,0.9)+vec2(4.7,0.0),5.0);
+  float c2=(1.0-smoothstep(0.0,(0.016+nw*0.007)*age2,e2))*age2;
+  float age3=smoothstep(0.52,1.00,uCrackAge);
+  float e3=edgeDist(p*vec2(0.8,1.2)+vec2(1.3,7.1),9.5);
+  float c3=(1.0-smoothstep(0.0,(0.009+nw*0.005)*age3,e3))*age3;
+  float crack=clamp(max(max(c1,c2),c3)+c1*c2*0.55+c1*c3*0.35,0.0,1.0);
+  float near=min(min(e1*age1,e2*age2+(1.0-age2)*4.0),e3*age3+(1.0-age3)*4.0);
+  return vec2(crack,near);
+}
+
+void main(){
+  float asp=uRes.x/max(uRes.y,1.0);
+  vec2 ptr=uPointer-0.5;
+  vec2 wuv=vUv+ptr*0.020;
+  vec2 cp=wuv*vec2(asp,1.0);
+  vec2 cf=crackField(cp);
+  float crack=cf.r, nedge=cf.g;
+
+  vec2 wp5=wuv*5.0+vec2(2.3,0.7);
+  float stone=fbm(wp5)+fbm(wuv*10.5+vec2(0.5,4.1))*0.22+noise(wuv*30.0)*0.05;
+  stone=clamp(stone,0.0,1.0);
+
+  float eps=0.004;
+  float dndx=fbm(wp5+vec2(eps,0))-fbm(wp5-vec2(eps,0));
+  float dndy=fbm(wp5+vec2(0,eps))-fbm(wp5-vec2(0,eps));
+  vec3  fakeN=normalize(vec3(-dndx*6.0,-dndy*6.0,1.0));
+  float diff=clamp(dot(fakeN,normalize(vec3(0.35,0.55,1.0))),0.25,1.0);
+
+  vec3 wallBase=mix(vec3(0.82,0.76,0.67),vec3(0.35,0.37,0.41),uColdness);
+  vec3 wallCol=wallBase*(0.55+stone*0.60)*diff;
+
+  float darkBias=clamp(uLightPhase*0.7+uColdness*0.55,0.0,1.0);
+  float breathe=1.0+uPulse*0.9*(0.5+0.5*sin(uTime*2.8+nedge*5.0));
+  vec3 lightCol=vec3(1.5,1.25,0.90)*breathe*(1.0+uWarmth*0.35);
+  vec3 voidCol =vec3(0.0,0.0,0.008);
+  vec3 throughCol=mix(lightCol,voidCol,darkBias);
+
+  /* Свечение от трещин — два разных радиуса:
+     ближний (tight) — сам край, дальний (wide) — атмосфера */
+  float glowTight=exp(-nedge*10.0)*uCrackAge;
+  float glowWide =exp(-nedge* 4.5)*uCrackAge;
+
+  /* Свет: золотое гало */
+  float lightGlow=glowTight*(1.0-darkBias)*(0.8+uPulse*0.6);
+  wallCol+=vec3(0.90,0.68,0.28)*lightGlow*0.55;
+  /* Свет: широкое тёплое рассеяние (атмосфера) */
+  wallCol+=vec3(0.55,0.38,0.12)*glowWide*(1.0-darkBias)*0.18;
+
+  /* Тьма: поглощает цвет рядом с трещиной */
+  float darkTight=glowTight*darkBias;
+  float darkWide =glowWide *darkBias;
+  wallCol*=1.0-darkTight*0.70;        /* сильное поглощение у края */
+  wallCol*=1.0-darkWide *0.30;        /* мягкая тень вдаль */
+  wallCol-=vec3(0.04,0.06,0.10)*darkTight;  /* холодный подтон */
+
+  vec3 col=mix(wallCol,throughCol,crack);
+  vec2 uvC=vUv-0.5;
+  col*=1.0-smoothstep(0.38,1.05,length(uvC*vec2(asp,1.0)));
+  col+=(h1(dot(vUv,vec2(127.1,311.7))+uTime*0.03)-0.5)*0.018;
+
+  o=vec4(clamp(col,0.0,2.0),1.0);
+}
+`;
+
+const FS_POST = `#version 300 es
+precision highp float;
+in vec2 vUv;
+uniform sampler2D uScene;
+uniform vec2 uRes;
+uniform float uFlash;
+out vec4 o;
+
+void main(){
+  vec2 px=1.0/uRes;
+  float bs=3.5;
+  vec3 c=texture(uScene,vUv).rgb;
+  vec3 b=vec3(0);
+  b+=texture(uScene,vUv+vec2(-px.x*bs,0)).rgb;
+  b+=texture(uScene,vUv+vec2( px.x*bs,0)).rgb;
+  b+=texture(uScene,vUv+vec2(0,-px.y*bs)).rgb;
+  b+=texture(uScene,vUv+vec2(0, px.y*bs)).rgb;
+  b+=texture(uScene,vUv+vec2(-px.x*2.0,-px.y*2.0)).rgb;
+  b+=texture(uScene,vUv+vec2( px.x*2.0,-px.y*2.0)).rgb;
+  b+=texture(uScene,vUv+vec2(-px.x*2.0, px.y*2.0)).rgb;
+  b+=texture(uScene,vUv+vec2( px.x*2.0, px.y*2.0)).rgb;
+  b/=8.0;
+  float br=dot(c,vec3(0.299,0.587,0.114));
+  vec3 out_c=c+b*smoothstep(0.28,1.05,br)*2.0*(0.55+uFlash*0.5);
+  o=vec4(clamp(out_c,0.0,1.0),1.0);
+}
+`;
+
+/* ── WebGL setup ─────────────────────────────────────────────────── */
+const cnv = document.getElementById('c');
+const gl  = cnv.getContext('webgl2',{
+  alpha:false, antialias:false, premultipliedAlpha:false,
+  powerPreference:'high-performance'
+});
+if(!gl){ document.body.innerHTML='<p style="color:#f55;padding:2rem">WebGL2 unavailable</p>'; return; }
+
+function sh(type, src){
+  const s=gl.createShader(type);
+  gl.shaderSource(s,src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){
+    console.error(gl.getShaderInfoLog(s)); return null;
+  }
+  return s;
+}
+function prog(vs,fs){
+  const p=gl.createProgram();
+  gl.attachShader(p,vs); gl.attachShader(p,fs); gl.linkProgram(p);
+  if(!gl.getProgramParameter(p,gl.LINK_STATUS)){
+    console.error(gl.getProgramInfoLog(p)); return null;
+  }
+  return p;
+}
+
+const vsQ   = sh(gl.VERTEX_SHADER,   VS);
+const fsWL  = sh(gl.FRAGMENT_SHADER, FS_WALL);
+const fsPO  = sh(gl.FRAGMENT_SHADER, FS_POST);
+const pWall = prog(vsQ, fsWL);
+const pPost = prog(vsQ, fsPO);
+
+const quad = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER,quad);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+
+function bindQ(){
+  gl.bindBuffer(gl.ARRAY_BUFFER,quad);
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+}
+
+/* FBO */
+let tex=null, fbo=null, CW=0, CH=0;
+function initFBO(w,h){
+  if(tex) gl.deleteTexture(tex);
+  if(fbo) gl.deleteFramebuffer(fbo);
+  tex=gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D,tex);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  fbo=gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER,fbo);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tex,0);
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+}
+
+/* Uniform locations */
+const U = {
+  wall:{
+    res: gl.getUniformLocation(pWall,'uRes'),
+    t:   gl.getUniformLocation(pWall,'uTime'),
+    ptr: gl.getUniformLocation(pWall,'uPointer'),
+    age: gl.getUniformLocation(pWall,'uCrackAge'),
+    pls: gl.getUniformLocation(pWall,'uPulse'),
+    lph: gl.getUniformLocation(pWall,'uLightPhase'),
+    cld: gl.getUniformLocation(pWall,'uColdness'),
+    wrm: gl.getUniformLocation(pWall,'uWarmth'),
+  },
+  post:{
+    scn: gl.getUniformLocation(pPost,'uScene'),
+    res: gl.getUniformLocation(pPost,'uRes'),
+    flh: gl.getUniformLocation(pPost,'uFlash'),
+  },
+};
+
+/* ── State ───────────────────────────────────────────────────────── */
+let px=0.5, py=0.5, tpx=0.5, tpy=0.5;
+let crackAge  = 0;
+let pulse     = 0;
+let lightPhase= 0;  // 0=свет, 1=тьма
+let coldness  = 0;
+let warmth    = 0;
+let flash     = 0;
+let lastClick = -10;
+let t0 = performance.now();
+
+/* Клик: вспышка + пульс */
+window.addEventListener('pointerdown', e=>{
+  lastClick = performance.now()*0.001;
+  pulse  = Math.min(pulse + 0.8, 1.0);
+  warmth = 0.9;
+  flash  = 1.0;
+  tpx = e.clientX/window.innerWidth;
+  tpy = e.clientY/window.innerHeight;
+});
+window.addEventListener('pointermove', e=>{
+  tpx = e.clientX/window.innerWidth;
+  tpy = e.clientY/window.innerHeight;
+});
+
+/* Resize */
+function resize(){
+  const dpr = Math.min(window.devicePixelRatio||1, 2);
+  const w = Math.floor(window.innerWidth*dpr);
+  const h = Math.floor(window.innerHeight*dpr);
+  cnv.width=w; cnv.height=h;
+  if(w!==CW||h!==CH){ CW=w; CH=h; if(CW>0&&CH>0) initFBO(CW,CH); }
+}
+window.addEventListener('resize', resize);
+resize();
+
+/* ── Loop ────────────────────────────────────────────────────────── */
+const BEAT = 2.4;  // длина такта в секундах (как в Signal)
+let lastBeat = -1;
+const info = document.getElementById('info');
+
+function loop(now){
+  const t  = (now - t0) * 0.001;
+  const dt = Math.min(t - (loop._prev ?? t), 0.05);
+  loop._prev = t;
+
+  /* Плавный курсор */
+  px += (tpx-px)*0.1;
+  py += (tpy-py)*0.1;
+
+  /* Трещины растут медленно, ускоряются после клика */
+  const clickBoost = Math.max(0, 1.0 - (t - lastClick) * 0.4);
+  crackAge = Math.min(crackAge + dt*(0.006 + clickBoost*0.05), 1.0);
+
+  /* Затухание пульса */
+  pulse  = Math.max(pulse  - dt*1.2,  0);
+  warmth = Math.max(warmth - dt*0.5,  0);
+  flash  = Math.max(flash  - dt*3.0,  0);
+
+  /* Такт → переключение свет/тьма */
+  const beat = Math.floor(t / BEAT);
+  if(beat !== lastBeat){
+    lastBeat = beat;
+    /* Нечётные такты — свет, чётные — тьма; с нарастанием coldness */
+    const targetPhase = (beat % 2 === 0) ? 0.0 : 0.85;
+    lightPhase = targetPhase;
+    /* Небольшой пульс синхронно с тактом */
+    pulse = Math.min(pulse + 0.35, 1.0);
+  }
+  /* Плавный возврат к нейтрали между тактами */
+  const phaseFrac = (t % BEAT) / BEAT;
+  lightPhase *= Math.max(0, 1.0 - phaseFrac*0.5);
+
+  /* coldness нарастает очень медленно — "атмосфера" */
+  coldness = 0.18 + Math.sin(t*0.04)*0.12;
+
+  /* ── Render ─────────────────────────────────────────────────── */
+  gl.disable(gl.DEPTH_TEST);
+  gl.disable(gl.BLEND);
+
+  /* Pass 1: WALL */
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+  gl.viewport(0,0,CW,CH);
+  gl.clearColor(0,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.useProgram(pWall); bindQ();
+  gl.uniform2f(U.wall.res,  CW, CH);
+  gl.uniform1f(U.wall.t,    t);
+  gl.uniform2f(U.wall.ptr,  px, py);
+  gl.uniform1f(U.wall.age,  crackAge);
+  gl.uniform1f(U.wall.pls,  pulse);
+  gl.uniform1f(U.wall.lph,  lightPhase);
+  gl.uniform1f(U.wall.cld,  coldness);
+  gl.uniform1f(U.wall.wrm,  warmth);
+  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+
+  /* Pass 2: POST */
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.viewport(0,0,CW,CH);
+  gl.clearColor(0,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.useProgram(pPost); bindQ();
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.uniform1i(U.post.scn,  0);
+  gl.uniform2f(U.post.res,  CW, CH);
+  gl.uniform1f(U.post.flh,  flash);
+  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+
+  /* HUD */
+  info.textContent = `age ${(crackAge*100|0)}% · ${lightPhase>0.4?'тьма':'свет'}`;
+
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

@@ -194,8 +194,7 @@ const DARK_URLS = [
     }
   }
 
-  // Preload все сэмплы сразу — decodeAudioData работает в suspended state
-  [...WORLD_URLS, ...DARK_URLS].forEach(url => loadSampleBuffer(url));
+  // Сэмплы загружаются только при первом взаимодействии (ensureStarted)
 
   // ── World samples: clean, atmospheric, slow fade ───────────────
   let nextWorldAt = ctx.currentTime + 4 + random() * 10;
@@ -523,6 +522,7 @@ const DARK_URLS = [
     ensureStarted() {
       if (started) return;
       started = true;
+      [...WORLD_URLS, ...DARK_URLS].forEach(url => loadSampleBuffer(url));
       ctx.resume();
       master.gain.cancelScheduledValues(ctx.currentTime);
       master.gain.exponentialRampToValueAtTime(0.72, ctx.currentTime + 0.8);

@@ -6,24 +6,29 @@ import {
 } from "@/i18n/config";
 import { absoluteUrl } from "@/lib/seo/site-url";
 
+const LAST_ABOUT_SIGNAL_MOD = "2026-05-01";
+
 const PAGE_GROUPS = [
   {
     ru: localePath("ru"),
     en: localePath("en"),
     changeFrequency: "weekly" as const,
     priority: 1,
+    lastmod: new Date().toISOString().slice(0, 10),
   },
   {
     ru: localeAboutPath("ru"),
     en: localeAboutPath("en"),
     changeFrequency: "monthly" as const,
     priority: 0.75,
+    lastmod: LAST_ABOUT_SIGNAL_MOD,
   },
   {
     ru: localeSignalPath("ru"),
     en: localeSignalPath("en"),
     changeFrequency: "monthly" as const,
     priority: 0.7,
+    lastmod: LAST_ABOUT_SIGNAL_MOD,
   },
 ] as const;
 
@@ -38,6 +43,7 @@ export function buildSitemapEntries(): MetadataRoute.Sitemap {
 
     return [group.ru, group.en].map((path) => ({
       url: absoluteUrl(path),
+      lastModified: group.lastmod,
       changeFrequency: group.changeFrequency,
       priority: group.priority,
       alternates: { languages },

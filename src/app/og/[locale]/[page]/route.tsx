@@ -18,5 +18,7 @@ export async function GET(_request: Request, { params }: RouteParams) {
     return new Response("Not found", { status: 404 });
   }
 
-  return renderOgImage(page, raw);
+  const img = renderOgImage(page, raw);
+  img.headers.set("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
+  return img;
 }

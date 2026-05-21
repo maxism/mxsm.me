@@ -175,8 +175,8 @@ export const ru: Dictionary = {
         { key: "PLATE", value: "06 · CONTACT" },
         { key: "ANSWERS", value: "within a week" },
       ],
-      heading: "/\u2009сигнал",
-      headingGlitch: "// сигнал",
+      heading: "/\u2009контакт",
+      headingGlitch: "// контакт",
     },
   },
   signalPage: {

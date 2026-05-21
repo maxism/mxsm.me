@@ -3,6 +3,7 @@ import { getAboutContent } from "@/i18n/about/get-about";
 import { getDictionary } from "@/i18n/get-dictionary";
 import type { Episode } from "@/lib/episodes";
 import { SHITBUSTARDS_RSS_URL } from "@/lib/shared-data";
+import { OG_SIZE } from "@/lib/seo/og-theme";
 import {
   PERSON_ID,
   WEBSITE_ID,
@@ -38,7 +39,12 @@ export function personJsonLd(locale: Locale) {
     alternateName: ["Макс Ульянов", "maxism"],
     url: localeAbsoluteUrl(locale),
     description: about.meta.description,
-    image: personOgImage(locale),
+    image: {
+    "@type": "ImageObject",
+    url: personOgImage(locale),
+    width: OG_SIZE.width,
+    height: OG_SIZE.height,
+  },
     jobTitle: "Chief Technology Officer",
     address: {
       "@type": "PostalAddress",
@@ -58,6 +64,7 @@ export function personJsonLd(locale: Locale) {
       name: "National Research Nuclear University MEPhI",
     },
     sameAs: [
+      "https://mxsm.me",
       "https://github.com/maxism",
       "https://www.linkedin.com/in/maxism/",
       "https://t.me/maxism",
@@ -75,7 +82,7 @@ export function personJsonLd(locale: Locale) {
       "Space SaaS",
       "Engineering effectiveness",
     ],
-    email: "mailto:m@mxsm.me",
+    email: "m@mxsm.me",
     mainEntityOfPage: localeAboutAbsoluteUrl(locale),
   };
 }
@@ -103,7 +110,7 @@ export function podcastJsonLd(locale: Locale) {
     alternateName: "SHITBUSTARDS",
     url: "https://shitbustards.ru/",
     webFeed: SHITBUSTARDS_RSS_URL,
-    inLanguage: locale === "ru" ? "ru" : ["ru", "en"],
+    inLanguage: "ru",
     author: [
       { "@type": "Person", name: "Max Ulianov", "@id": PERSON_ID },
       { "@type": "Person", name: "Mike Zharchev" },
@@ -119,9 +126,18 @@ export function podcastEpisodeJsonLd(episodes: readonly Episode[]) {
       "@context": "https://schema.org",
       "@type": "PodcastEpisode",
       name: episode.title,
+      url: episode.url || undefined,
       datePublished: episode.publishDate.toISOString(),
       ...(description ? { description: description.slice(0, 500) } : {}),
-      ...(episode.audioUrl ? { associatedMedia: episode.audioUrl } : {}),
+      ...(episode.audioUrl
+        ? {
+            associatedMedia: {
+              "@type": "AudioObject",
+              contentUrl: episode.audioUrl,
+              encodingFormat: "audio/ogg",
+            },
+          }
+        : {}),
       ...(episode.durationSec > 0
         ? { duration: `PT${episode.durationSec}S` }
         : {}),
@@ -148,6 +164,8 @@ export function profilePageJsonLd(locale: Locale) {
     inLanguage: locale === "ru" ? "ru-RU" : "en-US",
     isPartOf: { "@id": WEBSITE_ID },
     mainEntity: { "@id": PERSON_ID },
+    dateCreated: "2024-01-01",
+    dateModified: new Date().toISOString().slice(0, 10),
   };
 }
 
@@ -170,6 +188,7 @@ export function creativeWorkJsonLd(locale: Locale) {
       "signal",
       "Max Ulianov",
     ],
+    dateCreated: "2025-01-01",
     isPartOf: { "@id": WEBSITE_ID },
   };
 }
@@ -182,13 +201,13 @@ export function breadcrumbJsonLd(items: readonly BreadcrumbItem[]) {
       "@type": "ListItem",
       position: index + 1,
       name: item.name,
-      item: item.url,
+      item: { "@id": item.url },
     })),
   };
 }
 
 export function aboutBreadcrumbJsonLd(locale: Locale) {
-  const homeLabel = locale === "ru" ? "mxsm.me" : "mxsm.me";
+  const homeLabel = "mxsm.me";
   const aboutLabel = "about";
 
   return breadcrumbJsonLd([

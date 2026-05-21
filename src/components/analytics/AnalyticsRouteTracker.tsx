@@ -3,8 +3,8 @@
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-const GA_ID = "G-7YXT4BC7FF";
-const YM_ID = 109337094;
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID ?? "G-7YXT4BC7FF";
+const YM_ID = Number(process.env.NEXT_PUBLIC_YM_ID ?? 109337094);
 
 declare global {
   interface Window {

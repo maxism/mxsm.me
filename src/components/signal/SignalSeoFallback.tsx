@@ -11,8 +11,8 @@ export function SignalSeoFallback({ content }: SignalSeoFallbackProps) {
   return (
     <article className="signal-seo">
       <h1>{content.title}</h1>
-      {content.paragraphs.map((paragraph) => (
-        <p key={paragraph}>{paragraph}</p>
+      {content.paragraphs.map((paragraph, i) => (
+        <p key={i}>{paragraph}</p>
       ))}
     </article>
   );

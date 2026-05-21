@@ -32,7 +32,6 @@ export function SignalPlateVisual({ href, ctaHint }: SignalPlateVisualProps) {
       alpha: true,
       antialias: false,
       premultipliedAlpha: false,
-      preserveDrawingBuffer: true,
     } as const;
 
     const getGl = (el: HTMLCanvasElement) =>

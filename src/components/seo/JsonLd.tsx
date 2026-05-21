@@ -9,7 +9,7 @@ export function JsonLd({ data }: JsonLdProps) {
     <>
       {items.map((item, index) => (
         <script
-          key={index}
+          key={(item as { "@type"?: string })["@type"] ?? index}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(item) }}
         />

@@ -1,11 +1,17 @@
 "use client";
 
+import { useEffect } from "react";
+
 export default function SiteError({
+  error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useEffect(() => {
+    console.error(error);
+  }, [error]);
   return (
     <main id="main" className="plate" style={{ minHeight: "60vh" }}>
       <p className="plate-h" style={{ fontSize: "clamp(32px, 6vw, 64px)" }}>

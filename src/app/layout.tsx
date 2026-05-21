@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { JetBrains_Mono, Spectral } from "next/font/google";
-import { headers } from "next/headers";
 import { Suspense } from "react";
 import { AnalyticsRouteTracker } from "@/components/analytics/AnalyticsRouteTracker";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
@@ -29,22 +28,19 @@ const jetbrains = JetBrains_Mono({
   display: "swap",
 });
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const headersList = await headers();
-  const lang = headersList.get("x-mxsm-locale") === "en" ? "en" : "ru";
-
   return (
     <html
-      lang={lang}
+      lang="ru"
       className={`${spectral.variable} ${jetbrains.variable}`}
       suppressHydrationWarning
     >
       <body>
-        <Script src="/palette-runtime.js" strategy="beforeInteractive" />
+        <Script src="/palette-runtime.js" strategy="afterInteractive" />
         <script
           dangerouslySetInnerHTML={{ __html: timePaletteInitScript() }}
         />

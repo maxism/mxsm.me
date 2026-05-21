@@ -15,8 +15,8 @@ export function pageAlternates(
   return {
     canonical,
     languages: {
-      ru: absoluteUrl(ruPath),
-      en: absoluteUrl(enPath),
+      "ru-RU": absoluteUrl(ruPath),
+      "en-US": absoluteUrl(enPath),
       "x-default": absoluteUrl(ruPath),
     },
   };
@@ -91,6 +91,7 @@ export function buildPageMetadata(input: PageMetadataInput): Metadata {
           width: OG_SIZE.width,
           height: OG_SIZE.height,
           alt: ogTitle,
+          type: "image/png",
         },
       ],
     },
