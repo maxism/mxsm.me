@@ -10,7 +10,7 @@ export const ru: Dictionary = {
     ogLocale: "ru_RU",
   },
   masthead: {
-    name: "Макс Ульянов",
+    name: `Макс Ульянов`,
     nameGlitch: "Макс Ульянов",
     langSwitch: "language",
   },
@@ -156,11 +156,7 @@ export const ru: Dictionary = {
       ],
       heading: "/\u2009signal",
       headingGlitch: "// signal",
-      quote: [
-        "сигнал пришёл",
-        "из того места,",
-        "куда не отправляли.",
-      ],
+      quote: ["сигнал пришёл", "из того места,", "куда не отправляли."],
       metaRows: [
         { key: "stack", value: "webgl · web audio · formant synthesis" },
         { key: "voices", value: "03" },
