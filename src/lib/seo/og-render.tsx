@@ -1,8 +1,10 @@
+import type { ReactNode } from "react";
 import { ImageResponse } from "next/og";
 import { getAboutContent } from "@/i18n/about/get-about";
 import type { Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { OG_SIZE } from "@/lib/seo/og-theme";
+import type { TitleBlockRow } from "@/lib/shared-data";
+import { OG, OG_SIZE } from "@/lib/seo/og-theme";
 
 export const OG_PAGES = ["home", "about", "signal"] as const;
 export type OgPage = (typeof OG_PAGES)[number];
@@ -11,224 +13,338 @@ export function isOgPage(value: string): value is OgPage {
   return OG_PAGES.includes(value as OgPage);
 }
 
-const INK = "#e8e2d2";
-const MUTED = "#9a9488";
-const HOT = "#e8c547";
+// VOID FBM shader — violet void blooms only (no amber).
+function signalBackground(intensity: "subtle" | "full" = "subtle"): string {
+  const k = intensity === "full" ? 1 : 0.42;
+  const a = (n: number) => Math.min(1, n * k);
 
-// Approximation of the VOID FBM shader using layered CSS radial-gradients.
-// Satori supports multi-gradient `background` strings but NOT the `ellipse` keyword —
-// use only `circle` and `linear-gradient`.
-function signalBackground(): string {
-  // order: first = on top (frontmost), last = behind everything
   return [
-    // amber bloom — dominant hot spot, left-center
-    "radial-gradient(circle 400px at 28% 44%, rgba(232,190,55,0.88) 0%, rgba(200,150,30,0.50) 45%, transparent 80%)",
-    // amber satellite — upper-right
-    "radial-gradient(circle 180px at 72% 20%, rgba(225,175,50,0.72) 0%, transparent 100%)",
-    // amber flare — lower-left
-    "radial-gradient(circle 130px at 14% 76%, rgba(215,165,44,0.58) 0%, transparent 100%)",
-    // amber ember — right-center
-    "radial-gradient(circle 100px at 85% 52%, rgba(205,155,40,0.50) 0%, transparent 100%)",
-    // purple void — upper-left quadrant
-    "radial-gradient(circle 400px at 8% 20%, rgba(48,12,105,0.82) 0%, transparent 75%)",
-    // purple void — lower-right quadrant
-    "radial-gradient(circle 380px at 90% 85%, rgba(60,16,118,0.80) 0%, transparent 75%)",
-    // purple void — center shadow
-    "radial-gradient(circle 220px at 55% 56%, rgba(32,9,76,0.45) 0%, transparent 80%)",
-    // warm dark base with slight warm-left / cool-right diagonal
-    "linear-gradient(120deg, #150a04 0%, #08050e 50%, #050403 100%)",
+    `radial-gradient(circle 420px at 30% 42%, rgba(168,139,240,${a(0.55)}) 0%, rgba(110,72,190,${a(0.28)}) 48%, transparent 82%)`,
+    `radial-gradient(circle 200px at 74% 18%, rgba(130,95,210,${a(0.42)}) 0%, transparent 100%)`,
+    `radial-gradient(circle 150px at 12% 78%, rgba(90,55,165,${a(0.34)}) 0%, transparent 100%)`,
+    `radial-gradient(circle 110px at 86% 54%, rgba(72,40,140,${a(0.28)}) 0%, transparent 100%)`,
+    `radial-gradient(circle 400px at 8% 20%, rgba(48,12,105,${a(0.62)}) 0%, transparent 75%)`,
+    `radial-gradient(circle 380px at 90% 85%, rgba(60,16,118,${a(0.58)}) 0%, transparent 75%)`,
+    `radial-gradient(circle 220px at 55% 56%, rgba(32,9,76,${a(0.32)}) 0%, transparent 80%)`,
+    "linear-gradient(120deg, #0c0814 0%, #08050e 50%, #050403 100%)",
   ].join(",");
 }
 
-function pageLabel(text: string) {
-  return (
+/** Static RGB-split glitch (Satori has no ::before/::after). */
+function OgGlitchText({
+  text,
+  size,
+  inverted,
+  lowercase,
+}: {
+  text: string;
+  size: number;
+  inverted?: boolean;
+  lowercase?: boolean;
+}) {
+  const base = inverted ? OG.bg : OG.ink;
+
+  const layer = (color: string, opacity: number, dx: number, dy: number) => (
     <div
       style={{
         display: "flex",
-        fontSize: 12,
-        letterSpacing: "0.22em",
-        color: HOT,
-        fontFamily: "ui-monospace, monospace",
-        textTransform: "uppercase",
-        opacity: 0.9,
+        position: "absolute",
+        top: 0,
+        left: 0,
+        color,
+        opacity,
+        transform: `translate(${dx}px, ${dy}px)`,
       }}
     >
       {text}
     </div>
   );
+
+  const shell: Record<string, string | number> = {
+    display: "flex",
+    position: "relative",
+    fontSize: size,
+    fontWeight: 200,
+    letterSpacing: "-0.04em",
+    lineHeight: 0.92,
+    maxWidth: 920,
+  };
+  if (lowercase) shell.textTransform = "lowercase";
+
+  return (
+    <div style={shell}>
+      {layer(OG.glitchB, 0.52, 3, -1)}
+      {layer(OG.glitchR, 0.48, -4, 1)}
+      <div style={{ display: "flex", position: "relative", color: base }}>{text}</div>
+    </div>
+  );
 }
 
-function footer() {
+function crosshair(position: "tl" | "br", color: string) {
+  const base = { position: "absolute" as const, width: 14, height: 14, display: "flex" };
+
+  if (position === "tl") {
+    return {
+      ...base,
+      top: 22,
+      left: 22,
+      borderTop: `1px solid ${color}`,
+      borderLeft: `1px solid ${color}`,
+    };
+  }
+
+  return {
+    ...base,
+    bottom: 22,
+    right: 22,
+    borderBottom: `1px solid ${color}`,
+    borderRight: `1px solid ${color}`,
+  };
+}
+
+function OgTitleBlock({ rows, inverted }: { rows: readonly TitleBlockRow[]; inverted?: boolean }) {
+  const border = inverted ? "rgba(10, 9, 7, 0.16)" : OG.rule;
+  const panel = inverted ? "rgba(232, 226, 210, 0.42)" : "rgba(10, 9, 7, 0.52)";
+  const keyColor = inverted ? "rgba(10, 9, 7, 0.45)" : "rgba(154, 148, 136, 0.95)";
+  const valColor = inverted ? OG.bg : OG.ink;
+
   return (
     <div
       style={{
         display: "flex",
-        alignItems: "center",
-        gap: 10,
+        flexDirection: "column",
+        gap: 4,
+        padding: "10px 14px",
+        border: `1px solid ${border}`,
+        background: panel,
         fontFamily: "ui-monospace, monospace",
-        fontSize: 13,
-        letterSpacing: "0.14em",
-        color: MUTED,
-        opacity: 0.6,
+        fontSize: 9,
+        letterSpacing: "0.18em",
+        textTransform: "uppercase",
+        alignSelf: "flex-start",
       }}
     >
-      <span style={{ color: HOT, opacity: 0.7 }}>·</span>
-      <span>mxsm.me</span>
+      {rows.map((row) => (
+        <div key={row.key} style={{ display: "flex", gap: 16 }}>
+          <span style={{ display: "flex", color: keyColor }}>{row.key}</span>
+          <span style={{ display: "flex", color: valColor }}>{row.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function accentRule() {
+  return (
+    <div
+      style={{
+        display: "flex",
+        width: 48,
+        height: 2,
+        background: OG.accent,
+      }}
+    />
+  );
+}
+
+function footer(inverted?: boolean) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        fontSize: 12,
+        letterSpacing: "0.2em",
+        color: inverted ? "rgba(10, 9, 7, 0.45)" : OG.inkMuted,
+        fontFamily: "ui-monospace, monospace",
+        textTransform: "uppercase",
+      }}
+    >
+      mxsm.me
+    </div>
+  );
+}
+
+type OgShellProps = {
+  children: ReactNode;
+  shader: "subtle" | "full";
+  scrim: number;
+  inverted?: boolean;
+  ghost?: string;
+};
+
+function OgShell({ children, shader, scrim, inverted, ghost }: OgShellProps) {
+  const cross = inverted ? "rgba(10, 9, 7, 0.2)" : "rgba(232, 226, 210, 0.18)";
+  const scrimColor = inverted ? `rgba(232, 226, 210, ${scrim})` : `rgba(10, 9, 7, ${scrim})`;
+  const ghostColor = inverted ? "rgba(10, 9, 7, 0.06)" : "rgba(232, 226, 210, 0.05)";
+
+  return (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        position: "relative",
+        fontFamily: "ui-sans-serif, system-ui, sans-serif",
+        color: inverted ? OG.bg : OG.ink,
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          display: "flex",
+          background: signalBackground(shader),
+        }}
+      />
+      {scrim > 0 ? (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: "flex",
+            background: scrimColor,
+          }}
+        />
+      ) : null}
+      <div style={crosshair("tl", cross)} />
+      <div style={crosshair("br", cross)} />
+      {ghost ? (
+        <div
+          style={{
+            position: "absolute",
+            right: -36,
+            bottom: -72,
+            display: "flex",
+            fontSize: 400,
+            fontWeight: 200,
+            fontStyle: "italic",
+            color: ghostColor,
+            lineHeight: 0.8,
+          }}
+        >
+          {ghost}
+        </div>
+      ) : null}
+      <div
+        style={{
+          display: "flex",
+          flex: 1,
+          flexDirection: "column",
+          justifyContent: "space-between",
+          padding: "56px 64px",
+          position: "relative",
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 }
 
 function homeOgElement(locale: Locale) {
   const dict = getDictionary(locale);
+  const p = dict.plates.identity;
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        background: signalBackground(),
-        padding: "68px 80px",
-        fontFamily: "ui-sans-serif, system-ui, sans-serif",
-      }}
-    >
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        {pageLabel("mxsm.me · 01 · identity")}
+    <OgShell shader="subtle" scrim={0.62} ghost={p.ghostGlyph}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+        <OgTitleBlock rows={p.meta} />
+        <OgGlitchText text={dict.masthead.nameGlitch} size={76} />
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+        {accentRule()}
         <div
           style={{
-            fontSize: 92,
-            fontWeight: 200,
-            letterSpacing: "-0.035em",
-            color: INK,
-            lineHeight: 0.9,
-          }}
-        >
-          Max Ulianov
-        </div>
-        <div
-          style={{
-            fontSize: 28,
+            display: "flex",
+            fontSize: 26,
             fontWeight: 300,
-            color: MUTED,
-            letterSpacing: "-0.01em",
             lineHeight: 1.35,
-            maxWidth: 800,
-            marginTop: 4,
+            color: OG.inkMuted,
+            maxWidth: 820,
+            letterSpacing: "-0.01em",
           }}
         >
           {dict.meta.ogDescription}
         </div>
+        {footer()}
       </div>
-      {footer()}
-    </div>
+    </OgShell>
   );
 }
 
 function aboutOgElement(locale: Locale) {
   const content = getAboutContent(locale);
+  const plate = content.plate;
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        background: signalBackground(),
-        padding: "68px 80px",
-        fontFamily: "ui-sans-serif, system-ui, sans-serif",
-      }}
-    >
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        {pageLabel("mxsm.me · / about")}
+    <OgShell shader="subtle" scrim={0.62}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+        <OgTitleBlock rows={plate.rows} />
+        <OgGlitchText text={plate.headingGlitch} size={68} lowercase />
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+        {accentRule()}
         <div
           style={{
-            fontSize: 80,
-            fontWeight: 200,
-            letterSpacing: "-0.035em",
-            color: INK,
-            lineHeight: 0.9,
-          }}
-        >
-          Max Ulianov
-        </div>
-        <div
-          style={{
-            fontSize: 28,
+            display: "flex",
+            fontSize: 26,
             fontWeight: 300,
-            color: MUTED,
-            letterSpacing: "-0.01em",
             lineHeight: 1.35,
+            color: OG.inkMuted,
             maxWidth: 820,
-            marginTop: 4,
+            letterSpacing: "-0.01em",
           }}
         >
           {content.meta.ogDescription}
         </div>
+        {footer()}
       </div>
-      {footer()}
-    </div>
+    </OgShell>
   );
 }
 
 function signalOgElement(locale: Locale) {
   const dict = getDictionary(locale);
-  const [line1, line2, line3] = dict.plates.signal.quote;
+  const p = dict.plates.signal;
+  const [line1, line2, line3] = p.quote;
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        background: signalBackground(),
-        padding: "68px 80px",
-        fontFamily: "ui-sans-serif, system-ui, sans-serif",
-      }}
-    >
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        {pageLabel("mxsm.me · 05 · signal")}
-        <div
-          style={{
-            fontSize: 72,
-            fontWeight: 200,
-            letterSpacing: "-0.03em",
-            color: INK,
-            lineHeight: 0.9,
-          }}
-        >
-          mxsm / signal
-        </div>
+    <OgShell shader="full" scrim={0.28} inverted>
+      <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+        <OgTitleBlock rows={p.meta} inverted />
+        <OgGlitchText text={p.headingGlitch} size={64} inverted lowercase />
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {[
-          { text: line1, opacity: 0.85 },
-          { text: line2, opacity: 0.5 },
-          { text: line3, opacity: 0.25 },
+          { text: line1, opacity: 1 },
+          { text: line2, opacity: 0.55 },
+          { text: line3, opacity: 0.32 },
         ].map(({ text, opacity }) => (
           <div
             key={text}
             style={{
-              fontSize: 34,
+              display: "flex",
+              fontSize: 36,
               fontWeight: 200,
-              color: INK,
-              lineHeight: 1.25,
               fontStyle: "italic",
+              lineHeight: 1.2,
               letterSpacing: "-0.015em",
+              color: OG.bg,
               opacity,
             }}
           >
             {text}
           </div>
         ))}
-        <div style={{ marginTop: 20, display: "flex" }}>{footer()}</div>
+        <div style={{ display: "flex", marginTop: 16 }}>{footer(true)}</div>
       </div>
-    </div>
+    </OgShell>
   );
 }
 
