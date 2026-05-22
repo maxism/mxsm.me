@@ -13,11 +13,7 @@ type PageProps = {
 export async function generateMetadata({ params }: PageProps) {
   const locale = await resolveLocale(params);
   const dict = getDictionary(locale);
-  const { canonical, languages } = pageAlternates(
-    locale,
-    "/signal",
-    "/en/signal",
-  );
+  const { canonical, languages } = pageAlternates(locale, "/signal", "/en/signal");
 
   return buildPageMetadata({
     locale,
@@ -39,9 +35,7 @@ export default async function SignalPage({ params }: PageProps) {
 
   return (
     <>
-      <JsonLd
-        data={[creativeWorkJsonLd(locale), signalBreadcrumbJsonLd(locale)]}
-      />
+      <JsonLd data={[creativeWorkJsonLd(locale), signalBreadcrumbJsonLd(locale)]} />
       <SignalSeoFallback content={dict.signalPage.seo} />
       <SignalExperience
         backHref={locale === "ru" ? "/" : "/en"}

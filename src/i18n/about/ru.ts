@@ -5,8 +5,7 @@ export const aboutRu: AboutContent = {
     title: "Макс Ульянов — about · CTO MTS.ai",
     description:
       "Макс Ульянов: CTO MTS.ai, со-основатель Untitled Team, подкаст Шитбастардс, mxsm/signal. Москва. 15+ лет в инжиниринге и оргстроительстве.",
-    ogDescription:
-      "развёрнутый чертёж: кто, чем занят, откуда пришёл. без linkedin-лексики.",
+    ogDescription: "развёрнутый чертёж: кто, чем занят, откуда пришёл. без linkedin-лексики.",
   },
   plate: {
     rows: [

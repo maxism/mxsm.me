@@ -42,9 +42,7 @@ export function TimePalette() {
     const tick = () => {
       if (document.getElementById("dust")?.dataset.ready === "1") return;
       const p =
-        typeof window !== "undefined" && window.mxsmPalette
-          ? window.mxsmPalette.at()
-          : paletteAt();
+        typeof window !== "undefined" && window.mxsmPalette ? window.mxsmPalette.at() : paletteAt();
       applyPalette(p);
     };
 

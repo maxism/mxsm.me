@@ -20,7 +20,10 @@ function personOgImage(locale: Locale): string {
 }
 
 function stripHtml(raw: string): string {
-  return raw.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  return raw
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 type BreadcrumbItem = {
@@ -40,11 +43,11 @@ export function personJsonLd(locale: Locale) {
     url: localeAbsoluteUrl(locale),
     description: about.meta.description,
     image: {
-    "@type": "ImageObject",
-    url: personOgImage(locale),
-    width: OG_SIZE.width,
-    height: OG_SIZE.height,
-  },
+      "@type": "ImageObject",
+      url: personOgImage(locale),
+      width: OG_SIZE.width,
+      height: OG_SIZE.height,
+    },
     jobTitle: "Chief Technology Officer",
     address: {
       "@type": "PostalAddress",
@@ -138,9 +141,7 @@ export function podcastEpisodeJsonLd(episodes: readonly Episode[]) {
             },
           }
         : {}),
-      ...(episode.durationSec > 0
-        ? { duration: `PT${episode.durationSec}S` }
-        : {}),
+      ...(episode.durationSec > 0 ? { duration: `PT${episode.durationSec}S` } : {}),
       partOfSeries: {
         "@type": "PodcastSeries",
         name: "ШИТБАСТАРДС",
@@ -180,14 +181,7 @@ export function creativeWorkJsonLd(locale: Locale) {
     description: dict.signalPage.description,
     inLanguage: locale === "ru" ? "ru-RU" : "en-US",
     creator: { "@id": PERSON_ID },
-    keywords: [
-      "generative art",
-      "WebGL",
-      "Web Audio",
-      "mxsm",
-      "signal",
-      "Max Ulianov",
-    ],
+    keywords: ["generative art", "WebGL", "Web Audio", "mxsm", "signal", "Max Ulianov"],
     dateCreated: "2025-01-01",
     isPartOf: { "@id": WEBSITE_ID },
   };

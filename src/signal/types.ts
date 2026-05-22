@@ -57,19 +57,8 @@ export type AudioSystem = {
 
 export type TextLayer = {
   trigger: (phrase: string, intensity: number, now: number) => void;
-  update: (
-    dt: number,
-    now: number,
-    depth: number,
-    meaningPulse: number,
-  ) => void;
-  draw: (
-    ctx: CanvasRenderingContext2D,
-    w: number,
-    h: number,
-    now: number,
-    depth: number,
-  ) => void;
+  update: (dt: number, now: number, depth: number, meaningPulse: number) => void;
+  draw: (ctx: CanvasRenderingContext2D, w: number, h: number, now: number, depth: number) => void;
 };
 
 export type SignalRuntimeModule = {

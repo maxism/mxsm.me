@@ -237,7 +237,7 @@ function compile(gl, type, src) {
   gl.shaderSource(sh, src);
   gl.compileShader(sh);
   if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
-    console.error('[Cracks] Shader:', gl.getShaderInfoLog(sh));
+    console.error("[Cracks] Shader:", gl.getShaderInfoLog(sh));
     gl.deleteShader(sh);
     return null;
   }
@@ -250,7 +250,7 @@ function link(gl, vs, fs) {
   gl.attachShader(p, fs);
   gl.linkProgram(p);
   if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
-    console.error('[Cracks] Link:', gl.getProgramInfoLog(p));
+    console.error("[Cracks] Link:", gl.getProgramInfoLog(p));
     gl.deleteProgram(p);
     return null;
   }
@@ -259,18 +259,18 @@ function link(gl, vs, fs) {
 
 /* ── Factory ─────────────────────────────────────────────────────────────── */
 export default function createVisualCracks(canvas) {
-  const gl = canvas.getContext('webgl2', {
+  const gl = canvas.getContext("webgl2", {
     alpha: true,
     antialias: false,
     premultipliedAlpha: false,
-    powerPreference: 'high-performance',
+    powerPreference: "high-performance",
   });
   if (!gl) {
-    console.error('[Cracks] WebGL2 required');
+    console.error("[Cracks] WebGL2 required");
     return { resize() {}, draw() {} };
   }
 
-  const vsQ  = compile(gl, gl.VERTEX_SHADER,   VS_QUAD);
+  const vsQ = compile(gl, gl.VERTEX_SHADER, VS_QUAD);
   const fsWL = compile(gl, gl.FRAGMENT_SHADER, FS_WALL);
   const fsPO = compile(gl, gl.FRAGMENT_SHADER, FS_POST);
   if (!vsQ || !fsWL || !fsPO) return { resize() {}, draw() {} };
@@ -281,14 +281,17 @@ export default function createVisualCracks(canvas) {
 
   const quad = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, quad);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
 
   /* ── Scene FBO (full resolution) ─────────────────────────────────────── */
-  let texWall = null, fboWall = null, CW = 0, CH = 0;
+  let texWall = null,
+    fboWall = null,
+    CW = 0,
+    CH = 0;
 
   function initFBO(w, h) {
-    if (texWall)  gl.deleteTexture(texWall);
-    if (fboWall)  gl.deleteFramebuffer(fboWall);
+    if (texWall) gl.deleteTexture(texWall);
+    if (fboWall) gl.deleteFramebuffer(fboWall);
     texWall = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texWall);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
@@ -298,25 +301,24 @@ export default function createVisualCracks(canvas) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     fboWall = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, fboWall);
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0,
-                            gl.TEXTURE_2D, texWall, 0);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texWall, 0);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   }
 
   /* ── Uniforms WALL ────────────────────────────────────────────────────── */
-  const uWRes  = gl.getUniformLocation(progWall, 'uRes');
-  const uWTime = gl.getUniformLocation(progWall, 'uTime');
-  const uWPtr  = gl.getUniformLocation(progWall, 'uPointer');
-  const uWAge  = gl.getUniformLocation(progWall, 'uCrackAge');
-  const uWPls  = gl.getUniformLocation(progWall, 'uPulse');
-  const uWLPh  = gl.getUniformLocation(progWall, 'uLightPhase');
-  const uWCold = gl.getUniformLocation(progWall, 'uColdness');
-  const uWWarm = gl.getUniformLocation(progWall, 'uWarmth');
+  const uWRes = gl.getUniformLocation(progWall, "uRes");
+  const uWTime = gl.getUniformLocation(progWall, "uTime");
+  const uWPtr = gl.getUniformLocation(progWall, "uPointer");
+  const uWAge = gl.getUniformLocation(progWall, "uCrackAge");
+  const uWPls = gl.getUniformLocation(progWall, "uPulse");
+  const uWLPh = gl.getUniformLocation(progWall, "uLightPhase");
+  const uWCold = gl.getUniformLocation(progWall, "uColdness");
+  const uWWarm = gl.getUniformLocation(progWall, "uWarmth");
 
   /* ── Uniforms POST ────────────────────────────────────────────────────── */
-  const uPScn  = gl.getUniformLocation(progPost, 'uScene');
-  const uPRes  = gl.getUniformLocation(progPost, 'uRes');
-  const uPFlsh = gl.getUniformLocation(progPost, 'uFlash');
+  const uPScn = gl.getUniformLocation(progPost, "uScene");
+  const uPRes = gl.getUniformLocation(progPost, "uRes");
+  const uPFlsh = gl.getUniformLocation(progPost, "uFlash");
 
   function bindQuad() {
     gl.bindBuffer(gl.ARRAY_BUFFER, quad);
@@ -326,23 +328,25 @@ export default function createVisualCracks(canvas) {
 
   return {
     resize(width, height) {
-      const w = canvas.width, h = canvas.height;
+      const w = canvas.width,
+        h = canvas.height;
       if (w !== CW || h !== CH) {
-        CW = w; CH = h;
+        CW = w;
+        CH = h;
         if (CW > 0 && CH > 0) initFBO(CW, CH);
       }
     },
 
     draw({
-      time       = 0,
-      pointerX   = 0.5,
-      pointerY   = 0.5,
-      crackAge   = 0,
-      pulse      = 0,
+      time = 0,
+      pointerX = 0.5,
+      pointerY = 0.5,
+      crackAge = 0,
+      pulse = 0,
       lightPhase = 0,
-      coldness   = 0,
-      warmth     = 0,
-      flash      = 0,
+      coldness = 0,
+      warmth = 0,
+      flash = 0,
     }) {
       if (!texWall || CW === 0 || CH === 0) return;
 
@@ -356,12 +360,12 @@ export default function createVisualCracks(canvas) {
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.useProgram(progWall);
       bindQuad();
-      gl.uniform2f(uWRes,  CW, CH);
+      gl.uniform2f(uWRes, CW, CH);
       gl.uniform1f(uWTime, time);
-      gl.uniform2f(uWPtr,  pointerX, pointerY);
-      gl.uniform1f(uWAge,  crackAge);
-      gl.uniform1f(uWPls,  pulse);
-      gl.uniform1f(uWLPh,  lightPhase);
+      gl.uniform2f(uWPtr, pointerX, pointerY);
+      gl.uniform1f(uWAge, crackAge);
+      gl.uniform1f(uWPls, pulse);
+      gl.uniform1f(uWLPh, lightPhase);
       gl.uniform1f(uWCold, coldness);
       gl.uniform1f(uWWarm, warmth);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);

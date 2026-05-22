@@ -43,8 +43,7 @@
       return;
     }
 
-    var VERT =
-      "attribute vec2 p; void main() { gl_Position = vec4(p, 0.0, 1.0); }";
+    var VERT = "attribute vec2 p; void main() { gl_Position = vec4(p, 0.0, 1.0); }";
     var FRAG =
       "precision highp float;\n" +
       "uniform vec2 u_res;\n" +
@@ -124,11 +123,7 @@
 
     var buf = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
-      gl.STATIC_DRAW,
-    );
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
     var loc = gl.getAttribLocation(prog, "p");
     gl.enableVertexAttribArray(loc);
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
@@ -173,10 +168,7 @@
 
     var scrollAmt = 0;
     onScroll = function updateScroll() {
-      var max = Math.max(
-        1,
-        document.documentElement.scrollHeight - global.innerHeight,
-      );
+      var max = Math.max(1, document.documentElement.scrollHeight - global.innerHeight);
       scrollAmt = Math.min(1, global.scrollY / max);
     };
     global.addEventListener("scroll", onScroll, { passive: true });
@@ -185,16 +177,11 @@
 
     function applyPal(pal) {
       if (global.mxsmPalette) global.mxsmPalette.applyCss(pal);
-      if (uBgLo)
-        gl.uniform3f(uBgLo, pal.dustBgLo[0], pal.dustBgLo[1], pal.dustBgLo[2]);
-      if (uBgHi)
-        gl.uniform3f(uBgHi, pal.dustBgHi[0], pal.dustBgHi[1], pal.dustBgHi[2]);
-      if (uWarm)
-        gl.uniform3f(uWarm, pal.dustWarm[0], pal.dustWarm[1], pal.dustWarm[2]);
-      if (uMote)
-        gl.uniform3f(uMote, pal.dustMote[0], pal.dustMote[1], pal.dustMote[2]);
-      if (uGlow)
-        gl.uniform3f(uGlow, pal.dustGlow[0], pal.dustGlow[1], pal.dustGlow[2]);
+      if (uBgLo) gl.uniform3f(uBgLo, pal.dustBgLo[0], pal.dustBgLo[1], pal.dustBgLo[2]);
+      if (uBgHi) gl.uniform3f(uBgHi, pal.dustBgHi[0], pal.dustBgHi[1], pal.dustBgHi[2]);
+      if (uWarm) gl.uniform3f(uWarm, pal.dustWarm[0], pal.dustWarm[1], pal.dustWarm[2]);
+      if (uMote) gl.uniform3f(uMote, pal.dustMote[0], pal.dustMote[1], pal.dustMote[2]);
+      if (uGlow) gl.uniform3f(uGlow, pal.dustGlow[0], pal.dustGlow[1], pal.dustGlow[2]);
     }
 
     function tick() {

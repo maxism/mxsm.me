@@ -14,11 +14,7 @@ export function PlatePodcast({ dict, podcast }: PlatePodcastProps) {
   const { episodes, meta, ticker, foot } = podcast;
 
   return (
-    <section
-      className="plate plate-broadcast"
-      id="plate-04"
-      aria-labelledby="h-04"
-    >
+    <section className="plate plate-broadcast" id="plate-04" aria-labelledby="h-04">
       <div className="ticker" aria-hidden="true">
         <div className="ticker-track">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -45,11 +41,7 @@ export function PlatePodcast({ dict, podcast }: PlatePodcastProps) {
           <span className="ghost-glyph small" aria-hidden="true">
             {p.ghostGlyph}
           </span>
-          <a
-            className="pod-cta"
-            href={SHITBUSTARDS_ORIGIN}
-            rel="noopener noreferrer"
-          >
+          <a className="pod-cta" href={SHITBUSTARDS_ORIGIN} rel="noopener noreferrer">
             shitbustards.ru&nbsp;↗
           </a>
           <ul className="pod-plat">

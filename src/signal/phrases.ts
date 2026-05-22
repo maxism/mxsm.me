@@ -180,11 +180,7 @@ const RU_BANK: SignalPhraseBank = {
   MAX_PHRASES,
   EVENT_4823,
   ORACLE_NOTES,
-  getPhraseRegister: createPhraseRegister(
-    ABYSS_PHRASES,
-    THRESHOLD_PHRASES,
-    MAX_PHRASES,
-  ),
+  getPhraseRegister: createPhraseRegister(ABYSS_PHRASES, THRESHOLD_PHRASES, MAX_PHRASES),
 };
 
 const EN_BANK: SignalPhraseBank = {
@@ -193,11 +189,7 @@ const EN_BANK: SignalPhraseBank = {
   MAX_PHRASES: en.MAX_PHRASES,
   EVENT_4823: en.EVENT_4823,
   ORACLE_NOTES: en.ORACLE_NOTES,
-  getPhraseRegister: createPhraseRegister(
-    en.ABYSS_PHRASES,
-    en.THRESHOLD_PHRASES,
-    en.MAX_PHRASES,
-  ),
+  getPhraseRegister: createPhraseRegister(en.ABYSS_PHRASES, en.THRESHOLD_PHRASES, en.MAX_PHRASES),
 };
 
 export function getSignalPhraseBank(locale: Locale): SignalPhraseBank {

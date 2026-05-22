@@ -27,9 +27,7 @@ export function middleware(request: NextRequest) {
   }
 
   const rewritePath =
-    pathnameWithoutLocale === "/"
-      ? `/${locale}`
-      : `/${locale}${pathnameWithoutLocale}`;
+    pathnameWithoutLocale === "/" ? `/${locale}` : `/${locale}${pathnameWithoutLocale}`;
 
   const url = request.nextUrl.clone();
   url.pathname = rewritePath;
@@ -38,8 +36,7 @@ export function middleware(request: NextRequest) {
   response.headers.set("x-mxsm-locale", locale);
 
   const isSignalPath =
-    pathnameWithoutLocale === "/signal" ||
-    pathnameWithoutLocale.startsWith("/signal/");
+    pathnameWithoutLocale === "/signal" || pathnameWithoutLocale.startsWith("/signal/");
 
   if (isSignalPath && request.nextUrl.searchParams.has("seed")) {
     response.headers.set("X-Robots-Tag", "noindex, follow");

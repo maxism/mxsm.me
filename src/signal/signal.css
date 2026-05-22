@@ -42,11 +42,7 @@
   display: flex;
   padding: 14px 18px;
   pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.72) 0%,
-    transparent 100%
-  );
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.72) 0%, transparent 100%);
 }
 
 .signal-exit a {
@@ -59,7 +55,9 @@
   text-decoration: none;
   padding: 6px 10px;
   border: 1px solid rgba(232, 226, 210, 0.12);
-  transition: color 0.15s, border-color 0.15s;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
 }
 
 .signal-exit a:hover {

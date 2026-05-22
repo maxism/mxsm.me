@@ -11,12 +11,7 @@ export function PlateCurrently({ dict }: PlateCurrentlyProps) {
 
   return (
     <section className="plate" id="plate-02" aria-labelledby="h-02">
-      <PlateHead
-        rows={p.meta}
-        title={p.heading}
-        titleGlitch={p.headingGlitch}
-        titleId="h-02"
-      />
+      <PlateHead rows={p.meta} title={p.heading} titleGlitch={p.headingGlitch} titleId="h-02" />
 
       <div className="roles">
         {p.roles.map((role) => (

@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildAboutMarkdown,
-  buildHomeText,
-  buildLlmsFullTxt,
-  buildLlmsTxt,
-} from "@/lib/seo/llms";
+import { buildAboutMarkdown, buildHomeText, buildLlmsFullTxt, buildLlmsTxt } from "@/lib/seo/llms";
 
 describe("llms exports", () => {
   it("buildLlmsTxt links machine-readable exports", () => {

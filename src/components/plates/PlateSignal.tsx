@@ -13,11 +13,7 @@ export function PlateSignal({ dict, locale }: PlateSignalProps) {
   const href = localeSignalPath(locale);
 
   return (
-    <section
-      className="plate plate-inverted plate-signal"
-      id="plate-05"
-      aria-labelledby="h-05"
-    >
+    <section className="plate plate-inverted plate-signal" id="plate-05" aria-labelledby="h-05">
       <div className="sig-stage">
         <SignalPlateVisual href={href} ctaHint={p.ctaHint} />
         <div className="sig-stage-ui">

@@ -12,11 +12,7 @@ export type PodcastListEpisode = {
 
 export const LIST_LIMIT = 6;
 
-function formatEpisodeMeta(
-  date: Date,
-  durationSec: number,
-  locale: Locale,
-): string {
+function formatEpisodeMeta(date: Date, durationSec: number, locale: Locale): string {
   const localeTag = locale === "ru" ? "ru-RU" : "en-US";
   const month = date
     .toLocaleDateString(localeTag, { month: "short" })
@@ -28,9 +24,7 @@ function formatEpisodeMeta(
 }
 
 function sortNewestFirst(episodes: Episode[]): Episode[] {
-  return [...episodes].sort(
-    (a, b) => b.publishDate.getTime() - a.publishDate.getTime(),
-  );
+  return [...episodes].sort((a, b) => b.publishDate.getTime() - a.publishDate.getTime());
 }
 
 export function toPodcastListEpisodes(
@@ -38,11 +32,12 @@ export function toPodcastListEpisodes(
   locale: Locale,
   limit = LIST_LIMIT,
 ): PodcastListEpisode[] {
-  return sortNewestFirst(episodes).slice(0, limit).map((ep, i) => ({
-    n: `/${String(i + 1).padStart(2, "0")}`,
-    title: ep.title,
-    meta: formatEpisodeMeta(ep.publishDate, ep.durationSec, locale),
-    href: `${SHITBUSTARDS_ORIGIN}/episodes/${generateSlug(ep)}`,
-  }));
+  return sortNewestFirst(episodes)
+    .slice(0, limit)
+    .map((ep, i) => ({
+      n: `/${String(i + 1).padStart(2, "0")}`,
+      title: ep.title,
+      meta: formatEpisodeMeta(ep.publishDate, ep.durationSec, locale),
+      href: `${SHITBUSTARDS_ORIGIN}/episodes/${generateSlug(ep)}`,
+    }));
 }
-

@@ -5,8 +5,7 @@ export const aboutEn: AboutContent = {
     title: "Max Ulianov — about · CTO @ MTS.ai",
     description:
       "Max Ulianov: CTO at MTS.ai, co-founder of Untitled Team, SHITBUSTARDS podcast, mxsm/signal. Moscow. 15+ years in engineering and org building.",
-    ogDescription:
-      "expanded blueprint: who, what, where from. no linkedin voice.",
+    ogDescription: "expanded blueprint: who, what, where from. no linkedin voice.",
   },
   plate: {
     rows: [

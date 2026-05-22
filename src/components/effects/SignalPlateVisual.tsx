@@ -3,10 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { getLivePalette } from "@/lib/time-palette";
-import {
-  SIGNAL_PLATE_FS,
-  SIGNAL_PLATE_VS,
-} from "@/lib/signal-plate-shader";
+import { SIGNAL_PLATE_FS, SIGNAL_PLATE_VS } from "@/lib/signal-plate-shader";
 import { createProgram } from "@/lib/webgl/create-program";
 import { bindFullscreenQuad } from "@/lib/webgl/fullscreen-quad";
 
@@ -19,14 +16,10 @@ type SignalPlateVisualProps = {
 
 export function SignalPlateVisual({ href, ctaHint }: SignalPlateVisualProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [seed] = useState(
-    () => Math.floor(Math.random() * 2147483646) + 1,
-  );
+  const [seed] = useState(() => Math.floor(Math.random() * 2147483646) + 1);
 
   useEffect(() => {
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const glOpts = {
       alpha: true,
@@ -131,11 +124,7 @@ export function SignalPlateVisual({ href, ctaHint }: SignalPlateVisualProps) {
 
   return (
     <>
-      <canvas
-        ref={canvasRef}
-        className="sig-stage-canvas"
-        aria-hidden="true"
-      />
+      <canvas ref={canvasRef} className="sig-stage-canvas" aria-hidden="true" />
       <Link
         href={href}
         className="sig-stage-hit"

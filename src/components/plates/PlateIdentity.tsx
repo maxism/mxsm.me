@@ -18,7 +18,8 @@ export function PlateIdentity({ dict, locale }: PlateIdentityProps) {
 
       <h1 className="mono" id="h-01">
         <GlitchText as="span" text={dict.masthead.nameGlitch} className="mono-lat">
-          {dict.masthead.name}<span className="comma">,</span>
+          {dict.masthead.name}
+          <span className="comma">,</span>
         </GlitchText>
         <span className="bio">
           {p.bio}

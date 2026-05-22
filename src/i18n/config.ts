@@ -9,9 +9,7 @@ export function isLocale(value: string): value is Locale {
   return locales.includes(value as Locale);
 }
 
-export async function resolveLocale(
-  params: Promise<{ locale: string }>,
-): Promise<Locale> {
+export async function resolveLocale(params: Promise<{ locale: string }>): Promise<Locale> {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   return locale;

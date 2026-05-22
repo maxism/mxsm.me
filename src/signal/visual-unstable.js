@@ -11,15 +11,15 @@
  */
 /* exported as ES module — see src/main.js */
 
-  /* ── Quad VS ─────────────────────────────────────────────────────────────── */
-  const VS_QUAD = `#version 300 es
+/* ── Quad VS ─────────────────────────────────────────────────────────────── */
+const VS_QUAD = `#version 300 es
     layout(location=0) in vec2 aPos;
     out vec2 vUv;
     void main(){ vUv=aPos*0.5+0.5; gl_Position=vec4(aPos,0.0,1.0); }
   `;
 
-  /* ── PASS 1: Gray-Scott RD ───────────────────────────────────────────────── */
-  const FS_RD = `#version 300 es
+/* ── PASS 1: Gray-Scott RD ───────────────────────────────────────────────── */
+const FS_RD = `#version 300 es
     precision highp float;
     in vec2 vUv;
     uniform sampler2D uPrev;
@@ -48,8 +48,8 @@
     }
   `;
 
-  /* ── PASS 2: Нестабильный тоннель ────────────────────────────────────────── */
-  const FS_SCENE = `#version 300 es
+/* ── PASS 2: Нестабильный тоннель ────────────────────────────────────────── */
+const FS_SCENE = `#version 300 es
     precision highp float;
     in vec2 vUv;
     uniform vec2  uRes;
@@ -371,8 +371,8 @@
     }
   `;
 
-  /* ── PASS 3: POST — bloom + glitch ──────────────────────────────────────── */
-  const FS_POST = `#version 300 es
+/* ── PASS 3: POST — bloom + glitch ──────────────────────────────────────── */
+const FS_POST = `#version 300 es
     precision highp float;
     in vec2 vUv;
     uniform sampler2D uScene;
@@ -444,294 +444,329 @@
     }
   `;
 
-  /* ── Helpers ─────────────────────────────────────────────────────────────── */
-  function compile(gl, type, src) {
-    const sh = gl.createShader(type);
-    gl.shaderSource(sh, src); gl.compileShader(sh);
-    if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
-      console.error("[Unstable] Shader:", gl.getShaderInfoLog(sh));
-      gl.deleteShader(sh); return null;
-    }
-    return sh;
+/* ── Helpers ─────────────────────────────────────────────────────────────── */
+function compile(gl, type, src) {
+  const sh = gl.createShader(type);
+  gl.shaderSource(sh, src);
+  gl.compileShader(sh);
+  if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+    console.error("[Unstable] Shader:", gl.getShaderInfoLog(sh));
+    gl.deleteShader(sh);
+    return null;
   }
-  function link(gl, vs, fs) {
-    const p = gl.createProgram();
-    gl.attachShader(p,vs); gl.attachShader(p,fs); gl.linkProgram(p);
-    if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
-      console.error("[Unstable] Link:", gl.getProgramInfoLog(p));
-      gl.deleteProgram(p); return null;
-    }
-    return p;
+  return sh;
+}
+function link(gl, vs, fs) {
+  const p = gl.createProgram();
+  gl.attachShader(p, vs);
+  gl.attachShader(p, fs);
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+    console.error("[Unstable] Link:", gl.getProgramInfoLog(p));
+    gl.deleteProgram(p);
+    return null;
   }
+  return p;
+}
 
-  /* ── Сцены ───────────────────────────────────────────────────────────────── */
-  // instability: насколько сломан тоннель [0..1]
-  // voidBlend:   насколько сильна прямая RD-визуализация [0..1]
-  // glitch:      POST-глитч [0..1]
-  const SCENES = [
-    { name: "NORMAL",   durMin:  9, durMax: 22, instability: 0.04, voidBlend: 0.00, glitch: 0.03 },
-    { name: "BREAKING", durMin:  5, durMax: 13, instability: 0.52, voidBlend: 0.04, glitch: 0.28 },
-    { name: "VOID",     durMin:  6, durMax: 18, instability: 0.28, voidBlend: 0.58, glitch: 0.10 },
-    { name: "REFORM",   durMin:  3, durMax:  9, instability: 0.18, voidBlend: 0.04, glitch: 0.16 },
-  ];
-  function randDur(sc) { return sc.durMin + Math.random() * (sc.durMax - sc.durMin); }
+/* ── Сцены ───────────────────────────────────────────────────────────────── */
+// instability: насколько сломан тоннель [0..1]
+// voidBlend:   насколько сильна прямая RD-визуализация [0..1]
+// glitch:      POST-глитч [0..1]
+const SCENES = [
+  { name: "NORMAL", durMin: 9, durMax: 22, instability: 0.04, voidBlend: 0.0, glitch: 0.03 },
+  { name: "BREAKING", durMin: 5, durMax: 13, instability: 0.52, voidBlend: 0.04, glitch: 0.28 },
+  { name: "VOID", durMin: 6, durMax: 18, instability: 0.28, voidBlend: 0.58, glitch: 0.1 },
+  { name: "REFORM", durMin: 3, durMax: 9, instability: 0.18, voidBlend: 0.04, glitch: 0.16 },
+];
+function randDur(sc) {
+  return sc.durMin + Math.random() * (sc.durMax - sc.durMin);
+}
 
-  /* ── Factory ─────────────────────────────────────────────────────────────── */
+/* ── Factory ─────────────────────────────────────────────────────────────── */
 export default function createVisualUnstable(canvas) {
-    const gl = canvas.getContext("webgl2", {
-      alpha: true, antialias: false,
-      premultipliedAlpha: false,
-      powerPreference: "high-performance",
-    });
-    if (!gl) { console.error("[Unstable] WebGL2 required"); return { resize(){}, draw(){} }; }
+  const gl = canvas.getContext("webgl2", {
+    alpha: true,
+    antialias: false,
+    premultipliedAlpha: false,
+    powerPreference: "high-performance",
+  });
+  if (!gl) {
+    console.error("[Unstable] WebGL2 required");
+    return { resize() {}, draw() {} };
+  }
 
-    const extF = gl.getExtension("EXT_color_buffer_float");
-    const hasFloat = !!extF;
-    if (!hasFloat) console.warn("[Unstable] Float FBO unavailable — RD disabled");
+  const extF = gl.getExtension("EXT_color_buffer_float");
+  const hasFloat = !!extF;
+  if (!hasFloat) console.warn("[Unstable] Float FBO unavailable — RD disabled");
 
-    const TEX_INT  = hasFloat ? gl.RGBA32F : gl.RGBA8;
-    const TEX_TYPE = hasFloat ? gl.FLOAT   : gl.UNSIGNED_BYTE;
+  const TEX_INT = hasFloat ? gl.RGBA32F : gl.RGBA8;
+  const TEX_TYPE = hasFloat ? gl.FLOAT : gl.UNSIGNED_BYTE;
 
-    // Шейдеры
-    const vsQ  = compile(gl, gl.VERTEX_SHADER,   VS_QUAD);
-    const fsRD = compile(gl, gl.FRAGMENT_SHADER, FS_RD);
-    const fsSC = compile(gl, gl.FRAGMENT_SHADER, FS_SCENE);
-    const fsPO = compile(gl, gl.FRAGMENT_SHADER, FS_POST);
-    if (!vsQ || !fsRD || !fsSC || !fsPO) return { resize(){}, draw(){} };
+  // Шейдеры
+  const vsQ = compile(gl, gl.VERTEX_SHADER, VS_QUAD);
+  const fsRD = compile(gl, gl.FRAGMENT_SHADER, FS_RD);
+  const fsSC = compile(gl, gl.FRAGMENT_SHADER, FS_SCENE);
+  const fsPO = compile(gl, gl.FRAGMENT_SHADER, FS_POST);
+  if (!vsQ || !fsRD || !fsSC || !fsPO) return { resize() {}, draw() {} };
 
-    const progRD    = link(gl, vsQ, fsRD);
-    const progScene = link(gl, vsQ, fsSC);
-    const progPost  = link(gl, vsQ, fsPO);
-    if (!progRD || !progScene || !progPost) return { resize(){}, draw(){} };
+  const progRD = link(gl, vsQ, fsRD);
+  const progScene = link(gl, vsQ, fsSC);
+  const progPost = link(gl, vsQ, fsPO);
+  if (!progRD || !progScene || !progPost) return { resize() {}, draw() {} };
 
-    // Quad
-    const quad = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, quad);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+  // Quad
+  const quad = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
 
-    // ── RD ping-pong ────────────────────────────────────────────────────────
-    const RD_SIDE = 320;
+  // ── RD ping-pong ────────────────────────────────────────────────────────
+  const RD_SIDE = 320;
 
-    function makeRDTex() {
-      const t = gl.createTexture();
-      gl.bindTexture(gl.TEXTURE_2D, t);
-      if (hasFloat) {
-        const d = new Float32Array(RD_SIDE * RD_SIDE * 4);
-        for (let i = 0; i < RD_SIDE * RD_SIDE; i++) {
-          const x = (i % RD_SIDE) / RD_SIDE;
-          const y = Math.floor(i / RD_SIDE) / RD_SIDE;
-          const n = Math.random() * 0.015;
-          d[i*4]   = 1.0;
-          d[i*4+1] = (x-0.5)*(y-0.5) > 0.0 ? 0.32+n : n;
-          d[i*4+2] = 0; d[i*4+3] = 1;
-        }
-        gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA32F,RD_SIDE,RD_SIDE,0,gl.RGBA,gl.FLOAT,d);
-      } else {
-        const d = new Uint8Array(RD_SIDE * RD_SIDE * 4);
-        for (let i = 0; i < RD_SIDE * RD_SIDE; i++) {
-          const x = (i % RD_SIDE) / RD_SIDE;
-          const y = Math.floor(i / RD_SIDE) / RD_SIDE;
-          d[i*4]=255; d[i*4+1]=(x-0.5)*(y-0.5)>0.0?90:0; d[i*4+2]=0; d[i*4+3]=255;
-        }
-        gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA8,RD_SIDE,RD_SIDE,0,gl.RGBA,gl.UNSIGNED_BYTE,d);
+  function makeRDTex() {
+    const t = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, t);
+    if (hasFloat) {
+      const d = new Float32Array(RD_SIDE * RD_SIDE * 4);
+      for (let i = 0; i < RD_SIDE * RD_SIDE; i++) {
+        const x = (i % RD_SIDE) / RD_SIDE;
+        const y = Math.floor(i / RD_SIDE) / RD_SIDE;
+        const n = Math.random() * 0.015;
+        d[i * 4] = 1.0;
+        d[i * 4 + 1] = (x - 0.5) * (y - 0.5) > 0.0 ? 0.32 + n : n;
+        d[i * 4 + 2] = 0;
+        d[i * 4 + 3] = 1;
       }
-      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);
-      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.REPEAT);
-      return t;
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, RD_SIDE, RD_SIDE, 0, gl.RGBA, gl.FLOAT, d);
+    } else {
+      const d = new Uint8Array(RD_SIDE * RD_SIDE * 4);
+      for (let i = 0; i < RD_SIDE * RD_SIDE; i++) {
+        const x = (i % RD_SIDE) / RD_SIDE;
+        const y = Math.floor(i / RD_SIDE) / RD_SIDE;
+        d[i * 4] = 255;
+        d[i * 4 + 1] = (x - 0.5) * (y - 0.5) > 0.0 ? 90 : 0;
+        d[i * 4 + 2] = 0;
+        d[i * 4 + 3] = 255;
+      }
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, RD_SIDE, RD_SIDE, 0, gl.RGBA, gl.UNSIGNED_BYTE, d);
     }
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+    return t;
+  }
 
-    let rdTex = [makeRDTex(), makeRDTex()];
-    let rdFbo = [gl.createFramebuffer(), gl.createFramebuffer()];
-    for (let i = 0; i < 2; i++) {
-      gl.bindFramebuffer(gl.FRAMEBUFFER, rdFbo[i]);
-      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0,
-                              gl.TEXTURE_2D, rdTex[i], 0);
-      if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE)
-        console.warn("[Unstable] RD FBO incomplete");
-    }
-    let rdPing = 0;
+  let rdTex = [makeRDTex(), makeRDTex()];
+  let rdFbo = [gl.createFramebuffer(), gl.createFramebuffer()];
+  for (let i = 0; i < 2; i++) {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, rdFbo[i]);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, rdTex[i], 0);
+    if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE)
+      console.warn("[Unstable] RD FBO incomplete");
+  }
+  let rdPing = 0;
 
-    // ── Scene FBO (half-resolution) ─────────────────────────────────────────
-    // Raymarch рендерится в SW×SH (½ от экрана), POST делает бесплатный bilinear upscale.
-    // Экономия: ~4× пикселей в самом дорогом pass.
-    let texScene = null, fboScene = null, CW = 0, CH = 0, SW = 0, SH = 0;
+  // ── Scene FBO (half-resolution) ─────────────────────────────────────────
+  // Raymarch рендерится в SW×SH (½ от экрана), POST делает бесплатный bilinear upscale.
+  // Экономия: ~4× пикселей в самом дорогом pass.
+  let texScene = null,
+    fboScene = null,
+    CW = 0,
+    CH = 0,
+    SW = 0,
+    SH = 0;
 
-    function initSceneFBO(w, h) {
-      // Полуразрешение, минимум 1 пиксель
-      SW = Math.max(1, w >> 1);
-      SH = Math.max(1, h >> 1);
+  function initSceneFBO(w, h) {
+    // Полуразрешение, минимум 1 пиксель
+    SW = Math.max(1, w >> 1);
+    SH = Math.max(1, h >> 1);
 
-      if (texScene) gl.deleteTexture(texScene);
-      if (fboScene) gl.deleteFramebuffer(fboScene);
-      texScene = gl.createTexture();
-      gl.bindTexture(gl.TEXTURE_2D, texScene);
-      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,SW,SH,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
-      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
-      fboScene = gl.createFramebuffer();
+    if (texScene) gl.deleteTexture(texScene);
+    if (fboScene) gl.deleteFramebuffer(fboScene);
+    texScene = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texScene);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, SW, SH, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    fboScene = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fboScene);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texScene, 0);
+    if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE)
+      console.error("[Unstable] Scene FBO incomplete");
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  }
+
+  // ── Uniforms RD ─────────────────────────────────────────────────────────
+  const uRDPrev = gl.getUniformLocation(progRD, "uPrev");
+  const uRDTexel = gl.getUniformLocation(progRD, "uTexel");
+  const uRDInj = gl.getUniformLocation(progRD, "uInject");
+  const uRDInjS = gl.getUniformLocation(progRD, "uInjectStr");
+  const uRDFeed = gl.getUniformLocation(progRD, "uFeed");
+  const uRDKill = gl.getUniformLocation(progRD, "uKill");
+
+  // ── Uniforms SCENE ──────────────────────────────────────────────────────
+  const uSCRes = gl.getUniformLocation(progScene, "uRes");
+  const uSCTime = gl.getUniformLocation(progScene, "uTime");
+  const uSCMean = gl.getUniformLocation(progScene, "uMeaning");
+  const uSCFlsh = gl.getUniformLocation(progScene, "uFlash");
+  const uSCPtr = gl.getUniformLocation(progScene, "uPointer");
+  const uSCChem = gl.getUniformLocation(progScene, "uChem");
+  const uSCInst = gl.getUniformLocation(progScene, "uInstability");
+  const uSCVoid = gl.getUniformLocation(progScene, "uVoidBlend");
+  const uSCCold = gl.getUniformLocation(progScene, "uColdness");
+  const uSCWarm = gl.getUniformLocation(progScene, "uWarmth");
+  const uSCTunZ = gl.getUniformLocation(progScene, "uTunnelZ");
+  const uSCVoiceM = gl.getUniformLocation(progScene, "uVoiceMode");
+  const uSCEv4823 = gl.getUniformLocation(progScene, "uEvent4823");
+
+  // ── Uniforms POST ───────────────────────────────────────────────────────
+  const uPOScn = gl.getUniformLocation(progPost, "uScene");
+  const uPORes = gl.getUniformLocation(progPost, "uRes");
+  const uPOTime = gl.getUniformLocation(progPost, "uTime");
+  const uPOFlsh = gl.getUniformLocation(progPost, "uFlash");
+  const uPOGlch = gl.getUniformLocation(progPost, "uGlitch");
+
+  // ── State machine ───────────────────────────────────────────────────────
+  let sceneIdx = 0;
+  let sceneTimer = 0;
+  let sceneDur = randDur(SCENES[0]);
+  let prevTime = -1;
+  let instability = 0;
+  let voidBlend = 0;
+  let glitch = 0;
+
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+
+  // Вне draw() — не создаём closure каждый кадр
+  function bindQuad() {
+    gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+  }
+
+  return {
+    resize(width, height) {
+      const w = canvas.width,
+        h = canvas.height;
+      if (w !== CW || h !== CH) {
+        CW = w;
+        CH = h;
+        if (CW > 0 && CH > 0) initSceneFBO(CW, CH);
+      }
+    },
+
+    draw({
+      time,
+      pointerX,
+      pointerY,
+      meaningPulse,
+      meaningFlash,
+      coldness = 0,
+      warmth = 0,
+      tunnelZ,
+      voiceMode = 0,
+      event4823 = 0,
+    }) {
+      if (!texScene || CW === 0 || CH === 0) return;
+
+      // dt
+      const dt = prevTime < 0 ? 0.016 : Math.min(time - prevTime, 0.05);
+      prevTime = time;
+
+      // ── Смена сцен ─────────────────────────────────────────────────────
+      sceneTimer += dt;
+      if (sceneTimer > sceneDur || meaningFlash > 0.75) {
+        sceneIdx = (sceneIdx + 1) % SCENES.length;
+        sceneTimer = 0;
+        sceneDur = randDur(SCENES[sceneIdx]);
+      }
+      const tgt = SCENES[sceneIdx];
+      const spd = dt * 1.2;
+      instability = lerp(instability, tgt.instability, spd);
+      voidBlend = lerp(voidBlend, tgt.voidBlend, spd);
+      glitch = lerp(glitch, tgt.glitch, spd * 1.5);
+      // Вспышки ускоряют нестабильность
+      instability = Math.min(instability + meaningFlash * 0.15, 1.0);
+      glitch = Math.min(glitch + meaningFlash * 0.25, 1.0);
+
+      gl.disable(gl.DEPTH_TEST);
+      gl.disable(gl.BLEND);
+
+      /* ─── PASS 1: RD симуляция ─────────────────────────────────────── */
+      // Кап 6 шагов — визуальная разница с 12 незаметна (паттерн уже зрелый),
+      // а при BREAKING экономия 50% RD-работы именно когда она нужнее всего.
+      const rdSteps = hasFloat ? Math.min(6, 3 + ((instability * 4) | 0)) : 0;
+      if (rdSteps > 0) {
+        gl.useProgram(progRD);
+        bindQuad();
+        // Feed/kill меняются с нестабильностью — более хаотичная химия
+        const feed = 0.055 + instability * 0.008;
+        const kill = 0.062 + instability * 0.005;
+        gl.uniform2f(uRDTexel, 1 / RD_SIDE, 1 / RD_SIDE);
+        gl.uniform2f(uRDInj, pointerX, 1.0 - pointerY);
+        gl.uniform1f(uRDInjS, 0.4 + instability * 1.8 + meaningFlash * 0.6);
+        gl.uniform1f(uRDFeed, feed);
+        gl.uniform1f(uRDKill, kill);
+        for (let s = 0; s < rdSteps; s++) {
+          const read = rdPing,
+            write = 1 - rdPing;
+          gl.bindFramebuffer(gl.FRAMEBUFFER, rdFbo[write]);
+          gl.viewport(0, 0, RD_SIDE, RD_SIDE);
+          gl.activeTexture(gl.TEXTURE0);
+          gl.bindTexture(gl.TEXTURE_2D, rdTex[read]);
+          gl.uniform1i(uRDPrev, 0);
+          gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+          rdPing = write;
+        }
+      }
+
+      /* ─── PASS 2: SCENE → half-res FBO ────────────────────────────── */
       gl.bindFramebuffer(gl.FRAMEBUFFER, fboScene);
-      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0,
-                              gl.TEXTURE_2D, texScene, 0);
-      if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE)
-        console.error("[Unstable] Scene FBO incomplete");
+      gl.viewport(0, 0, SW, SH); // ← полуразрешение
+      gl.clearColor(0, 0, 0, 1);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.useProgram(progScene);
+      bindQuad();
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, rdTex[rdPing]);
+      gl.uniform1i(uSCChem, 0);
+      gl.uniform2f(uSCRes, SW, SH); // аспект вычисляется корректно
+      gl.uniform1f(uSCTime, time);
+      gl.uniform1f(uSCMean, meaningPulse);
+      gl.uniform1f(uSCFlsh, meaningFlash);
+      gl.uniform2f(uSCPtr, pointerX, pointerY);
+      // 4823: instability → 0 (жуткий покой), voidBlend → 1 (чистая пустота)
+      gl.uniform1f(uSCInst, lerp(instability, 0.0, event4823));
+      gl.uniform1f(uSCVoid, lerp(voidBlend, event4823, event4823));
+      gl.uniform1f(uSCCold, coldness);
+      gl.uniform1f(uSCWarm, warmth);
+      gl.uniform1f(uSCTunZ, tunnelZ ?? time * 2.0);
+      gl.uniform1f(uSCVoiceM, voiceMode);
+      gl.uniform1f(uSCEv4823, event4823);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+      /* ─── PASS 3: POST → screen ────────────────────────────────────── */
       gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    }
+      gl.viewport(0, 0, CW, CH);
+      gl.clearColor(0, 0, 0, 1);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.useProgram(progPost);
+      bindQuad();
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, texScene);
+      gl.uniform1i(uPOScn, 0);
+      gl.uniform2f(uPORes, CW, CH);
+      gl.uniform1f(uPOTime, time);
+      gl.uniform1f(uPOFlsh, meaningFlash);
+      gl.uniform1f(uPOGlch, glitch);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
-    // ── Uniforms RD ─────────────────────────────────────────────────────────
-    const uRDPrev  = gl.getUniformLocation(progRD, "uPrev");
-    const uRDTexel = gl.getUniformLocation(progRD, "uTexel");
-    const uRDInj   = gl.getUniformLocation(progRD, "uInject");
-    const uRDInjS  = gl.getUniformLocation(progRD, "uInjectStr");
-    const uRDFeed  = gl.getUniformLocation(progRD, "uFeed");
-    const uRDKill  = gl.getUniformLocation(progRD, "uKill");
-
-    // ── Uniforms SCENE ──────────────────────────────────────────────────────
-    const uSCRes  = gl.getUniformLocation(progScene, "uRes");
-    const uSCTime = gl.getUniformLocation(progScene, "uTime");
-    const uSCMean = gl.getUniformLocation(progScene, "uMeaning");
-    const uSCFlsh = gl.getUniformLocation(progScene, "uFlash");
-    const uSCPtr  = gl.getUniformLocation(progScene, "uPointer");
-    const uSCChem = gl.getUniformLocation(progScene, "uChem");
-    const uSCInst = gl.getUniformLocation(progScene, "uInstability");
-    const uSCVoid = gl.getUniformLocation(progScene, "uVoidBlend");
-    const uSCCold = gl.getUniformLocation(progScene, "uColdness");
-    const uSCWarm = gl.getUniformLocation(progScene, "uWarmth");
-    const uSCTunZ    = gl.getUniformLocation(progScene, "uTunnelZ");
-    const uSCVoiceM  = gl.getUniformLocation(progScene, "uVoiceMode");
-    const uSCEv4823  = gl.getUniformLocation(progScene, "uEvent4823");
-
-    // ── Uniforms POST ───────────────────────────────────────────────────────
-    const uPOScn  = gl.getUniformLocation(progPost, "uScene");
-    const uPORes  = gl.getUniformLocation(progPost, "uRes");
-    const uPOTime = gl.getUniformLocation(progPost, "uTime");
-    const uPOFlsh = gl.getUniformLocation(progPost, "uFlash");
-    const uPOGlch = gl.getUniformLocation(progPost, "uGlitch");
-
-    // ── State machine ───────────────────────────────────────────────────────
-    let sceneIdx    = 0;
-    let sceneTimer  = 0;
-    let sceneDur    = randDur(SCENES[0]);
-    let prevTime    = -1;
-    let instability = 0;
-    let voidBlend   = 0;
-    let glitch      = 0;
-
-    function lerp(a, b, t) { return a + (b - a) * t; }
-
-    // Вне draw() — не создаём closure каждый кадр
-    function bindQuad() {
-      gl.bindBuffer(gl.ARRAY_BUFFER, quad);
-      gl.enableVertexAttribArray(0);
-      gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-    }
-
-    return {
-      resize(width, height) {
-        const w = canvas.width, h = canvas.height;
-        if (w !== CW || h !== CH) {
-          CW = w; CH = h;
-          if (CW > 0 && CH > 0) initSceneFBO(CW, CH);
-        }
-      },
-
-      draw({ time, pointerX, pointerY, meaningPulse, meaningFlash,
-              coldness = 0, warmth = 0, tunnelZ, voiceMode = 0, event4823 = 0 }) {
-        if (!texScene || CW === 0 || CH === 0) return;
-
-        // dt
-        const dt = prevTime < 0 ? 0.016 : Math.min(time - prevTime, 0.05);
-        prevTime = time;
-
-        // ── Смена сцен ─────────────────────────────────────────────────────
-        sceneTimer += dt;
-        if (sceneTimer > sceneDur || meaningFlash > 0.75) {
-          sceneIdx   = (sceneIdx + 1) % SCENES.length;
-          sceneTimer = 0;
-          sceneDur   = randDur(SCENES[sceneIdx]);
-        }
-        const tgt = SCENES[sceneIdx];
-        const spd = dt * 1.2;
-        instability = lerp(instability, tgt.instability, spd);
-        voidBlend   = lerp(voidBlend,   tgt.voidBlend,   spd);
-        glitch      = lerp(glitch,      tgt.glitch,      spd * 1.5);
-        // Вспышки ускоряют нестабильность
-        instability = Math.min(instability + meaningFlash * 0.15, 1.0);
-        glitch      = Math.min(glitch      + meaningFlash * 0.25, 1.0);
-
-        gl.disable(gl.DEPTH_TEST);
-        gl.disable(gl.BLEND);
-
-        /* ─── PASS 1: RD симуляция ─────────────────────────────────────── */
-        // Кап 6 шагов — визуальная разница с 12 незаметна (паттерн уже зрелый),
-        // а при BREAKING экономия 50% RD-работы именно когда она нужнее всего.
-        const rdSteps = hasFloat ? Math.min(6, 3 + (instability * 4 | 0)) : 0;
-        if (rdSteps > 0) {
-          gl.useProgram(progRD);
-          bindQuad();
-          // Feed/kill меняются с нестабильностью — более хаотичная химия
-          const feed = 0.055 + instability * 0.008;
-          const kill = 0.062 + instability * 0.005;
-          gl.uniform2f(uRDTexel, 1/RD_SIDE, 1/RD_SIDE);
-          gl.uniform2f(uRDInj, pointerX, 1.0 - pointerY);
-          gl.uniform1f(uRDInjS, 0.4 + instability * 1.8 + meaningFlash * 0.6);
-          gl.uniform1f(uRDFeed, feed);
-          gl.uniform1f(uRDKill, kill);
-          for (let s = 0; s < rdSteps; s++) {
-            const read = rdPing, write = 1 - rdPing;
-            gl.bindFramebuffer(gl.FRAMEBUFFER, rdFbo[write]);
-            gl.viewport(0, 0, RD_SIDE, RD_SIDE);
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, rdTex[read]);
-            gl.uniform1i(uRDPrev, 0);
-            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-            rdPing = write;
-          }
-        }
-
-        /* ─── PASS 2: SCENE → half-res FBO ────────────────────────────── */
-        gl.bindFramebuffer(gl.FRAMEBUFFER, fboScene);
-        gl.viewport(0, 0, SW, SH);   // ← полуразрешение
-        gl.clearColor(0,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT);
-        gl.useProgram(progScene);
-        bindQuad();
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, rdTex[rdPing]);
-        gl.uniform1i(uSCChem, 0);
-        gl.uniform2f(uSCRes,  SW, SH); // аспект вычисляется корректно
-        gl.uniform1f(uSCTime, time);
-        gl.uniform1f(uSCMean, meaningPulse);
-        gl.uniform1f(uSCFlsh, meaningFlash);
-        gl.uniform2f(uSCPtr,  pointerX, pointerY);
-        // 4823: instability → 0 (жуткий покой), voidBlend → 1 (чистая пустота)
-        gl.uniform1f(uSCInst, lerp(instability, 0.0,       event4823));
-        gl.uniform1f(uSCVoid, lerp(voidBlend,   event4823, event4823));
-        gl.uniform1f(uSCCold, coldness);
-        gl.uniform1f(uSCWarm, warmth);
-        gl.uniform1f(uSCTunZ,   tunnelZ ?? time * 2.0);
-        gl.uniform1f(uSCVoiceM, voiceMode);
-        gl.uniform1f(uSCEv4823, event4823);
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-
-        /* ─── PASS 3: POST → screen ────────────────────────────────────── */
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        gl.viewport(0, 0, CW, CH);
-        gl.clearColor(0,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT);
-        gl.useProgram(progPost);
-        bindQuad();
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, texScene);
-        gl.uniform1i(uPOScn,  0);
-        gl.uniform2f(uPORes,  CW, CH);
-        gl.uniform1f(uPOTime, time);
-        gl.uniform1f(uPOFlsh, meaningFlash);
-        gl.uniform1f(uPOGlch, glitch);
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-
-        return SCENES[sceneIdx].name; // для console oracle
-      },
-    };
+      return SCENES[sceneIdx].name; // для console oracle
+    },
   };
+}

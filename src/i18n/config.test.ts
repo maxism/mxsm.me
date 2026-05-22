@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  isLocale,
-  localeAboutPath,
-  localePath,
-  localeSignalPath,
-} from "@/i18n/config";
+import { isLocale, localeAboutPath, localePath, localeSignalPath } from "@/i18n/config";
 
 describe("i18n config", () => {
   it("isLocale", () => {

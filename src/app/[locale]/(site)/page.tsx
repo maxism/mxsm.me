@@ -2,11 +2,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { HomePlates } from "@/components/plates/HomePlates";
 import { resolveLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
-import {
-  personJsonLd,
-  podcastEpisodeJsonLd,
-  podcastJsonLd,
-} from "@/i18n/json-ld";
+import { personJsonLd, podcastEpisodeJsonLd, podcastJsonLd } from "@/i18n/json-ld";
 import { getPodcastHomeData } from "@/lib/podcast-home";
 import { buildPageMetadata, pageAlternates } from "@/lib/seo/metadata";
 
@@ -44,11 +40,7 @@ export default async function HomePage({ params }: PageProps) {
   return (
     <>
       <JsonLd
-        data={[
-          personJsonLd(locale),
-          podcastJsonLd(),
-          ...podcastEpisodeJsonLd(podcast.rawEpisodes),
-        ]}
+        data={[personJsonLd(locale), podcastJsonLd(), ...podcastEpisodeJsonLd(podcast.rawEpisodes)]}
       />
       <main id="main">
         <HomePlates dict={dict} locale={locale} podcast={podcast} />

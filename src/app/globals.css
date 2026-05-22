@@ -88,10 +88,7 @@ button {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background-image: radial-gradient(
-    rgba(232, 226, 210, 0.06) 0.5px,
-    transparent 0.6px
-  );
+  background-image: radial-gradient(rgba(232, 226, 210, 0.06) 0.5px, transparent 0.6px);
   background-size: 2px 2px;
   mix-blend-mode: overlay;
   opacity: 0.6;
@@ -576,11 +573,7 @@ main {
 .role-bar {
   flex: 1;
   min-height: 12px;
-  background-image: repeating-linear-gradient(
-    45deg,
-    var(--rule) 0 2px,
-    transparent 2px 5px
-  );
+  background-image: repeating-linear-gradient(45deg, var(--rule) 0 2px, transparent 2px 5px);
 }
 .role-status {
   font-family: var(--mono);
@@ -738,11 +731,7 @@ main {
 /* distinct treatment: yellow ticker, accented frame, poster aside */
 .plate-broadcast {
   border-top: 2px solid var(--hot);
-  background: linear-gradient(
-    180deg,
-    rgba(232, 197, 71, 0.025) 0%,
-    transparent 240px
-  );
+  background: linear-gradient(180deg, rgba(232, 197, 71, 0.025) 0%, transparent 240px);
   padding-top: 0;
 }
 .plate-broadcast .plate-head {

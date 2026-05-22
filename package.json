@@ -9,6 +9,8 @@
     "build": "next build",
     "start": "next start -p 3030",
     "lint": "eslint src",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "vitest run"
   },
   "dependencies": {
@@ -24,6 +26,8 @@
     "@types/react-dom": "^19.1.0",
     "eslint": "^9.0.0",
     "eslint-config-next": "^15.5.0",
+    "eslint-config-prettier": "^10.1.5",
+    "prettier": "^3.5.3",
     "typescript": "^5.8.0",
     "vitest": "^3.2.4"
   }

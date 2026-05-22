@@ -5,8 +5,7 @@ export const en: Dictionary = {
     title: "Max Ulianov — CTO @ MTS.ai, co-founder Untitled Team",
     description:
       "Max Ulianov. CTO at MTS.ai, co-founder of Untitled Team. SHITBUSTARDS podcast. mxsm/signal generative art. Moscow, 2026.",
-    ogDescription:
-      "blueprint of one person: cto mts.ai, untitled team, shitbustards, mxsm/signal.",
+    ogDescription: "blueprint of one person: cto mts.ai, untitled team, shitbustards, mxsm/signal.",
     ogLocale: "en_US",
   },
   masthead: {
@@ -156,11 +155,7 @@ export const en: Dictionary = {
       ],
       heading: "/\u2009signal",
       headingGlitch: "// signal",
-      quote: [
-        "the signal arrived",
-        "from the place",
-        "we never sent anything to.",
-      ],
+      quote: ["the signal arrived", "from the place", "we never sent anything to."],
       metaRows: [
         { key: "stack", value: "webgl · web audio · formant synthesis" },
         { key: "voices", value: "03" },

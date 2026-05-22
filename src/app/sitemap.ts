@@ -1,9 +1,5 @@
 import type { MetadataRoute } from "next";
-import {
-  localeAboutPath,
-  localePath,
-  localeSignalPath,
-} from "@/i18n/config";
+import { localeAboutPath, localePath, localeSignalPath } from "@/i18n/config";
 import { absoluteUrl } from "@/lib/seo/site-url";
 
 const LAST_ABOUT_SIGNAL_MOD = "2026-05-01";

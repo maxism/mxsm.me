@@ -105,22 +105,14 @@ export async function getEpisodes(): Promise<Episode[]> {
     title: String(item.title ?? ""),
     description: String(item["content:encoded"] ?? item.description ?? ""),
     publishDate: new Date(String(item.pubDate ?? "")),
-    durationSec: parseDuration(
-      item["itunes:duration"] as string | number | undefined,
-    ),
+    durationSec: parseDuration(item["itunes:duration"] as string | number | undefined),
     season: Number(item["itunes:season"] ?? 0),
     episodeNumber: Number(item["itunes:episode"] ?? 0),
     imageUrl: normalizeImageUrl(
-      String(
-        (item["itunes:image"] as Record<string, unknown> | undefined)?.[
-          "@_href"
-        ] ?? "",
-      ),
+      String((item["itunes:image"] as Record<string, unknown> | undefined)?.["@_href"] ?? ""),
     ),
     audioUrl: normalizeAudioUrl(
-      String(
-        (item.enclosure as Record<string, unknown> | undefined)?.["@_url"] ?? "",
-      ),
+      String((item.enclosure as Record<string, unknown> | undefined)?.["@_url"] ?? ""),
     ),
     url: String(item.link ?? ""),
   }));
@@ -139,5 +131,10 @@ export function generateSlug(ep: Episode): string {
     return `s${ep.season}ep${ep.episodeNumber}`;
   }
   if (ep.episodeNumber > 0) return String(ep.episodeNumber);
-  return ep.guid.replace(/[^a-z0-9]/gi, "").toLowerCase().slice(0, 16) || "ep";
+  return (
+    ep.guid
+      .replace(/[^a-z0-9]/gi, "")
+      .toLowerCase()
+      .slice(0, 16) || "ep"
+  );
 }

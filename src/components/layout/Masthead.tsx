@@ -24,11 +24,7 @@ export function Masthead({ locale, dict }: MastheadProps) {
             {dict.masthead.name}
           </GlitchText>
         </Link>
-        <div
-          className="lang"
-          role="group"
-          aria-label={dict.masthead.langSwitch}
-        >
+        <div className="lang" role="group" aria-label={dict.masthead.langSwitch}>
           <Link
             href={localePath("ru")}
             className={locale === "ru" ? "lang-on" : "lang-off"}

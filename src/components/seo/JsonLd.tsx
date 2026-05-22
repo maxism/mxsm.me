@@ -14,9 +14,7 @@ function jsonLdKey(item: Record<string, unknown>, index: number): string {
   const unique =
     record["@id"] ??
     record.url ??
-    (record.name && record.datePublished
-      ? `${record.name}-${record.datePublished}`
-      : record.name);
+    (record.name && record.datePublished ? `${record.name}-${record.datePublished}` : record.name);
 
   return unique ? `${type}-${unique}` : `${type}-${index}`;
 }

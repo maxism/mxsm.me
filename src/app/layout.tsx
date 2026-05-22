@@ -41,9 +41,7 @@ export default function RootLayout({
     >
       <body>
         <Script src="/palette-runtime.js" strategy="afterInteractive" />
-        <script
-          dangerouslySetInnerHTML={{ __html: timePaletteInitScript() }}
-        />
+        <script dangerouslySetInnerHTML={{ __html: timePaletteInitScript() }} />
         <TimePalette />
         {children}
         <GoogleAnalytics />

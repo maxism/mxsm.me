@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  getPaletteHour,
-  PALETTE_CYCLE_MS,
-  paletteAt,
-} from "@/lib/time-palette";
+import { getPaletteHour, PALETTE_CYCLE_MS, paletteAt } from "@/lib/time-palette";
 
 describe("time-palette", () => {
   it("cycles virtual hour over PALETTE_CYCLE_MS", () => {

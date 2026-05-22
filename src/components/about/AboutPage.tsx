@@ -22,8 +22,7 @@ function AboutSectionBlock({ section }: { section: AboutSection }) {
       ))}
       {hasLink && (
         <p className="about-note">
-          {section.note}{" "}
-          <a href={section.link.href}>{section.link.label}</a>
+          {section.note} <a href={section.link.href}>{section.link.label}</a>
         </p>
       )}
     </section>

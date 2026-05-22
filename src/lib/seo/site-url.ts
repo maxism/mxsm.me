@@ -1,9 +1,4 @@
-import {
-  localeAboutPath,
-  localePath,
-  localeSignalPath,
-  type Locale,
-} from "@/i18n/config";
+import { localeAboutPath, localePath, localeSignalPath, type Locale } from "@/i18n/config";
 
 export const SITE_ORIGIN =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://mxsm.me";

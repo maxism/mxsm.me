@@ -241,9 +241,6 @@ export function renderOgImage(page: OgPage, locale: Locale) {
         : signalOgElement(locale);
 
   const img = new ImageResponse(element, { ...OG_SIZE });
-  img.headers.set(
-    "Cache-Control",
-    "public, max-age=86400, stale-while-revalidate=604800",
-  );
+  img.headers.set("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
   return img;
 }

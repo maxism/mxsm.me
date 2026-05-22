@@ -15,22 +15,14 @@ export type PodcastHomeData = {
 
 function formatSinceMonthYear(date: Date, locale: Locale): string {
   const tag = locale === "ru" ? "ru-RU" : "en-US";
-  const month = date
-    .toLocaleDateString(tag, { month: "short" })
-    .replace(/\./g, "")
-    .toLowerCase();
+  const month = date.toLocaleDateString(tag, { month: "short" }).replace(/\./g, "").toLowerCase();
   return `${month} ${date.getFullYear()}`;
 }
 
 function getFeedStats(episodes: Episode[]) {
-  const sorted = [...episodes].sort(
-    (a, b) => a.publishDate.getTime() - b.publishDate.getTime(),
-  );
+  const sorted = [...episodes].sort((a, b) => a.publishDate.getTime() - b.publishDate.getTime());
   const oldest = sorted[0]?.publishDate ?? new Date("2024-03-01");
-  const maxSeason = episodes.reduce(
-    (max, ep) => (ep.season > max ? ep.season : max),
-    0,
-  );
+  const maxSeason = episodes.reduce((max, ep) => (ep.season > max ? ep.season : max), 0);
   return {
     count: episodes.length,
     maxSeason: maxSeason > 0 ? maxSeason : 1,
@@ -39,9 +31,7 @@ function getFeedStats(episodes: Episode[]) {
 }
 
 function interpolate(template: string, vars: Record<string, string | number>) {
-  return template.replace(/\{(\w+)\}/g, (_, key: string) =>
-    String(vars[key] ?? ""),
-  );
+  return template.replace(/\{(\w+)\}/g, (_, key: string) => String(vars[key] ?? ""));
 }
 
 function buildMeta(

@@ -73,9 +73,7 @@ export function buildPageMetadata(input: PageMetadataInput): Metadata {
     alternates: {
       canonical,
       languages,
-      ...(rss
-        ? { types: { "application/rss+xml": SHITBUSTARDS_RSS_URL } }
-        : {}),
+      ...(rss ? { types: { "application/rss+xml": SHITBUSTARDS_RSS_URL } } : {}),
     },
     openGraph: {
       title: ogTitle,

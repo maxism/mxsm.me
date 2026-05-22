@@ -4,9 +4,7 @@ import { useEffect } from "react";
 
 export function useGlitch() {
   useEffect(() => {
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reducedMotion) return;
 
     const glitchables = document.querySelectorAll("[data-glitch]");
@@ -32,9 +30,7 @@ export function useGlitch() {
     glitchables.forEach((el) => io.observe(el));
 
     const onEnter = (e: Event) => fire(e.currentTarget as Element);
-    glitchables.forEach((el) =>
-      el.addEventListener("mouseenter", onEnter),
-    );
+    glitchables.forEach((el) => el.addEventListener("mouseenter", onEnter));
 
     const heads = document.querySelectorAll(
       ".plate-h [data-glitch], .m-id [data-glitch], .mono [data-glitch]",
@@ -48,9 +44,7 @@ export function useGlitch() {
 
     return () => {
       io.disconnect();
-      glitchables.forEach((el) =>
-        el.removeEventListener("mouseenter", onEnter),
-      );
+      glitchables.forEach((el) => el.removeEventListener("mouseenter", onEnter));
       window.clearInterval(interval);
     };
   }, []);

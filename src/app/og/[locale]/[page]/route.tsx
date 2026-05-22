@@ -6,9 +6,7 @@ type RouteParams = {
 };
 
 export function generateStaticParams() {
-  return locales.flatMap((locale) =>
-    OG_PAGES.map((page) => ({ locale, page })),
-  );
+  return locales.flatMap((locale) => OG_PAGES.map((page) => ({ locale, page })));
 }
 
 export async function GET(_request: Request, { params }: RouteParams) {
