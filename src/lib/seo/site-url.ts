@@ -1,4 +1,10 @@
-import { localeAboutPath, localePath, localeSignalPath, type Locale } from "@/i18n/config";
+import {
+  localeAboutPath,
+  localeMaskPath,
+  localePath,
+  localeSignalPath,
+  type Locale,
+} from "@/i18n/config";
 
 export const SITE_ORIGIN =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://mxsm.me";
@@ -20,4 +26,8 @@ export function localeAboutAbsoluteUrl(locale: Locale): string {
 
 export function localeSignalAbsoluteUrl(locale: Locale): string {
   return absoluteUrl(localeSignalPath(locale));
+}
+
+export function localeMaskAbsoluteUrl(locale: Locale): string {
+  return absoluteUrl(localeMaskPath(locale));
 }

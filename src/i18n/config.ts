@@ -31,3 +31,7 @@ export function localeSignalPath(locale: Locale): string {
 export function localeAboutPath(locale: Locale): string {
   return locale === defaultLocale ? "/about" : "/en/about";
 }
+
+export function localeMaskPath(locale: Locale): string {
+  return locale === defaultLocale ? "/mask" : "/en/mask";
+}

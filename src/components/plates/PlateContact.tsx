@@ -11,8 +11,8 @@ export function PlateContact({ dict }: PlateContactProps) {
   const p = dict.plates.contact;
 
   return (
-    <section className="plate" id="plate-06" aria-labelledby="h-06">
-      <PlateHead rows={p.meta} title={p.heading} titleGlitch={p.headingGlitch} titleId="h-06" />
+    <section className="plate" id="plate-07" aria-labelledby="h-07">
+      <PlateHead rows={p.meta} title={p.heading} titleGlitch={p.headingGlitch} titleId="h-07" />
 
       <div className="contact-main">
         <GlitchText as="a" href="mailto:m@mxsm.me" text="m@mxsm.me" className="contact-mail" />

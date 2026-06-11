@@ -6,7 +6,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import type { TitleBlockRow } from "@/lib/shared-data";
 import { OG, OG_SIZE } from "@/lib/seo/og-theme";
 
-export const OG_PAGES = ["home", "about", "signal"] as const;
+export const OG_PAGES = ["home", "about", "signal", "mask"] as const;
 export type OgPage = (typeof OG_PAGES)[number];
 
 export function isOgPage(value: string): value is OgPage {
@@ -348,13 +348,117 @@ function signalOgElement(locale: Locale) {
   );
 }
 
+function maskOgElement(locale: Locale) {
+  const dict = getDictionary(locale);
+  const p = dict.plates.mask;
+
+  const W = 296, H = 415;
+  const oLeft = 710, oTop = 108;
+
+  return (
+    <div style={{ width: "100%", height: "100%", display: "flex", background: "#060508", position: "relative", fontFamily: "ui-monospace, monospace" }}>
+
+      {/* ── Dot grid (on top of bg, below scrim) ── */}
+      <div style={{
+        position: "absolute", inset: 0,
+        backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.78) 3px, transparent 3px)",
+        backgroundSize: "64px 64px",
+        backgroundRepeat: "repeat",
+      }} />
+
+      {/* ── Left gradient scrim — only covers text area ── */}
+      <div style={{
+        position: "absolute", top: 0, left: 0, bottom: 0, width: 680,
+        background: "linear-gradient(90deg, rgba(6,5,8,0.97) 55%, transparent 100%)",
+      }} />
+
+      {/* ── Chromatic rim: orange border outer ── */}
+      <div style={{
+        position: "absolute", left: oLeft - 6, top: oTop - 6,
+        width: W + 12, height: H + 12,
+        borderRadius: "50%",
+        border: "3px solid rgba(255,90,0,0.85)",
+        display: "flex",
+      }} />
+      {/* ── Chromatic rim: cyan border inner ── */}
+      <div style={{
+        position: "absolute", left: oLeft + 5, top: oTop + 5,
+        width: W - 10, height: H - 10,
+        borderRadius: "50%",
+        border: "2px solid rgba(0,195,255,0.7)",
+        display: "flex",
+      }} />
+
+      {/* ── Mask body ── */}
+      <div style={{
+        position: "absolute", left: oLeft, top: oTop, width: W, height: H,
+        borderRadius: "50%",
+        background: "radial-gradient(ellipse at 42% 32%, #14091c 0%, #070408 70%)",
+        overflow: "hidden",
+        display: "flex",
+      }}>
+        {/* Blue-cyan top sphere */}
+        <div style={{
+          position: "absolute", left: 74, top: -22, width: 96, height: 96, borderRadius: "50%",
+          background: "radial-gradient(circle at 36% 30%, rgba(190,240,255,1.0) 0%, rgba(0,160,230,0.8) 50%, rgba(0,70,150,0.2) 100%)",
+        }} />
+        {/* Orange centre sphere */}
+        <div style={{
+          position: "absolute", left: 66, top: 152, width: 132, height: 132, borderRadius: "50%",
+          background: "radial-gradient(circle at 35% 28%, rgba(255,235,195,1.0) 0%, rgba(255,140,0,0.85) 46%, rgba(190,60,0,0.25) 100%)",
+        }} />
+        {/* Cyan bottom sphere */}
+        <div style={{
+          position: "absolute", left: 80, top: 318, width: 82, height: 82, borderRadius: "50%",
+          background: "radial-gradient(circle at 36% 33%, rgba(150,255,248,0.9) 0%, rgba(0,195,190,0.65) 55%, transparent 100%)",
+        }} />
+      </div>
+
+      {/* ── Text — left column ── */}
+      <div style={{
+        display: "flex", flexDirection: "column", justifyContent: "space-between",
+        padding: "56px 0 56px 60px", height: "100%",
+        width: 640, color: OG.ink,
+      }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <OgTitleBlock rows={p.meta} />
+          <div style={{
+            display: "flex",
+            fontSize: 96, fontWeight: 200, lineHeight: 0.88,
+            letterSpacing: "-0.04em",
+            color: OG.ink,
+            fontFamily: "ui-serif, Georgia, serif",
+          }}>
+            {p.headingGlitch}
+          </div>
+          <div style={{
+            display: "flex", marginTop: 6,
+            fontSize: 14, letterSpacing: "0.1em",
+            color: "rgba(232,226,210,0.4)",
+            textTransform: "uppercase",
+          }}>
+            {dict.maskPage.materialsTagline}
+          </div>
+        </div>
+        {footer()}
+      </div>
+
+      {/* Corner marks */}
+      <div style={{ position: "absolute", top: 22, left: 22, width: 14, height: 14, borderTop: `1px solid ${OG.rule}`, borderLeft: `1px solid ${OG.rule}`, display: "flex" }} />
+      <div style={{ position: "absolute", bottom: 22, right: 22, width: 14, height: 14, borderBottom: `1px solid ${OG.rule}`, borderRight: `1px solid ${OG.rule}`, display: "flex" }} />
+    </div>
+  );
+}
+
 export function renderOgImage(page: OgPage, locale: Locale) {
   const element =
     page === "home"
       ? homeOgElement(locale)
       : page === "about"
         ? aboutOgElement(locale)
-        : signalOgElement(locale);
+        : page === "mask"
+          ? maskOgElement(locale)
+          : signalOgElement(locale);
 
   const img = new ImageResponse(element, { ...OG_SIZE });
   img.headers.set("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");

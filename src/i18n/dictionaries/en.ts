@@ -36,7 +36,7 @@ export const en: Dictionary = {
         { key: "ROLES", value: "02, both live" },
         { key: "BOTH SINCE", value: "2025" },
       ],
-      heading: "/\u2009now",
+      heading: "/ now",
       headingGlitch: "// now",
       live: "● LIVE",
       roles: [
@@ -74,7 +74,7 @@ export const en: Dictionary = {
         { key: "STOPS", value: "07 / 5 countries" },
         { key: "LANES", value: "banking · adult · space · iot · gov" },
       ],
-      heading: "/\u2009archive",
+      heading: "/ archive",
       headingGlitch: "// archive",
       items: [
         {
@@ -139,9 +139,9 @@ export const en: Dictionary = {
         { key: "WITH", value: "mike zharchev" },
         { key: "ON AIR", value: "since mar 2024 · S2" },
       ],
-      heading: "/\u2009shitbustards",
+      heading: "/ shitbustards",
       headingGlitch: "// shitbustards",
-      ticker: "★ ON AIR · SHITBUSTARDS · S2 · WITH MIKE ZHARCHEV ·\u00a0",
+      ticker: "★ ON AIR · SHITBUSTARDS · S2 · WITH MIKE ZHARCHEV · ",
       tickerBrand: "SHITBUSTARDS",
       onAir: "ON AIR",
       foot: "with m. zharchev, since mar 2024",
@@ -153,7 +153,7 @@ export const en: Dictionary = {
         { key: "TYPE", value: "generative art" },
         { key: "STACK", value: "webgl · web audio" },
       ],
-      heading: "/\u2009signal",
+      heading: "/ signal",
       headingGlitch: "// signal",
       quote: ["the signal arrived", "from the place", "we never sent anything to."],
       metaRows: [
@@ -165,13 +165,60 @@ export const en: Dictionary = {
       ctaHint: "fullscreen · sound · click or move to start",
       exitLabel: "← mxsm",
     },
+    mask: {
+      meta: [
+        { key: "PLATE", value: "06 · MXSM/MASK" },
+        { key: "TYPE", value: "3d experiment" },
+        { key: "STACK", value: "three.js · webgl" },
+      ],
+      heading: "/ mask",
+      headingGlitch: "// mask",
+      ctaHint: "drag to rotate · click to flip",
+      exitLabel: "← mxsm",
+    },
     contact: {
       meta: [
-        { key: "PLATE", value: "06 · CONTACT" },
+        { key: "PLATE", value: "07 · CONTACT" },
         { key: "ANSWERS", value: "within a week" },
       ],
-      heading: "/\u2009contact",
+      heading: "/ contact",
       headingGlitch: "// contact",
+    },
+  },
+  maskPage: {
+    title: "mxsm / mask",
+    description: "a 3d face mask — glass on one side, pin art on the other",
+    exitLabel: "← mxsm",
+    materialsTagline: "glass · dispersion · holographic · glitch · ghost",
+    scanFace: "scan face",
+    uploadObj: "upload .obj",
+    objTooLarge: "file too large (max 5 MB)",
+    materials: {
+      dispersion: "dispersion",
+      holo: "holographic",
+      glitch: "glitch",
+      ghost: "ghost",
+      glass: "glass",
+    },
+    loader: {
+      initializing: "initializing scene…",
+      loadingModel: "loading mask model…",
+    },
+    scanner: {
+      loading: "loading mediapipe…",
+      aimFace: "point the camera at your face",
+      faceFound: "face detected",
+      cameraDenied: "camera access denied — check browser settings",
+      cancel: "✕ cancel",
+      capture: "● capture",
+    },
+    seo: {
+      title: "mxsm / mask",
+      paragraphs: [
+        "mxsm/mask is a 3D face mask experiment by Max Ulianov on mxsm.me. rotate the mask, flip materials, scan your face with the webcam, or upload an OBJ model.",
+        "materials: chromatic dispersion, holographic iridescence, glitch scanlines, ghost glass, and physical glass refraction — all running in the browser with Three.js and WebGL.",
+        "by Max Ulianov, 2026.",
+      ],
     },
   },
   signalPage: {

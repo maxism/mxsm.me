@@ -985,7 +985,8 @@ main {
   color: var(--hot);
 }
 
-.plate-signal {
+.plate-signal,
+.plate-mask {
   min-height: 100vh;
   min-height: 100dvh;
   padding: 0;
@@ -1009,6 +1010,11 @@ main {
   display: block;
   pointer-events: none;
 }
+.sig-stage-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 .sig-stage-hit {
   position: absolute;
   inset: 0;
@@ -1029,29 +1035,36 @@ main {
 .sig-stage-ui * {
   pointer-events: none;
 }
-.plate-signal .plate-head {
+.plate-signal .plate-head,
+.plate-mask .plate-head {
   margin: 0;
   gap: clamp(10px, 2vh, 18px);
 }
-.plate-signal .plate-head .title-block {
+.plate-signal .plate-head .title-block,
+.plate-mask .plate-head .title-block {
   margin-bottom: clamp(12px, 2.5vh, 24px);
 }
-.plate-signal .plate-h {
+.plate-signal .plate-h,
+.plate-mask .plate-h {
   margin: 0;
   font-size: clamp(40px, 8vw, 108px);
   color: #e8e2d2;
 }
-.plate-signal .plate-h::first-letter {
+.plate-signal .plate-h::first-letter,
+.plate-mask .plate-h::first-letter {
   color: var(--hot);
 }
-.plate-signal .title-block.inv {
+.plate-signal .title-block.inv,
+.plate-mask .title-block.inv {
   background: rgba(6, 5, 8, 0.55);
   border-color: rgba(232, 226, 210, 0.12);
 }
-.plate-signal .title-block.inv .tb-k {
+.plate-signal .title-block.inv .tb-k,
+.plate-mask .title-block.inv .tb-k {
   color: rgba(232, 226, 210, 0.45);
 }
-.plate-signal .title-block.inv .tb-v {
+.plate-signal .title-block.inv .tb-v,
+.plate-mask .title-block.inv .tb-v {
   color: rgba(232, 226, 210, 0.88);
 }
 
@@ -1391,9 +1404,315 @@ main {
     min-height: 1px;
     height: 12px;
   }
-  .plate-signal {
+  .plate-signal,
+  .plate-mask {
     min-height: 100vh;
     min-height: 100dvh;
     padding: 0;
   }
+}
+
+/* ── Mask model loader ── */
+.mask-load {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(6, 5, 8, 0.88);
+  pointer-events: none;
+}
+.mask-load--plate {
+  z-index: 1;
+  justify-content: flex-end;
+  padding-bottom: clamp(56px, 12vh, 120px);
+  background: linear-gradient(to top, rgba(6, 5, 8, 0.92) 0%, transparent 70%);
+}
+.mask-load-label {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: lowercase;
+  color: rgba(232, 226, 210, 0.55);
+}
+.mask-load-bar {
+  width: min(160px, 40vw);
+  height: 1px;
+  background: rgba(232, 226, 210, 0.12);
+  overflow: hidden;
+}
+.mask-load-bar-fill {
+  height: 100%;
+  background: var(--hot);
+  transition: width 0.12s linear;
+}
+.mask-load-bar-fill--indeterminate {
+  width: 35% !important;
+  animation: mask-load-indeterminate 1.1s ease-in-out infinite;
+}
+.mask-load-pct {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: rgba(232, 226, 210, 0.35);
+}
+@keyframes mask-load-indeterminate {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+
+/* ── Mask experience (full page) ── */
+.mask-exp {
+  position: fixed;
+  inset: 0;
+  background: #060508;
+  overflow: hidden;
+}
+.mask-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.mask-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.mask-ui {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(16px, 3vh, 32px) clamp(16px, 3vw, 40px);
+}
+.mask-back {
+  pointer-events: auto;
+  align-self: flex-start;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(232, 226, 210, 0.5);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.mask-back:hover {
+  color: rgba(232, 226, 210, 0.9);
+}
+.mask-controls {
+  pointer-events: auto;
+  position: absolute;
+  bottom: clamp(20px, 4vh, 40px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+}
+.mask-btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(232, 226, 210, 0.65);
+  background: rgba(10, 9, 7, 0.5);
+  border: 1px solid rgba(232, 226, 210, 0.15);
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  backdrop-filter: blur(6px);
+}
+.mask-btn:hover {
+  color: rgba(232, 226, 210, 0.95);
+  border-color: rgba(232, 226, 210, 0.4);
+  background: rgba(10, 9, 7, 0.75);
+}
+.mask-hint {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: rgba(232, 226, 210, 0.3);
+  margin: 0;
+  text-align: center;
+}
+.mask-hint--side {
+  position: absolute;
+  bottom: clamp(20px, 4vh, 40px);
+  right: clamp(16px, 3vw, 40px);
+  text-transform: uppercase;
+}
+
+/* ── Face scanner overlay ── */
+.scanner-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: #060508;
+  display: flex;
+  flex-direction: column;
+}
+.scanner-stage {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.scanner-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  opacity: 0.75;
+}
+.scanner-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  pointer-events: none;
+}
+.scanner-guide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.scanner-face-ring {
+  width: min(38vw, 280px);
+  height: min(48vw, 360px);
+  border: 1px solid rgba(200, 190, 170, 0.2);
+  border-radius: 50%;
+  transition: border-color 0.4s, box-shadow 0.4s;
+}
+.scanner-face-ring--found {
+  border-color: rgba(200, 190, 170, 0.6);
+  box-shadow: 0 0 40px rgba(200, 190, 170, 0.08);
+}
+.scanner-ui {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-top: 1px solid rgba(232, 226, 210, 0.08);
+  gap: 16px;
+  flex-shrink: 0;
+}
+.scanner-close {
+  position: static;
+  pointer-events: auto;
+}
+.scanner-status {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(232, 226, 210, 0.4);
+}
+.scanner-status--found {
+  color: rgba(200, 190, 170, 0.8);
+}
+.scanner-capture {
+  opacity: 0.4;
+  transition: opacity 0.3s, color 0.2s, border-color 0.2s;
+}
+.scanner-capture:not(:disabled) {
+  opacity: 1;
+}
+.mask-btn--ready {
+  color: rgba(232, 226, 210, 0.9);
+  border-color: rgba(232, 226, 210, 0.5);
+}
+
+/* ── Mask material selector ── */
+.mask-mat-row {
+  position: absolute;
+  top: clamp(16px, 3vh, 32px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  pointer-events: auto;
+}
+.mask-mat-btn {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(232, 226, 210, 0.4);
+  background: none;
+  border: 1px solid rgba(232, 226, 210, 0.1);
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.mask-mat-btn:hover {
+  color: rgba(232, 226, 210, 0.75);
+  border-color: rgba(232, 226, 210, 0.3);
+}
+.mask-mat-btn--active {
+  color: rgba(232, 226, 210, 0.95);
+  border-color: rgba(232, 226, 210, 0.55);
+}
+
+.mask-seo {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  max-width: 36rem;
+  margin: 0;
+  padding: 18px 20px 22px;
+  pointer-events: none;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.88) 0%,
+    rgba(0, 0, 0, 0.45) 72%,
+    transparent 100%
+  );
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.55;
+  letter-spacing: 0.04em;
+  color: rgba(232, 226, 210, 0.42);
+}
+.mask-seo h1 {
+  margin: 0 0 8px;
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: lowercase;
+  color: rgba(232, 226, 210, 0.58);
+}
+.mask-seo p {
+  margin: 0 0 6px;
+}
+.mask-seo p:last-child {
+  margin-bottom: 0;
+}
+
+.scanner-status--error {
+  color: rgba(255, 120, 100, 0.85);
+}
+
+.mask-obj-error {
+  position: absolute;
+  bottom: clamp(68px, 10vh, 88px);
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 120, 100, 0.75);
+  pointer-events: none;
 }

@@ -9,6 +9,7 @@ export const navPlates = [
   { href: "#plate-04", label: "/04" },
   { href: "#plate-05", label: "/05" },
   { href: "#plate-06", label: "/06" },
+  { href: "#plate-07", label: "/07" },
 ] as const;
 
 export const podcastPlatforms = [

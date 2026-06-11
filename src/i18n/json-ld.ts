@@ -10,6 +10,7 @@ import {
   absoluteUrl,
   localeAboutAbsoluteUrl,
   localeAbsoluteUrl,
+  localeMaskAbsoluteUrl,
   localeSignalAbsoluteUrl,
 } from "@/lib/seo/site-url";
 
@@ -214,5 +215,29 @@ export function signalBreadcrumbJsonLd(locale: Locale) {
   return breadcrumbJsonLd([
     { name: "mxsm.me", url: localeAbsoluteUrl(locale) },
     { name: "signal", url: localeSignalAbsoluteUrl(locale) },
+  ]);
+}
+
+export function maskCreativeWorkJsonLd(locale: Locale) {
+  const dict = getDictionary(locale);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    name: dict.maskPage.title,
+    url: localeMaskAbsoluteUrl(locale),
+    description: dict.maskPage.description,
+    inLanguage: locale === "ru" ? "ru-RU" : "en-US",
+    creator: { "@id": PERSON_ID },
+    keywords: ["3d", "WebGL", "Three.js", "mxsm", "mask", "Max Ulianov"],
+    dateCreated: "2026-01-01",
+    isPartOf: { "@id": WEBSITE_ID },
+  };
+}
+
+export function maskBreadcrumbJsonLd(locale: Locale) {
+  return breadcrumbJsonLd([
+    { name: "mxsm.me", url: localeAbsoluteUrl(locale) },
+    { name: "mask", url: localeMaskAbsoluteUrl(locale) },
   ]);
 }

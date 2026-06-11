@@ -84,10 +84,49 @@ export type Dictionary = {
       ctaHint: string;
       exitLabel: string;
     };
+    mask: {
+      meta: TitleBlockRow[];
+      heading: string;
+      headingGlitch: string;
+      ctaHint: string;
+      exitLabel: string;
+    };
     contact: {
       meta: TitleBlockRow[];
       heading: string;
       headingGlitch: string;
+    };
+  };
+  maskPage: {
+    title: string;
+    description: string;
+    exitLabel: string;
+    materialsTagline: string;
+    scanFace: string;
+    uploadObj: string;
+    objTooLarge: string;
+    materials: {
+      dispersion: string;
+      holo: string;
+      glitch: string;
+      ghost: string;
+      glass: string;
+    };
+    loader: {
+      initializing: string;
+      loadingModel: string;
+    };
+    scanner: {
+      loading: string;
+      aimFace: string;
+      faceFound: string;
+      cameraDenied: string;
+      cancel: string;
+      capture: string;
+    };
+    seo: {
+      title: string;
+      paragraphs: readonly string[];
     };
   };
   signalPage: {

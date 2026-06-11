@@ -3,6 +3,7 @@ import {
   PlateContact,
   PlateCurrently,
   PlateIdentity,
+  PlateMask,
   PlatePodcast,
   PlateSignal,
 } from "@/components/plates";
@@ -24,6 +25,7 @@ export function HomePlates({ dict, locale, podcast }: HomePlatesProps) {
       <PlateArchive dict={dict} />
       <PlatePodcast dict={dict} podcast={podcast} />
       <PlateSignal dict={dict} locale={locale} />
+      <PlateMask dict={dict} locale={locale} />
       <PlateContact dict={dict} />
     </>
   );

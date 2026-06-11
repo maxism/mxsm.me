@@ -5,6 +5,7 @@ const isDev = process.env.NODE_ENV === "development";
 const scriptSrc = [
   "'self'",
   "'unsafe-inline'",
+  "'wasm-unsafe-eval'",
   ...(isDev ? ["'unsafe-eval'"] : []),
   "https://www.googletagmanager.com",
   "https://mc.yandex.ru",
@@ -16,7 +17,7 @@ const securityHeaders = [
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   {
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=()",
+    value: "camera=(self), microphone=(), geolocation=()",
   },
   {
     key: "Strict-Transport-Security",

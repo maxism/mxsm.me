@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { isLocale, localeAboutPath, localePath, localeSignalPath } from "@/i18n/config";
+import {
+  isLocale,
+  localeAboutPath,
+  localeMaskPath,
+  localePath,
+  localeSignalPath,
+} from "@/i18n/config";
 
 describe("i18n config", () => {
   it("isLocale", () => {
@@ -21,5 +27,10 @@ describe("i18n config", () => {
   it("localeAboutPath", () => {
     expect(localeAboutPath("ru")).toBe("/about");
     expect(localeAboutPath("en")).toBe("/en/about");
+  });
+
+  it("localeMaskPath", () => {
+    expect(localeMaskPath("ru")).toBe("/mask");
+    expect(localeMaskPath("en")).toBe("/en/mask");
   });
 });

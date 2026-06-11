@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { localeAboutPath, localePath, localeSignalPath } from "@/i18n/config";
+import { localeAboutPath, localeMaskPath, localePath, localeSignalPath } from "@/i18n/config";
 import { absoluteUrl } from "@/lib/seo/site-url";
 
 const LAST_ABOUT_SIGNAL_MOD = "2026-05-01";
@@ -25,6 +25,13 @@ const PAGE_GROUPS = [
     changeFrequency: "monthly" as const,
     priority: 0.7,
     lastmod: LAST_ABOUT_SIGNAL_MOD,
+  },
+  {
+    ru: localeMaskPath("ru"),
+    en: localeMaskPath("en"),
+    changeFrequency: "monthly" as const,
+    priority: 0.65,
+    lastmod: new Date().toISOString().slice(0, 10),
   },
 ] as const;
 
