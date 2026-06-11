@@ -13,7 +13,8 @@ export function useGlitch() {
       el.classList.remove("glitch");
       void (el as HTMLElement).offsetWidth;
       el.classList.add("glitch");
-      window.setTimeout(() => el.classList.remove("glitch"), 380);
+      const duration = el.closest(".plate-mask") ? 520 : 380;
+      window.setTimeout(() => el.classList.remove("glitch"), duration);
     };
 
     const io = new IntersectionObserver(
@@ -42,10 +43,19 @@ export function useGlitch() {
       if (r.top > -100 && r.top < window.innerHeight) fire(el);
     }, 4200);
 
+    const maskHeads = document.querySelectorAll(".plate-mask .plate-h [data-glitch]");
+    const maskInterval = window.setInterval(() => {
+      if (maskHeads.length === 0) return;
+      const el = maskHeads[0]!;
+      const r = el.getBoundingClientRect();
+      if (r.top > -100 && r.bottom < window.innerHeight + 100) fire(el);
+    }, 2500);
+
     return () => {
       io.disconnect();
       glitchables.forEach((el) => el.removeEventListener("mouseenter", onEnter));
       window.clearInterval(interval);
+      window.clearInterval(maskInterval);
     };
   }, []);
 }

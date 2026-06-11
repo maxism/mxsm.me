@@ -11,9 +11,30 @@ type Props = {
   backHref: string;
   copy: Dictionary["maskPage"];
 };
-type MaterialKey = "dispersion" | "holo" | "glitch" | "ghost" | "glass";
+type MaterialKey =
+  | "dispersion" | "holo" | "glitch" | "ghost" | "glass"
+  | "blood" | "xray" | "rot" | "void";
 
-const MATERIAL_KEYS: MaterialKey[] = ["dispersion", "holo", "glitch", "ghost", "glass"];
+const MATERIAL_KEYS: MaterialKey[] = [
+  "dispersion", "holo", "glitch", "ghost", "glass",
+  "blood", "xray", "rot", "void",
+];
+
+// Which backdrop each material gets
+type BgKey = "gradient" | "ico" | "veins" | "morgue" | "abyss";
+const MAT_BG: Record<MaterialKey, BgKey> = {
+  dispersion: "gradient",
+  holo: "gradient",
+  glitch: "gradient",
+  ghost: "ico",
+  glass: "ico",
+  blood: "veins",
+  rot: "veins",
+  xray: "morgue",
+  void: "abyss",
+};
+// Materials that never sample the captured background texture
+const NO_RT = new Set<MaterialKey>(["holo", "blood", "xray", "rot"]);
 
 // ─── Background animated gradient shader ────────────────────────────────────
 const BG_VERT = `varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.99, 1.0); }`;
@@ -122,6 +143,214 @@ void main() {
   gl_FragColor = vec4(col, 0.97);
 }`;
 
+// ─── Shared noise helpers ────────────────────────────────────────────────────
+const NOISE3D = `
+float hash3(vec3 p){ return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
+float noise3(vec3 p){
+  vec3 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
+  return mix(
+    mix(mix(hash3(i), hash3(i+vec3(1,0,0)), f.x), mix(hash3(i+vec3(0,1,0)), hash3(i+vec3(1,1,0)), f.x), f.y),
+    mix(mix(hash3(i+vec3(0,0,1)), hash3(i+vec3(1,0,1)), f.x), mix(hash3(i+vec3(0,1,1)), hash3(i+vec3(1,1,1)), f.x), f.y),
+    f.z);
+}
+float fbm3(vec3 p){ float v = 0.0, a = 0.5; for (int i = 0; i < 4; i++) { v += a*noise3(p); p *= 2.03; a *= 0.5; } return v; }
+`;
+const NOISE2D = `
+float hash2(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float noise2(vec2 p){
+  vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
+  return mix(mix(hash2(i), hash2(i+vec2(1,0)), f.x), mix(hash2(i+vec2(0,1)), hash2(i+vec2(1,1)), f.x), f.y);
+}
+float fbm2(vec2 p){ float v = 0.0, a = 0.5; for (int i = 0; i < 4; i++) { v += a*noise2(p); p *= 2.03; a *= 0.5; } return v; }
+`;
+
+// ─── Vertex shader with object-space position (for surface noise) ────────────
+const MASK_VERT_P = `
+varying vec3 vN;
+varying vec3 vP;
+void main() {
+  vN = normalize(normalMatrix * normal);
+  vP = position;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}`;
+
+// ─── Blood — wet flesh, pulsing veins, heartbeat ─────────────────────────────
+const BLOOD_FRAG = `
+precision mediump float;
+uniform float uTime;
+varying vec3 vN;
+varying vec3 vP;
+${NOISE3D}
+void main() {
+  vec3 n = normalize(vN);
+  // double-thump heartbeat
+  float beat = pow(abs(sin(uTime*1.9)), 6.0) + 0.4*pow(abs(sin(uTime*1.9 + 0.4)), 24.0);
+
+  float v = fbm3(vP*6.0 + vec3(0.0, uTime*0.05, 0.0));
+  float veins = pow(1.0 - abs(v*2.0 - 1.0), 6.0);
+
+  vec3 flesh   = vec3(0.16, 0.008, 0.012);
+  vec3 veinCol = vec3(0.62, 0.02, 0.04) * (0.5 + beat);
+  vec3 col = flesh + veinCol*veins;
+
+  float fr = pow(1.0 - abs(dot(n, vec3(0.,0.,1.))), 2.0);
+  col += vec3(0.5, 0.03, 0.05) * fr * (0.5 + 0.8*beat);
+
+  // wet specular
+  vec3 l = normalize(vec3(0.4, 0.7, 0.6));
+  float spec = pow(max(dot(reflect(-l, n), vec3(0.,0.,1.)), 0.0), 60.0);
+  col += vec3(1.0, 0.85, 0.8) * spec * 0.9;
+
+  gl_FragColor = vec4(col, 1.0);
+}`;
+
+// ─── X-ray — bone densitometry, sweeping scan band ───────────────────────────
+const XRAY_FRAG = `
+precision mediump float;
+uniform float uTime;
+varying vec3 vN;
+varying vec3 vP;
+float hx(float n){ return fract(sin(n)*43758.5453); }
+void main() {
+  vec3 n = normalize(vN);
+  float facing = abs(dot(n, vec3(0.,0.,1.)));
+  float bone = pow(facing, 2.2);
+  float fr = pow(1.0 - facing, 1.4);
+
+  // scan band sweeping down the skull
+  float y = fract(uTime*0.16)*3.0 - 1.5;
+  float band = exp(-pow((vP.y - y)*6.0, 2.0));
+
+  vec3 col = vec3(0.30, 0.85, 0.75)*bone + vec3(0.08, 0.45, 0.40)*fr;
+  col += vec3(0.5, 1.0, 0.9)*band*0.7;
+
+  // film flicker + horizontal noise lines
+  col *= 0.88 + 0.12*sin(uTime*40.0 + vP.y*60.0);
+  col *= 0.92 + 0.08*hx(floor(vP.y*120.0) + floor(uTime*24.0));
+
+  float alpha = clamp(bone*0.9 + fr*0.5 + band*0.3, 0.0, 1.0);
+  gl_FragColor = vec4(col, alpha);
+}`;
+
+// ─── Rot — necrotic decay, crawling patches ──────────────────────────────────
+const ROT_FRAG = `
+precision mediump float;
+uniform float uTime;
+varying vec3 vN;
+varying vec3 vP;
+${NOISE3D}
+void main() {
+  vec3 n = normalize(vN);
+  float crawl = fbm3(vP*3.0 + vec3(0.0, -uTime*0.05, uTime*0.03));
+  float patches = smoothstep(0.42, 0.68, crawl);
+  float holes = smoothstep(0.60, 0.74, crawl);
+
+  vec3 skin = vec3(0.22, 0.17, 0.11);
+  vec3 rot  = vec3(0.09, 0.12, 0.03);
+  vec3 col = mix(skin, rot, patches);
+  col = mix(col, vec3(0.012, 0.008, 0.006), holes);
+
+  // sickly green rim
+  float fr = pow(1.0 - abs(dot(n, vec3(0.,0.,1.))), 2.5);
+  col += vec3(0.22, 0.38, 0.07) * fr;
+
+  // wriggling specks in the live tissue
+  float speck = step(0.985, hash3(floor(vP*40.0) + floor(uTime*8.0)));
+  col += vec3(0.38, 0.42, 0.28) * speck * (1.0 - holes);
+
+  gl_FragColor = vec4(col, 1.0);
+}`;
+
+// ─── Void — light-swallowing silhouette with unstable rim ────────────────────
+const VOID_FRAG = `
+precision mediump float;
+uniform sampler2D uBg;
+uniform vec2 uRes;
+uniform float uTime;
+varying vec3 vN;
+void main() {
+  vec2 uv = gl_FragCoord.xy / uRes;
+  vec3 n = normalize(vN);
+  float facing = abs(dot(n, vec3(0.,0.,1.)));
+
+  // pull background light into the silhouette and extinguish it
+  vec2 warp = n.xy * (0.25 + 0.05*sin(uTime*0.8));
+  vec3 bg = texture2D(uBg, uv - warp).rgb;
+  vec3 col = bg * pow(1.0 - facing, 3.0) * 0.35;
+
+  // thin flickering white rim
+  float rim = pow(1.0 - facing, 6.0);
+  rim *= 0.7 + 0.3*sin(uTime*13.0 + gl_FragCoord.y*0.6);
+  col += vec3(0.9, 0.95, 1.0) * rim;
+
+  gl_FragColor = vec4(col, 1.0);
+}`;
+
+// ─── Backdrop: pulsing veins (blood / rot) ───────────────────────────────────
+const VEINS_BG_FRAG = `
+precision mediump float;
+uniform float uTime;
+varying vec2 vUv;
+${NOISE2D}
+void main() {
+  vec2 p = vUv - 0.5;
+  float r = length(p);
+  float beat = pow(abs(sin(uTime*1.9)), 6.0);
+
+  float v = fbm2(p*7.0 + vec2(0.0, uTime*0.03));
+  float veins = pow(1.0 - abs(v*2.0 - 1.0), 7.0);
+
+  vec3 col = vec3(0.045, 0.0, 0.005);
+  col += vec3(0.30, 0.01, 0.02) * veins * (0.35 + 0.65*beat);
+  col *= 1.0 - smoothstep(0.15, 0.75, r) * 0.85;
+  col += vec3(0.07, 0.0, 0.01) * beat * (1.0 - r);
+
+  gl_FragColor = vec4(col, 1.0);
+}`;
+
+// ─── Backdrop: flickering morgue light (x-ray) ───────────────────────────────
+const MORGUE_BG_FRAG = `
+precision mediump float;
+uniform float uTime;
+varying vec2 vUv;
+float hm(float n){ return fract(sin(n)*43758.5453); }
+void main() {
+  vec2 p = vUv;
+  // dying fluorescent tube
+  float t = floor(uTime*24.0);
+  float flick = 0.55 + 0.45*hm(t);
+  flick *= step(0.06, hm(t*1.7)); // random blackouts
+
+  float light = exp(-pow((p.x - 0.5)*2.2, 2.0)) * (1.2 - p.y*0.7);
+  vec3 col = vec3(0.42, 0.55, 0.50) * light * flick * 0.35;
+
+  col *= 0.85 + 0.15*step(0.5, fract(gl_FragCoord.y*0.5));
+  col += hm(dot(p, vec2(12.9, 78.2)) + uTime) * 0.05 - 0.025;
+
+  gl_FragColor = vec4(max(col, 0.0), 1.0);
+}`;
+
+// ─── Backdrop: slow black vortex (void) ──────────────────────────────────────
+const ABYSS_BG_FRAG = `
+precision mediump float;
+uniform float uTime;
+varying vec2 vUv;
+${NOISE2D}
+void main() {
+  vec2 p = vUv - 0.5;
+  float a = atan(p.y, p.x);
+  float r = length(p);
+
+  float swirl = fbm2(vec2(a*2.0 + r*6.0 - uTime*0.12, r*8.0 - uTime*0.08));
+  vec3 col = vec3(0.010, 0.007, 0.018);
+  col += vec3(0.09, 0.035, 0.15) * pow(swirl, 2.0) * (1.0 - smoothstep(0.0, 0.7, r));
+
+  // rare dust sparks
+  col += vec3(0.02) * step(0.997, hash2(floor(p*220.0) + floor(uTime*3.0)));
+
+  gl_FragColor = vec4(col, 1.0);
+}`;
+
 // ─── Physical dispersion vertex shader (worldNormal + eyeVector) ─────────────
 const PHYS_VERT = `
 varying vec3 worldNormal;
@@ -222,14 +451,18 @@ export function MaskExperience({ backHref, copy }: Props) {
   const threeRef = useRef<typeof ThreeTypes | null>(null);
   const bgPlaneRef = useRef<ThreeTypes.Mesh | null>(null);
   const icoGroupRef = useRef<ThreeTypes.Group | null>(null);
-
-  const DARK_BG = new Set<MaterialKey>(["glass", "ghost"]);
+  const bgMatsRef = useRef<Record<Exclude<BgKey, "ico">, ThreeTypes.ShaderMaterial> | null>(null);
 
   const switchMaterial = (key: MaterialKey) => {
     setActiveMat(key);
     matKeyRef.current = key;
-    if (bgPlaneRef.current) bgPlaneRef.current.visible = !DARK_BG.has(key);
-    if (icoGroupRef.current) icoGroupRef.current.visible = DARK_BG.has(key);
+    const bg = MAT_BG[key];
+    const plane = bgPlaneRef.current;
+    if (plane) {
+      plane.visible = bg !== "ico";
+      if (bg !== "ico" && bgMatsRef.current) plane.material = bgMatsRef.current[bg];
+    }
+    if (icoGroupRef.current) icoGroupRef.current.visible = bg === "ico";
     const mesh = outerMeshRef.current;
     if (!mesh || !threeRef.current) return;
     const geo = (mesh.geometry as ThreeTypes.BufferGeometry).clone();
@@ -305,19 +538,30 @@ export function MaskExperience({ backHref, copy }: Props) {
           const m = new THREE.Mesh(icoGeo, icoMat);
           m.position.set(col, row, -6); icoGroup.add(m);
         }
-      icoGroup.visible = DARK_BG.has(matKeyRef.current);
+      icoGroup.visible = MAT_BG[matKeyRef.current] === "ico";
       icoGroupRef.current = icoGroup;
       scene.add(icoGroup);
 
-      // ── Background plane ──────────────────────────────────────────────────
-      const bgMat = new THREE.ShaderMaterial({
-        vertexShader: BG_VERT, fragmentShader: BG_FRAG,
+      // ── Background plane (one per backdrop shader) ────────────────────────
+      const mkBg = (frag: string) => new THREE.ShaderMaterial({
+        vertexShader: BG_VERT, fragmentShader: frag,
         uniforms: { uTime: { value: 0 } },
         depthWrite: false,
       });
-      const bgPlane = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), bgMat);
+      const bgMats = {
+        gradient: mkBg(BG_FRAG),
+        veins: mkBg(VEINS_BG_FRAG),
+        morgue: mkBg(MORGUE_BG_FRAG),
+        abyss: mkBg(ABYSS_BG_FRAG),
+      };
+      bgMatsRef.current = bgMats;
+      const initialBg = MAT_BG[matKeyRef.current];
+      const bgPlane = new THREE.Mesh(
+        new THREE.PlaneGeometry(2, 2),
+        bgMats[initialBg === "ico" ? "gradient" : initialBg],
+      );
       bgPlane.renderOrder = -1;
-      bgPlane.visible = !DARK_BG.has(matKeyRef.current);
+      bgPlane.visible = initialBg !== "ico";
       bgPlaneRef.current = bgPlane;
       scene.add(bgPlane);
 
@@ -341,6 +585,18 @@ export function MaskExperience({ backHref, copy }: Props) {
           case "glitch":
             return new THREE.ShaderMaterial({ vertexShader: DISP_VERT, fragmentShader: GLITCH_FRAG,
               uniforms: uni, transparent: true, depthWrite: false });
+          case "blood":
+            return new THREE.ShaderMaterial({ vertexShader: MASK_VERT_P, fragmentShader: BLOOD_FRAG,
+              uniforms: { uTime: { value: 0 } } });
+          case "xray":
+            return new THREE.ShaderMaterial({ vertexShader: MASK_VERT_P, fragmentShader: XRAY_FRAG,
+              uniforms: { uTime: { value: 0 } }, transparent: true, depthWrite: false });
+          case "rot":
+            return new THREE.ShaderMaterial({ vertexShader: MASK_VERT_P, fragmentShader: ROT_FRAG,
+              uniforms: { uTime: { value: 0 } } });
+          case "void":
+            return new THREE.ShaderMaterial({ vertexShader: DISP_VERT, fragmentShader: VOID_FRAG,
+              uniforms: uni });
           case "ghost":
           case "glass": {
             const physUniforms = {
@@ -515,15 +771,15 @@ export function MaskExperience({ backHref, copy }: Props) {
         if (!isDragging) rotY += 0.0012;
         root.rotation.y = rotY;
         root.rotation.x = rotX;
-        bgMat.uniforms.uTime.value = time;
+        for (const m of Object.values(bgMats)) m.uniforms.uTime.value = time;
 
         const mat = outerMatRef.current;
         if (mat?.uniforms) {
           if (mat.uniforms.uTime) mat.uniforms.uTime.value = time;
         }
 
-        // Pass 1: capture background (mask hidden) — needed for all shader mats
-        const needsRT = matKeyRef.current !== "holo";
+        // Pass 1: capture background (mask hidden) — only for bg-sampling mats
+        const needsRT = !NO_RT.has(matKeyRef.current);
         if (needsRT && outerMesh && innerMesh) {
           outerMesh.visible = false; innerMesh.visible = false;
           renderer.setRenderTarget(bgTarget);
@@ -564,7 +820,7 @@ export function MaskExperience({ backHref, copy }: Props) {
           }
         });
         envTex.dispose();
-        bgMat.dispose();
+        Object.values(bgMats).forEach((m) => m.dispose());
         icoGeo.dispose();
         icoMat.dispose();
         bgTarget.dispose();

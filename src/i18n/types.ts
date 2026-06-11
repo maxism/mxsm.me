@@ -111,6 +111,10 @@ export type Dictionary = {
       glitch: string;
       ghost: string;
       glass: string;
+      blood: string;
+      xray: string;
+      rot: string;
+      void: string;
     };
     loader: {
       initializing: string;
