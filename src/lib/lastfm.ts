@@ -1,5 +1,14 @@
 export const LASTFM_USER = "maxismart";
 
+const LASTFM_API_URL = "https://ws.audioscrobbler.com/2.0/";
+const LASTFM_USER_AGENT = "mxsm.me/1.0 (+https://mxsm.me)";
+
+export function readLastFmApiKey(): string | undefined {
+  const raw = process.env.LASTFM_API_KEY?.trim();
+  if (!raw) return undefined;
+  return raw.replace(/^["']|["']$/g, "");
+}
+
 export type NowPlayingTrack = {
   track: string;
   artist: string;
@@ -69,7 +78,7 @@ export function parseLastFmRecentTrack(payload: LastFmResponse): NowPlayingTrack
 }
 
 export async function fetchNowPlaying(): Promise<NowPlayingState> {
-  const apiKey = process.env.LASTFM_API_KEY;
+  const apiKey = readLastFmApiKey();
   if (!apiKey) {
     return { ok: false, data: null, error: "missing_api_key" };
   }
@@ -83,15 +92,22 @@ export async function fetchNowPlaying(): Promise<NowPlayingState> {
   });
 
   try {
-    const res = await fetch(`https://ws.audioscrobbler.com/2.0/?${params}`, {
+    const res = await fetch(`${LASTFM_API_URL}?${params}`, {
+      headers: { "User-Agent": LASTFM_USER_AGENT },
       next: { revalidate: 30 },
     });
 
+    const payload = (await res.json()) as LastFmResponse & {
+      error?: number;
+      message?: string;
+    };
+
     if (!res.ok) {
-      return { ok: false, data: null, error: `http_${res.status}` };
+      const detail =
+        payload.error === 10 ? "invalid_api_key" : payload.message?.toLowerCase().replace(/\s+/g, "_");
+      return { ok: false, data: null, error: detail ?? `http_${res.status}` };
     }
 
-    const payload = (await res.json()) as LastFmResponse;
     return { ok: true, data: parseLastFmRecentTrack(payload) };
   } catch {
     return { ok: false, data: null, error: "fetch_failed" };

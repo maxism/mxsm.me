@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatRelativePlayedAt, parseLastFmRecentTrack } from "@/lib/lastfm";
+import { formatRelativePlayedAt, parseLastFmRecentTrack, readLastFmApiKey } from "@/lib/lastfm";
 
 const nowPlayingPayload = {
   recenttracks: {
@@ -65,5 +65,11 @@ describe("lastfm", () => {
   it("formats relative played at", () => {
     const playedAt = Math.floor(Date.now() / 1000) - 7200;
     expect(formatRelativePlayedAt(playedAt, "en", Date.now())).toMatch(/hour/);
+  });
+
+  it("normalizes quoted api key env values", () => {
+    process.env.LASTFM_API_KEY = '"abc123"';
+    expect(readLastFmApiKey()).toBe("abc123");
+    delete process.env.LASTFM_API_KEY;
   });
 });

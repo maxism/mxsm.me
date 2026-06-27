@@ -25,9 +25,12 @@ const connectSrc = [
   ...yandexMetrikaOrigins,
 ].join(" ");
 
-const imgSrc = ["'self'", "data:", ...yandexMetrikaOrigins.filter((origin) => origin.startsWith("https://"))].join(
-  " ",
-);
+const imgSrc = [
+  "'self'",
+  "data:",
+  "https://lastfm.freetls.fastly.net",
+  ...yandexMetrikaOrigins.filter((origin) => origin.startsWith("https://")),
+].join(" ");
 
 const frameSrc = [
   ...yandexMetrikaOrigins.filter((origin) => origin.startsWith("https://")),
