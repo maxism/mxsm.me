@@ -28,7 +28,7 @@ const securityHeaders = [
     value: [
       "default-src 'self'",
       `script-src ${scriptSrc}`,
-      "connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://mc.yandex.ru",
+      "connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://mc.yandex.ru wss://mc.yandex.ru",
       "img-src 'self' data: https://mc.yandex.ru",
       "style-src 'self' 'unsafe-inline'",
       "font-src 'self' https://fonts.gstatic.com",
