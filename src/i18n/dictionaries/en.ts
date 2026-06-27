@@ -16,6 +16,14 @@ export const en: Dictionary = {
   nav: {
     primary: "primary",
     about: "about",
+    plates: {
+      currently: "now",
+      archive: "archive",
+      podcast: "shitbustards",
+      signal: "signal",
+      mask: "mask",
+      contact: "contact",
+    },
   },
   plates: {
     identity: {
@@ -39,6 +47,11 @@ export const en: Dictionary = {
       heading: "/ now",
       headingGlitch: "// now",
       live: "● LIVE",
+      nowPlaying: {
+        label: "now playing",
+        silence: "silence",
+        lastPlayed: "last played",
+      },
       roles: [
         {
           n: "01",
@@ -139,8 +152,8 @@ export const en: Dictionary = {
         { key: "WITH", value: "mike zharchev" },
         { key: "ON AIR", value: "since mar 2024 · S2" },
       ],
-      heading: "/ shitbustards",
-      headingGlitch: "// shitbustards",
+      heading: "SHITBUSTARDS",
+      headingGlitch: "SHITBUSTARDS",
       ticker: "★ ON AIR · SHITBUSTARDS · S2 · WITH MIKE ZHARCHEV · ",
       tickerBrand: "SHITBUSTARDS",
       onAir: "ON AIR",
@@ -149,7 +162,6 @@ export const en: Dictionary = {
     },
     signal: {
       meta: [
-        { key: "PLATE", value: "05 · MXSM/SIGNAL" },
         { key: "TYPE", value: "generative art" },
         { key: "STACK", value: "webgl · web audio" },
       ],
@@ -167,7 +179,6 @@ export const en: Dictionary = {
     },
     mask: {
       meta: [
-        { key: "PLATE", value: "06 · MXSM/MASK" },
         { key: "TYPE", value: "3d experiment" },
         { key: "STACK", value: "three.js · webgl" },
       ],

@@ -12,6 +12,8 @@ type PlateHeadProps = {
   cyrillic?: boolean;
   href?: string;
   centered?: boolean;
+  minimal?: boolean;
+  display?: boolean;
 };
 
 export function PlateHead({
@@ -24,8 +26,10 @@ export function PlateHead({
   cyrillic,
   href,
   centered,
+  minimal,
+  display,
 }: PlateHeadProps) {
-  const headingClass = `plate-h${cyrillic ? " cyr" : ""}`;
+  const headingClass = `plate-h${cyrillic ? " cyr" : ""}${display ? " plate-h--display" : ""}`;
 
   const heading = href ? (
     <Heading className={headingClass} id={titleId}>
@@ -46,7 +50,7 @@ export function PlateHead({
 
   return (
     <header className={`plate-head${centered ? " plate-head--center" : ""}`}>
-      <TitleBlock rows={rows} inverted={inverted} />
+      {!minimal && <TitleBlock rows={rows} inverted={inverted} />}
       {heading}
     </header>
   );

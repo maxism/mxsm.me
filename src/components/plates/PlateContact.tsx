@@ -12,7 +12,7 @@ export function PlateContact({ dict }: PlateContactProps) {
 
   return (
     <section className="plate" id="plate-07" aria-labelledby="h-07">
-      <PlateHead rows={p.meta} title={p.heading} titleGlitch={p.headingGlitch} titleId="h-07" />
+      <PlateHead rows={p.meta} title={p.heading} titleGlitch={p.headingGlitch} titleId="h-07" minimal />
 
       <div className="contact-main">
         <GlitchText as="a" href="mailto:m@mxsm.me" text="m@mxsm.me" className="contact-mail" />

@@ -4,12 +4,12 @@ export const SHITBUSTARDS_ORIGIN = "https://shitbustards.ru";
 export const SHITBUSTARDS_RSS_URL = "https://cloud.mave.digital/54964";
 
 export const navPlates = [
-  { href: "#plate-02", label: "/02" },
-  { href: "#plate-03", label: "/03" },
-  { href: "#plate-04", label: "/04" },
-  { href: "#plate-05", label: "/05" },
-  { href: "#plate-06", label: "/06" },
-  { href: "#plate-07", label: "/07" },
+  { href: "#plate-02", key: "currently" },
+  { href: "#plate-03", key: "archive" },
+  { href: "#plate-04", key: "podcast" },
+  { href: "#plate-05", key: "signal" },
+  { href: "#plate-06", key: "mask" },
+  { href: "#plate-07", key: "contact" },
 ] as const;
 
 export const podcastPlatforms = [

@@ -50,7 +50,7 @@ export function Masthead({ locale, dict }: MastheadProps) {
         <Link href={aboutHref}>{dict.nav.about}</Link>
         {navPlates.map((item) => (
           <a key={item.href} href={item.href}>
-            {item.label}
+            {dict.nav.plates[item.key]}
           </a>
         ))}
       </nav>

@@ -17,6 +17,14 @@ export const ru: Dictionary = {
   nav: {
     primary: "primary",
     about: "about",
+    plates: {
+      currently: "сейчас",
+      archive: "архив",
+      podcast: "шитбастардс",
+      signal: "signal",
+      mask: "mask",
+      contact: "контакт",
+    },
   },
   plates: {
     identity: {
@@ -40,6 +48,11 @@ export const ru: Dictionary = {
       heading: "/ сейчас",
       headingGlitch: "// сейчас",
       live: "● LIVE",
+      nowPlaying: {
+        label: "слушаю",
+        silence: "тишина",
+        lastPlayed: "последний трек",
+      },
       roles: [
         {
           n: "01",
@@ -140,8 +153,8 @@ export const ru: Dictionary = {
         { key: "WITH", value: "mike zharchev" },
         { key: "ON AIR", value: "since mar 2024 · S2" },
       ],
-      heading: "/ шитбастардс",
-      headingGlitch: "// шитбастардс",
+      heading: "ШИТБАСТАРДС",
+      headingGlitch: "ШИТБАСТАРДС",
       ticker: "★ ON AIR · ШИТБАСТАРДС · S2 · WITH MIKE ZHARCHEV · ",
       tickerBrand: "ШИТБАСТАРДС",
       onAir: "ON AIR",
@@ -150,7 +163,6 @@ export const ru: Dictionary = {
     },
     signal: {
       meta: [
-        { key: "PLATE", value: "05 · MXSM/SIGNAL" },
         { key: "TYPE", value: "generative art" },
         { key: "STACK", value: "webgl · web audio" },
       ],
@@ -168,7 +180,6 @@ export const ru: Dictionary = {
     },
     mask: {
       meta: [
-        { key: "PLATE", value: "06 · MXSM/MASK" },
         { key: "TYPE", value: "3d experiment" },
         { key: "STACK", value: "three.js · webgl" },
       ],

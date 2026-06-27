@@ -36,6 +36,14 @@ export type Dictionary = {
   nav: {
     primary: string;
     about: string;
+    plates: {
+      currently: string;
+      archive: string;
+      podcast: string;
+      signal: string;
+      mask: string;
+      contact: string;
+    };
   };
   plates: {
     identity: {
@@ -51,6 +59,11 @@ export type Dictionary = {
       heading: string;
       headingGlitch: string;
       live: string;
+      nowPlaying: {
+        label: string;
+        silence: string;
+        lastPlayed: string;
+      };
       roles: Role[];
     };
     archive: {

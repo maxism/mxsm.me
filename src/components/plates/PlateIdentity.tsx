@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { GlitchText } from "@/components/ui/GlitchText";
-import { TitleBlock } from "@/components/ui/TitleBlock";
 import { localeAboutPath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 
@@ -14,8 +13,6 @@ export function PlateIdentity({ dict, locale }: PlateIdentityProps) {
 
   return (
     <section className="plate plate-hero" id="plate-01" aria-labelledby="h-01">
-      <TitleBlock rows={p.meta} />
-
       <h1 className="mono" id="h-01">
         <GlitchText as="span" text={dict.masthead.nameGlitch} className="mono-lat">
           {dict.masthead.name}
@@ -28,16 +25,7 @@ export function PlateIdentity({ dict, locale }: PlateIdentityProps) {
         </span>
       </h1>
 
-      <span className="ghost-glyph" aria-hidden="true">
-        {p.ghostGlyph}
-      </span>
-
       <div className="hero-foot">
-        <ul className="tags">
-          {p.tags.map((tag) => (
-            <li key={tag}>{tag}</li>
-          ))}
-        </ul>
         <Link href={localeAboutPath(locale)} className="hero-about">
           {p.aboutLink}
         </Link>

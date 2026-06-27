@@ -10,7 +10,7 @@ export function PlateArchive({ dict }: PlateArchiveProps) {
 
   return (
     <section className="plate" id="plate-03" aria-labelledby="h-03">
-      <PlateHead rows={p.meta} title={p.heading} titleGlitch={p.headingGlitch} titleId="h-03" />
+      <PlateHead rows={p.meta} title={p.heading} titleGlitch={p.headingGlitch} titleId="h-03" minimal />
 
       <ol className="archive">
         {p.items.map((item) => (
