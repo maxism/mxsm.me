@@ -1,12 +1,13 @@
 export const LASTFM_USER = "maxismart";
 
 const LASTFM_API_URL = "https://ws.audioscrobbler.com/2.0/";
-const LASTFM_USER_AGENT = "mxsm.me/1.0 (+https://mxsm.me)";
 
 export function readLastFmApiKey(): string | undefined {
-  const raw = process.env.LASTFM_API_KEY?.trim();
+  const raw =
+    process.env.NEXT_PUBLIC_LASTFM_API_KEY ??
+    process.env.LASTFM_API_KEY;
   if (!raw) return undefined;
-  return raw.replace(/^["']|["']$/g, "");
+  return raw.trim().replace(/^["']|["']$/g, "");
 }
 
 export type NowPlayingTrack = {
@@ -38,6 +39,11 @@ type LastFmResponse = {
   recenttracks?: {
     track?: LastFmTrack | LastFmTrack[];
   };
+};
+
+type LastFmErrorResponse = LastFmResponse & {
+  error?: number;
+  message?: string;
 };
 
 function textField(value: { "#text": string } | { "#text": string }[] | undefined): string {
@@ -77,6 +83,15 @@ export function parseLastFmRecentTrack(payload: LastFmResponse): NowPlayingTrack
   };
 }
 
+function mapLastFmError(payload: LastFmErrorResponse, status: number): string {
+  if (payload.error === 10) return "invalid_api_key";
+  if (payload.error === 17) return "profile_private";
+  if (payload.error === 26) return "api_key_suspended";
+  if (payload.error === 29) return "rate_limit_exceeded";
+  if (payload.message) return payload.message.toLowerCase().replace(/\s+/g, "_");
+  return `http_${status}`;
+}
+
 export async function fetchNowPlaying(): Promise<NowPlayingState> {
   const apiKey = readLastFmApiKey();
   if (!apiKey) {
@@ -93,19 +108,17 @@ export async function fetchNowPlaying(): Promise<NowPlayingState> {
 
   try {
     const res = await fetch(`${LASTFM_API_URL}?${params}`, {
-      headers: { "User-Agent": LASTFM_USER_AGENT },
-      next: { revalidate: 30 },
+      cache: "no-store",
     });
 
-    const payload = (await res.json()) as LastFmResponse & {
-      error?: number;
-      message?: string;
-    };
+    const payload = (await res.json()) as LastFmErrorResponse;
 
-    if (!res.ok) {
-      const detail =
-        payload.error === 10 ? "invalid_api_key" : payload.message?.toLowerCase().replace(/\s+/g, "_");
-      return { ok: false, data: null, error: detail ?? `http_${res.status}` };
+    if (payload.error || !res.ok) {
+      return {
+        ok: false,
+        data: null,
+        error: mapLastFmError(payload, res.status),
+      };
     }
 
     return { ok: true, data: parseLastFmRecentTrack(payload) };

@@ -22,6 +22,7 @@ const connectSrc = [
   "'self'",
   "https://www.google-analytics.com",
   "https://region1.google-analytics.com",
+  "https://ws.audioscrobbler.com",
   ...yandexMetrikaOrigins,
 ].join(" ");
 

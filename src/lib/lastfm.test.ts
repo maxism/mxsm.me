@@ -68,8 +68,8 @@ describe("lastfm", () => {
   });
 
   it("normalizes quoted api key env values", () => {
-    process.env.LASTFM_API_KEY = '"abc123"';
+    process.env.NEXT_PUBLIC_LASTFM_API_KEY = '"abc123"';
     expect(readLastFmApiKey()).toBe("abc123");
-    delete process.env.LASTFM_API_KEY;
+    delete process.env.NEXT_PUBLIC_LASTFM_API_KEY;
   });
 });

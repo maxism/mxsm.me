@@ -4,41 +4,37 @@ import { useEffect, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 import {
+  fetchNowPlaying,
   formatRelativePlayedAt,
   type NowPlayingState,
   type NowPlayingTrack,
 } from "@/lib/lastfm";
 
 type NowPlayingProps = {
-  initial: NowPlayingState;
   locale: Locale;
   copy: Dictionary["plates"]["currently"]["nowPlaying"];
 };
 
 const POLL_MS = 30_000;
 
-function trackFromState(state: NowPlayingState): NowPlayingTrack | null {
-  return state.ok ? state.data : null;
+function trackFromState(state: NowPlayingState | null): NowPlayingTrack | null {
+  if (!state?.ok) return null;
+  return state.data;
 }
 
-export function NowPlaying({ initial, locale, copy }: NowPlayingProps) {
-  const [state, setState] = useState<NowPlayingState>(initial);
+export function NowPlaying({ locale, copy }: NowPlayingProps) {
+  const [state, setState] = useState<NowPlayingState | null>(null);
   const track = trackFromState(state);
 
   useEffect(() => {
     let cancelled = false;
 
     async function poll() {
-      try {
-        const res = await fetch("/api/now-playing");
-        if (!res.ok || cancelled) return;
-        const next = (await res.json()) as NowPlayingState;
-        if (!cancelled) setState(next);
-      } catch {
-        /* keep last good state */
-      }
+      const next = await fetchNowPlaying();
+      if (!cancelled) setState(next);
     }
 
+    void poll();
     const id = window.setInterval(poll, POLL_MS);
     return () => {
       cancelled = true;

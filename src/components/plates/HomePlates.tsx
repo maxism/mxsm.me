@@ -9,21 +9,19 @@ import {
 } from "@/components/plates";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
-import type { NowPlayingState } from "@/lib/lastfm";
 import type { PodcastHomeData } from "@/lib/podcast-home";
 
 type HomePlatesProps = {
   dict: Dictionary;
   locale: Locale;
   podcast: PodcastHomeData;
-  nowPlaying: NowPlayingState;
 };
 
-export function HomePlates({ dict, locale, podcast, nowPlaying }: HomePlatesProps) {
+export function HomePlates({ dict, locale, podcast }: HomePlatesProps) {
   return (
     <>
       <PlateIdentity dict={dict} locale={locale} />
-      <PlateCurrently dict={dict} locale={locale} nowPlaying={nowPlaying} />
+      <PlateCurrently dict={dict} locale={locale} />
       <PlateArchive dict={dict} />
       <PlatePodcast dict={dict} podcast={podcast} />
       <PlateSignal dict={dict} locale={locale} />
