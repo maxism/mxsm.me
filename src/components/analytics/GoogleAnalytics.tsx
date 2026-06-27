@@ -1,8 +1,9 @@
 import Script from "next/script";
-
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID ?? "G-7YXT4BC7FF";
+import { GA_ID, gaEnabled } from "@/lib/analytics/config";
 
 export function GoogleAnalytics() {
+  if (!gaEnabled || !GA_ID) return null;
+
   return (
     <>
       <Script

@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { AnalyticsRouteTracker } from "@/components/analytics/AnalyticsRouteTracker";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { YandexMetrika } from "@/components/analytics/YandexMetrika";
+import { analyticsEnabled } from "@/lib/analytics/config";
 import { TimePalette } from "@/components/effects/TimePalette";
 import { timePaletteInitScript } from "@/lib/time-palette";
 import "./globals.css";
@@ -51,11 +52,15 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: timePaletteInitScript() }} />
         <TimePalette />
         {children}
-        <GoogleAnalytics />
-        <YandexMetrika />
-        <Suspense fallback={null}>
-          <AnalyticsRouteTracker />
-        </Suspense>
+        {analyticsEnabled ? (
+          <>
+            <GoogleAnalytics />
+            <YandexMetrika />
+            <Suspense fallback={null}>
+              <AnalyticsRouteTracker />
+            </Suspense>
+          </>
+        ) : null}
       </body>
     </html>
   );

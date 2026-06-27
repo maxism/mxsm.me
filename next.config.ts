@@ -2,13 +2,36 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV === "development";
 
+const yandexMetrikaOrigins = [
+  "https://mc.yandex.ru",
+  "https://mc.yandex.com",
+  "wss://mc.yandex.ru",
+  "wss://mc.yandex.com",
+];
+
 const scriptSrc = [
   "'self'",
   "'unsafe-inline'",
   "'wasm-unsafe-eval'",
   ...(isDev ? ["'unsafe-eval'"] : []),
   "https://www.googletagmanager.com",
-  "https://mc.yandex.ru",
+  ...yandexMetrikaOrigins.filter((origin) => origin.startsWith("https://")),
+].join(" ");
+
+const connectSrc = [
+  "'self'",
+  "https://www.google-analytics.com",
+  "https://region1.google-analytics.com",
+  ...yandexMetrikaOrigins,
+].join(" ");
+
+const imgSrc = ["'self'", "data:", ...yandexMetrikaOrigins.filter((origin) => origin.startsWith("https://"))].join(
+  " ",
+);
+
+const frameSrc = [
+  ...yandexMetrikaOrigins.filter((origin) => origin.startsWith("https://")),
+  "https://mc.webvisor.org",
 ].join(" ");
 
 const securityHeaders = [
@@ -28,8 +51,9 @@ const securityHeaders = [
     value: [
       "default-src 'self'",
       `script-src ${scriptSrc}`,
-      "connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://mc.yandex.ru wss://mc.yandex.ru",
-      "img-src 'self' data: https://mc.yandex.ru",
+      `connect-src ${connectSrc}`,
+      `img-src ${imgSrc}`,
+      `frame-src ${frameSrc}`,
       "style-src 'self' 'unsafe-inline'",
       "font-src 'self' https://fonts.gstatic.com",
       "frame-ancestors 'none'",
