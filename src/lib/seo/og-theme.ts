@@ -3,8 +3,8 @@ export const OG = {
   bg: "#0a0907",
   ink: "#e8e2d2",
   inkMuted: "#9a9488",
-  /** Void / signal accent — not time-of-day yellow. */
-  accent: "#a88bf0",
+  /** Warm industrial accent — matches site --hot default. */
+  accent: "#e8c547",
   /** Static glitch RGB split (matches globals.css [data-glitch]). */
   glitchR: "#ff2a45",
   glitchB: "#00d9ff",

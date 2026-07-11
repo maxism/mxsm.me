@@ -24,6 +24,7 @@ export function PlateMask({ dict, locale }: PlateMaskProps) {
             titleId="h-06"
             inverted
             centered
+            glitch
           />
           <p className="sig-hint sig-hint--stage">{p.ctaHint}</p>
         </div>

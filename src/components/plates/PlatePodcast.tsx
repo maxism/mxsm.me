@@ -10,7 +10,7 @@ type PlatePodcastProps = {
 
 export function PlatePodcast({ dict, podcast }: PlatePodcastProps) {
   const p = dict.plates.podcast;
-  const { episodes, meta, ticker, foot } = podcast;
+  const { episodes, ticker, foot, quote } = podcast;
 
   return (
     <section
@@ -32,14 +32,17 @@ export function PlatePodcast({ dict, podcast }: PlatePodcastProps) {
         </span>
 
         <PlateHead
-          rows={meta}
           title={p.heading}
           titleGlitch={p.headingGlitch}
           titleId="h-04"
           cyrillic
           href={SHITBUSTARDS_ORIGIN}
           display
+          glitch
+          minimal
         />
+
+        {quote && <blockquote className="pod-quote">«{quote}»</blockquote>}
 
         <div className="pod-grid">
           <aside className="pod-aside pod-aside--shb">

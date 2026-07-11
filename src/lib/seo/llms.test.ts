@@ -35,8 +35,8 @@ describe("llms exports", () => {
   it("buildHomeText includes archive and contacts", () => {
     const text = buildHomeText("en");
 
-    expect(text).toContain("=== archive ===");
-    expect(text).toContain("OnlyFans");
+    expect(text).toContain("=== before ===");
+    expect(text).toContain("onlyfans");
     expect(text).toContain("github: https://github.com/maxism");
   });
 });

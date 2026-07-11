@@ -3,50 +3,91 @@
 import { useEffect, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
+import { fetchMusicFeedWithFallback } from "@/lib/lastfm-client";
 import {
-  fetchNowPlaying,
   formatRelativePlayedAt,
-  type NowPlayingState,
+  LASTFM_PROFILE_URL,
+  type MusicFeedState,
   type NowPlayingTrack,
 } from "@/lib/lastfm";
+import { accentFromImage, applyAccentColor, clearAccentColor } from "@/lib/album-accent";
+
+type MusicFeedCopy = Dictionary["plates"]["currently"]["nowPlaying"];
 
 type NowPlayingProps = {
+  initial: MusicFeedState;
   locale: Locale;
-  copy: Dictionary["plates"]["currently"]["nowPlaying"];
+  copy: MusicFeedCopy;
 };
 
 const POLL_MS = 30_000;
 
-function trackFromState(state: NowPlayingState | null): NowPlayingTrack | null {
-  if (!state?.ok) return null;
-  return state.data;
-}
-
-export function NowPlaying({ locale, copy }: NowPlayingProps) {
-  const [state, setState] = useState<NowPlayingState | null>(null);
-  const track = trackFromState(state);
+export function NowPlaying({ initial, locale, copy }: NowPlayingProps) {
+  const [feed, setFeed] = useState<MusicFeedState>(initial);
+  const [loading, setLoading] = useState(!initial.ok && !initial.current);
 
   useEffect(() => {
     let cancelled = false;
 
     async function poll() {
-      const next = await fetchNowPlaying();
-      if (!cancelled) setState(next);
+      const next = await fetchMusicFeedWithFallback();
+      if (!cancelled) {
+        setFeed(next);
+        setLoading(false);
+      }
     }
 
-    void poll();
+    if (!initial.ok) void poll();
+
     const id = window.setInterval(poll, POLL_MS);
     return () => {
       cancelled = true;
       window.clearInterval(id);
     };
-  }, []);
+  }, [initial.ok]);
 
-  if (!track) {
+  const track = feed.ok ? feed.current : null;
+  const recent = feed.ok ? feed.recent.filter((t) => !t.isPlaying).slice(0, 4) : [];
+
+  useEffect(() => {
+    if (!track?.isPlaying || !track.artUrl) {
+      clearAccentColor();
+      return;
+    }
+
+    let cancelled = false;
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      if (cancelled) return;
+      const accent = accentFromImage(img);
+      if (accent) applyAccentColor(accent);
+    };
+    img.onerror = () => clearAccentColor();
+    img.src = track.artUrl;
+
+    return () => {
+      cancelled = true;
+    };
+  }, [track?.isPlaying, track?.artUrl]);
+
+  if (loading && !track) {
     return (
       <div className="now-playing now-playing--idle" aria-live="polite">
         <span className="now-playing-label">{copy.label}</span>
-        <p className="now-playing-silence">{copy.silence}</p>
+        <p className="now-playing-silence">{copy.loading}</p>
+      </div>
+    );
+  }
+
+  if (!feed.ok || !track) {
+    return (
+      <div className="now-playing now-playing--idle" aria-live="polite">
+        <span className="now-playing-label">{copy.label}</span>
+        <p className="now-playing-silence">{feed.ok ? copy.silence : copy.unavailable}</p>
+        <a className="now-playing-fallback" href={LASTFM_PROFILE_URL} rel="noopener noreferrer">
+          {copy.profile}
+        </a>
       </div>
     );
   }
@@ -55,6 +96,22 @@ export function NowPlaying({ locale, copy }: NowPlayingProps) {
     ? copy.label
     : `${copy.lastPlayed} · ${track.playedAt ? formatRelativePlayedAt(track.playedAt, locale) : "—"}`;
 
+  return (
+    <NowPlayingCard track={track} recent={recent} meta={meta} copy={copy} />
+  );
+}
+
+function NowPlayingCard({
+  track,
+  recent,
+  meta,
+  copy,
+}: {
+  track: NowPlayingTrack;
+  recent: NowPlayingTrack[];
+  meta: string;
+  copy: MusicFeedCopy;
+}) {
   return (
     <div
       className={`now-playing${track.isPlaying ? " now-playing--live" : " now-playing--idle"}`}
@@ -94,6 +151,20 @@ export function NowPlaying({ locale, copy }: NowPlayingProps) {
           <span />
           <span />
         </div>
+      )}
+
+      {recent.length > 0 && (
+        <ul className="now-playing-recent" aria-label={copy.recent}>
+          <li className="now-playing-recent-label">{copy.recent}</li>
+          {recent.map((item) => (
+            <li key={`${item.artist}-${item.track}-${item.playedAt ?? "now"}`}>
+              <a href={item.url} rel="noopener noreferrer">
+                <span>{item.artist}</span>
+                <span>{item.track}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );

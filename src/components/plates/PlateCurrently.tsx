@@ -3,25 +3,27 @@ import { PlateHead } from "@/components/ui/PlateHead";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 
+import type { MusicFeedState } from "@/lib/lastfm";
+
 type PlateCurrentlyProps = {
   dict: Dictionary;
   locale: Locale;
+  music: MusicFeedState;
 };
 
-export function PlateCurrently({ dict, locale }: PlateCurrentlyProps) {
+export function PlateCurrently({ dict, locale, music }: PlateCurrentlyProps) {
   const p = dict.plates.currently;
 
   return (
     <section className="plate" id="plate-02" aria-labelledby="h-02">
       <PlateHead
-        rows={p.meta}
         title={p.heading}
         titleGlitch={p.headingGlitch}
         titleId="h-02"
         minimal
       />
 
-      <NowPlaying locale={locale} copy={p.nowPlaying} />
+      <NowPlaying initial={music} locale={locale} copy={p.nowPlaying} />
 
       <div className="roles">
         {p.roles.map((role) => (
@@ -43,20 +45,17 @@ export function PlateCurrently({ dict, locale }: PlateCurrentlyProps) {
                   role.name
                 )}
               </h3>
-              <ul className="kv">
-                {role.kv.map((item) => (
-                  <li key={item.key}>
-                    <span>{item.key}</span>
-                    {item.href ? (
-                      <a href={item.href} rel="noopener noreferrer">
-                        {item.value}
-                      </a>
-                    ) : (
-                      <span>{item.value}</span>
-                    )}
-                  </li>
-                ))}
-              </ul>
+              <p className="role-prose">
+                {role.prose}
+                {role.link && (
+                  <>
+                    {" · "}
+                    <a href={role.link.href} rel="noopener noreferrer">
+                      {role.link.label}
+                    </a>
+                  </>
+                )}
+              </p>
             </div>
           </article>
         ))}

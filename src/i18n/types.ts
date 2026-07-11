@@ -1,24 +1,16 @@
 import type { TitleBlockRow } from "@/lib/shared-data";
 
-export type RoleKv = {
-  key: string;
-  value: string;
-  href?: string;
-};
-
 export type Role = {
   n: string;
   name: string;
   href?: string;
-  kv: RoleKv[];
+  prose: string;
+  link?: { href: string; label: string };
 };
 
 export type ArchiveItem = {
-  n: string;
   years: string;
-  name: string;
-  tag: string;
-  note: string;
+  line: string;
 };
 
 export type Dictionary = {
@@ -32,6 +24,7 @@ export type Dictionary = {
     name: string;
     nameGlitch: string;
     langSwitch: string;
+    place: string;
   };
   nav: {
     primary: string;
@@ -47,29 +40,29 @@ export type Dictionary = {
   };
   plates: {
     identity: {
-      meta: TitleBlockRow[];
       bio: string;
       bioEm: string;
-      tags: string[];
       aboutLink: string;
-      ghostGlyph: string;
     };
     currently: {
-      meta: TitleBlockRow[];
       heading: string;
       headingGlitch: string;
-      live: string;
       nowPlaying: {
         label: string;
         silence: string;
         lastPlayed: string;
+        recent: string;
+        loading: string;
+        unavailable: string;
+        profile: string;
       };
       roles: Role[];
     };
     archive: {
-      meta: TitleBlockRow[];
       heading: string;
       headingGlitch: string;
+      teaser: string;
+      aboutLink: string;
       items: ArchiveItem[];
     };
     podcast: {
@@ -85,7 +78,6 @@ export type Dictionary = {
       tickerBrand: string;
       onAir: string;
       foot: string;
-      ghostGlyph: string;
     };
     signal: {
       meta: TitleBlockRow[];
@@ -105,9 +97,9 @@ export type Dictionary = {
       exitLabel: string;
     };
     contact: {
-      meta: TitleBlockRow[];
       heading: string;
       headingGlitch: string;
+      hint: string;
     };
   };
   maskPage: {
@@ -156,7 +148,7 @@ export type Dictionary = {
     };
   };
   footer: {
-    copyright: string;
+    lines: readonly string[];
     home: string;
     about: string;
   };

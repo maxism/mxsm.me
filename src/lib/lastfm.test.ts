@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatRelativePlayedAt, parseLastFmRecentTrack, readLastFmApiKey } from "@/lib/lastfm";
+import { formatRelativePlayedAt, parseLastFmRecentTrack, parseLastFmRecentTracks, readLastFmApiKey } from "@/lib/lastfm";
 
 const nowPlayingPayload = {
   recenttracks: {
@@ -56,6 +56,20 @@ describe("lastfm", () => {
       isPlaying: false,
       playedAt: 1719403200,
     });
+  });
+
+  it("parses multiple tracks", () => {
+    const tracks = parseLastFmRecentTracks({
+      recenttracks: {
+        track: [
+          ...(nowPlayingPayload.recenttracks!.track as object[]),
+          ...(Array.isArray(scrobbledPayload.recenttracks!.track)
+            ? scrobbledPayload.recenttracks!.track
+            : [scrobbledPayload.recenttracks!.track]),
+        ],
+      },
+    });
+    expect(tracks).toHaveLength(2);
   });
 
   it("returns null for empty payload", () => {

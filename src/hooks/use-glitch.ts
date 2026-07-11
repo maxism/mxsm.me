@@ -34,7 +34,7 @@ export function useGlitch() {
     glitchables.forEach((el) => el.addEventListener("mouseenter", onEnter));
 
     const heads = document.querySelectorAll(
-      ".plate-h [data-glitch], .m-id [data-glitch], .mono [data-glitch]",
+      ".plate-h [data-glitch], .mono [data-glitch], .contact-mail[data-glitch]",
     );
     const interval = window.setInterval(() => {
       if (heads.length === 0) return;

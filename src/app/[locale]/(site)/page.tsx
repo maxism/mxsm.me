@@ -3,6 +3,7 @@ import { HomePlates } from "@/components/plates/HomePlates";
 import { resolveLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { personJsonLd, podcastEpisodeJsonLd, podcastJsonLd } from "@/i18n/json-ld";
+import { fetchMusicFeed } from "@/lib/lastfm";
 import { getPodcastHomeData } from "@/lib/podcast-home";
 import { buildPageMetadata, pageAlternates } from "@/lib/seo/metadata";
 
@@ -36,6 +37,7 @@ export default async function HomePage({ params }: PageProps) {
   const locale = await resolveLocale(params);
   const dict = getDictionary(locale);
   const podcast = await getPodcastHomeData(locale, dict);
+  const music = await fetchMusicFeed();
 
   return (
     <>
@@ -43,7 +45,7 @@ export default async function HomePage({ params }: PageProps) {
         data={[personJsonLd(locale), podcastJsonLd(), ...podcastEpisodeJsonLd(podcast.rawEpisodes)]}
       />
       <main id="main">
-        <HomePlates dict={dict} locale={locale} podcast={podcast} />
+        <HomePlates dict={dict} locale={locale} podcast={podcast} music={music} />
       </main>
     </>
   );

@@ -3,9 +3,9 @@ import { GlitchText } from "@/components/ui/GlitchText";
 import { TitleBlock } from "@/components/ui/TitleBlock";
 
 type PlateHeadProps = {
-  rows: readonly TitleBlockRow[];
+  rows?: readonly TitleBlockRow[];
   title: string;
-  titleGlitch: string;
+  titleGlitch?: string;
   titleId: string;
   as?: "h1" | "h2";
   inverted?: boolean;
@@ -14,10 +14,11 @@ type PlateHeadProps = {
   centered?: boolean;
   minimal?: boolean;
   display?: boolean;
+  glitch?: boolean;
 };
 
 export function PlateHead({
-  rows,
+  rows = [],
   title,
   titleGlitch,
   titleId,
@@ -28,15 +29,23 @@ export function PlateHead({
   centered,
   minimal,
   display,
+  glitch = true,
 }: PlateHeadProps) {
   const headingClass = `plate-h${cyrillic ? " cyr" : ""}${display ? " plate-h--display" : ""}`;
+  const glitchText = titleGlitch ?? title;
+
+  const titleNode = glitch ? (
+    <GlitchText as="span" text={glitchText}>
+      {title}
+    </GlitchText>
+  ) : (
+    title
+  );
 
   const heading = href ? (
     <Heading className={headingClass} id={titleId}>
       <a href={href} rel="noopener noreferrer">
-        <GlitchText as="span" text={titleGlitch}>
-          {title}
-        </GlitchText>
+        {titleNode}
         <span className="plate-h-arrow" aria-hidden="true">
           ↗
         </span>
@@ -44,13 +53,13 @@ export function PlateHead({
     </Heading>
   ) : (
     <Heading className={headingClass} id={titleId}>
-      <GlitchText text={titleGlitch}>{title}</GlitchText>
+      {titleNode}
     </Heading>
   );
 
   return (
     <header className={`plate-head${centered ? " plate-head--center" : ""}`}>
-      {!minimal && <TitleBlock rows={rows} inverted={inverted} />}
+      {!minimal && rows.length > 0 && <TitleBlock rows={rows} inverted={inverted} />}
       {heading}
     </header>
   );

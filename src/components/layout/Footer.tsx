@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { localeAboutPath, localePath } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
@@ -9,6 +12,14 @@ type FooterProps = {
 };
 
 export function Footer({ dict, locale }: FooterProps) {
+  const [line, setLine] = useState(dict.footer.lines[0] ?? "");
+
+  useEffect(() => {
+    const lines = dict.footer.lines;
+    if (lines.length <= 1) return;
+    setLine(lines[Math.floor(Math.random() * lines.length)]!);
+  }, [dict.footer.lines]);
+
   return (
     <footer className="colo">
       <div className="colo-links">
@@ -19,7 +30,7 @@ export function Footer({ dict, locale }: FooterProps) {
           {dict.footer.about}
         </Link>
       </div>
-      <span>{dict.footer.copyright}</span>
+      <span className="colo-aside">{line}</span>
     </footer>
   );
 }

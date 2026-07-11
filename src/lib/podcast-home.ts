@@ -11,7 +11,20 @@ export type PodcastHomeData = {
   meta: TitleBlockRow[];
   ticker: string;
   foot: string;
+  quote: string | null;
 };
+
+function stripHtml(text: string): string {
+  return text.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function excerptQuote(description: string, maxLen = 140): string | null {
+  const plain = stripHtml(description);
+  if (!plain) return null;
+  const sentence = plain.split(/(?<=[.!?])\s+/)[0] ?? plain;
+  if (sentence.length <= maxLen) return sentence;
+  return `${sentence.slice(0, maxLen - 1).trim()}…`;
+}
 
 function formatSinceMonthYear(date: Date, locale: Locale): string {
   const tag = locale === "ru" ? "ru-RU" : "en-US";
@@ -42,7 +55,6 @@ function buildMeta(
   const since = formatSinceMonthYear(stats.oldest, locale);
   const p = dict.plates.podcast;
   return [
-    { key: "PLATE", value: p.metaPlate },
     { key: "WITH", value: p.metaWith },
     {
       key: "EPISODES",
@@ -58,8 +70,9 @@ function buildMeta(
   ];
 }
 
-function buildTicker(brand: string, season: number): string {
-  return `★ ON AIR · ${brand} · S${season} · WITH MIKE ZHARCHEV ·\u00a0`;
+function buildTicker(brand: string, season: number, locale: Locale): string {
+  const tag = locale === "ru" ? "ЖИЗНЬ · ЛЮДИ" : "LIFE · PEOPLE";
+  return `★ ON AIR · ${brand} · ${tag} · S${season} ·\u00a0`;
 }
 
 export async function getPodcastHomeData(
@@ -71,12 +84,16 @@ export async function getPodcastHomeData(
     const stats = getFeedStats(raw);
     const since = formatSinceMonthYear(stats.oldest, locale);
 
+    const sorted = [...raw].sort((a, b) => b.publishDate.getTime() - a.publishDate.getTime());
+    const latest = sorted[0];
+
     return {
       rawEpisodes: raw,
       episodes: toPodcastListEpisodes(raw, locale, LIST_LIMIT),
       meta: buildMeta(stats, locale, dict),
-      ticker: buildTicker(dict.plates.podcast.tickerBrand, stats.maxSeason),
+      ticker: buildTicker(dict.plates.podcast.tickerBrand, stats.maxSeason, locale),
       foot: interpolate(dict.plates.podcast.footTemplate, { since }),
+      quote: latest ? excerptQuote(latest.description) : null,
     };
   } catch {
     const p = dict.plates.podcast;
@@ -86,6 +103,7 @@ export async function getPodcastHomeData(
       meta: p.metaFallback,
       ticker: p.ticker,
       foot: p.foot,
+      quote: null,
     };
   }
 }

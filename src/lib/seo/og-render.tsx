@@ -13,20 +13,16 @@ export function isOgPage(value: string): value is OgPage {
   return OG_PAGES.includes(value as OgPage);
 }
 
-// VOID FBM shader — violet void blooms only (no amber).
-function signalBackground(intensity: "subtle" | "full" = "subtle"): string {
+// Warm industrial background — amber dust, no violet AI-portfolio blobs.
+function warmBackground(intensity: "subtle" | "full" = "subtle"): string {
   const k = intensity === "full" ? 1 : 0.42;
   const a = (n: number) => Math.min(1, n * k);
 
   return [
-    `radial-gradient(circle 420px at 30% 42%, rgba(168,139,240,${a(0.55)}) 0%, rgba(110,72,190,${a(0.28)}) 48%, transparent 82%)`,
-    `radial-gradient(circle 200px at 74% 18%, rgba(130,95,210,${a(0.42)}) 0%, transparent 100%)`,
-    `radial-gradient(circle 150px at 12% 78%, rgba(90,55,165,${a(0.34)}) 0%, transparent 100%)`,
-    `radial-gradient(circle 110px at 86% 54%, rgba(72,40,140,${a(0.28)}) 0%, transparent 100%)`,
-    `radial-gradient(circle 400px at 8% 20%, rgba(48,12,105,${a(0.62)}) 0%, transparent 75%)`,
-    `radial-gradient(circle 380px at 90% 85%, rgba(60,16,118,${a(0.58)}) 0%, transparent 75%)`,
-    `radial-gradient(circle 220px at 55% 56%, rgba(32,9,76,${a(0.32)}) 0%, transparent 80%)`,
-    "linear-gradient(120deg, #0c0814 0%, #08050e 50%, #050403 100%)",
+    `radial-gradient(circle 420px at 28% 38%, rgba(232,197,71,${a(0.22)}) 0%, transparent 78%)`,
+    `radial-gradient(circle 240px at 78% 22%, rgba(180,140,60,${a(0.14)}) 0%, transparent 100%)`,
+    `radial-gradient(circle 180px at 12% 82%, rgba(120,90,40,${a(0.12)}) 0%, transparent 100%)`,
+    "linear-gradient(165deg, #0a0907 0%, #110f0b 55%, #0a0907 100%)",
   ].join(",");
 }
 
@@ -196,7 +192,7 @@ function OgShell({ children, shader, scrim, inverted, ghost }: OgShellProps) {
           right: 0,
           bottom: 0,
           display: "flex",
-          background: signalBackground(shader),
+          background: warmBackground(shader),
         }}
       />
       {scrim > 0 ? (
@@ -252,9 +248,8 @@ function homeOgElement(locale: Locale) {
   const p = dict.plates.identity;
 
   return (
-    <OgShell shader="subtle" scrim={0.62} ghost={p.ghostGlyph}>
+    <OgShell shader="subtle" scrim={0.55}>
       <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-        <OgTitleBlock rows={p.meta} />
         <OgGlitchText text={dict.masthead.nameGlitch} size={76} />
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
@@ -262,12 +257,24 @@ function homeOgElement(locale: Locale) {
         <div
           style={{
             display: "flex",
-            fontSize: 26,
+            fontSize: 28,
             fontWeight: 300,
             lineHeight: 1.35,
             color: OG.inkMuted,
             maxWidth: 820,
             letterSpacing: "-0.01em",
+          }}
+        >
+          {p.bio} {p.bioEm}
+        </div>
+        <div
+          style={{
+            display: "flex",
+            fontSize: 22,
+            fontStyle: "italic",
+            lineHeight: 1.3,
+            color: "rgba(154, 148, 136, 0.85)",
+            maxWidth: 720,
           }}
         >
           {dict.meta.ogDescription}

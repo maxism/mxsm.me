@@ -56,22 +56,22 @@ function formatHomeText(dict: Dictionary, locale: Locale): string {
     "=== identity ===",
     dict.plates.identity.bio,
     dict.plates.identity.bioEm,
-    dict.plates.identity.tags.join(" · "),
     "",
     "=== currently ===",
   ];
 
   for (const role of dict.plates.currently.roles) {
-    lines.push(`${role.n}. ${role.name}`);
-    for (const kv of role.kv) {
-      lines.push(`  ${kv.key}: ${kv.value}`);
+    lines.push(`${role.n}. ${role.name} — ${role.prose}`);
+    if (role.link) {
+      lines.push(`  ${role.link.label}: ${role.link.href}`);
     }
     lines.push("");
   }
 
-  lines.push("=== archive ===");
+  lines.push("=== before ===");
+  lines.push(dict.plates.archive.teaser);
   for (const item of dict.plates.archive.items) {
-    lines.push(`${item.years} · ${item.name} (${item.tag}) — ${item.note}`);
+    lines.push(`${item.years} · ${item.line}`);
   }
 
   lines.push("");
@@ -143,14 +143,14 @@ export function buildLlmsTxt(): string {
     `> ${enSummary}`,
     "",
     "Personal site of Max Ulianov (@maxism): CTO at MTS.ai, co-founder of Untitled Team,",
-    "co-host of SHITBUSTARDS podcast, author of mxsm/signal generative art. Moscow.",
+    "co-host of SHITBUSTARDS podcast, author of mxsm/signal. Moscow.",
     "",
     "## Primary sources",
     `- [Home (RU)](${localeAbsoluteUrl("ru")}): compressed blueprint — roles, archive, contacts`,
     `- [Home (EN)](${localeAbsoluteUrl("en")}): English home page`,
     `- [About (RU)](${localeAboutAbsoluteUrl("ru")}): expanded bio for humans and machines`,
     `- [About (EN)](${localeAboutAbsoluteUrl("en")}): English about page`,
-    `- [Signal (RU)](${localeSignalAbsoluteUrl("ru")}): generative art (WebGL + Web Audio)`,
+    `- [Signal (RU)](${localeSignalAbsoluteUrl("ru")}): browser piece (WebGL + Web Audio)`,
     `- [Signal (EN)](${localeSignalAbsoluteUrl("en")}): English signal page`,
     "",
     "## Machine-readable exports",
