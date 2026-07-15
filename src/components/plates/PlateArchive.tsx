@@ -24,9 +24,19 @@ export function PlateArchive({ dict, locale }: PlateArchiveProps) {
 
       <ol className="timeline">
         {p.items.map((item) => (
-          <li key={item.years + item.line} className="timeline-item">
+          <li key={item.years + item.name} className="timeline-item">
             <span className="timeline-years">{item.years}</span>
-            <span className="timeline-line">{item.line}</span>
+            <span className="timeline-line">
+              {item.href ? (
+                <a href={item.href} target="_blank" rel="noopener noreferrer">
+                  {item.name}
+                </a>
+              ) : (
+                item.name
+              )}
+              {" · "}
+              {item.line}
+            </span>
           </li>
         ))}
       </ol>

@@ -20,6 +20,7 @@ export function YandexMetrika() {
       </Script>
       <noscript>
         <div>
+          {/* eslint-disable-next-line @next/next/no-img-element -- noscript tracking pixel must stay a raw img beacon */}
           <img
             src={`https://mc.yandex.ru/watch/${YM_ID}`}
             style={{ position: "absolute", left: "-9999px" }}

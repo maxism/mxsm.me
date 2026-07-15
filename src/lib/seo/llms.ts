@@ -71,7 +71,7 @@ function formatHomeText(dict: Dictionary, locale: Locale): string {
   lines.push("=== before ===");
   lines.push(dict.plates.archive.teaser);
   for (const item of dict.plates.archive.items) {
-    lines.push(`${item.years} · ${item.line}`);
+    lines.push(`${item.years} · ${item.name} · ${item.line}${item.href ? ` (${item.href})` : ""}`);
   }
 
   lines.push("");

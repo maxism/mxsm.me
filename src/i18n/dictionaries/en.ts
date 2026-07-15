@@ -4,7 +4,7 @@ export const en: Dictionary = {
   meta: {
     title: "Max Ulianov — teams, systems, sound",
     description:
-      "Max Ulianov — CTO at MTS.ai, co-founder of Untitled Team. Moscow. SHITBUSTARDS podcast, mxsm/signal, mxsm/mask.",
+      "Max Ulianov — CTO at MTS.ai. 15 years building teams and engineering systems: a neobank from zero to ~150 people, payments at OnlyFans, satellite SaaS. SHITBUSTARDS podcast, WebGL and sound experiments.",
     ogDescription: "teams, systems, sound — and side projects when the calendar allows.",
     ogLocale: "en_US",
   },
@@ -28,8 +28,8 @@ export const en: Dictionary = {
   },
   plates: {
     identity: {
-      bio: "engineer and mathematician at the core — mom called it, and she wasn't wrong.",
-      bioEm: "builds teams and systems from that. sound and pixels when the calendar allows.",
+      bio: "i build teams and systems from zero — and untangle the ones that grew faster than their agreements.",
+      bioEm: "cto at mts.ai. before that — a ~150-person bank, payments at onlyfans, satellite saas. sound and pixels when the calendar allows.",
       aboutLink: "about ↗",
     },
     currently: {
@@ -54,7 +54,7 @@ export const en: Dictionary = {
         {
           n: "02",
           name: "Untitled Team",
-          prose: "co-founder since 2025 — a community of people worth knowing",
+          prose: "co-founder since 2025 — the team behind untitled bank, kept together and growing toward the next big project",
           link: { href: "https://untitlednow.com/", label: "untitlednow.com ↗" },
         },
       ],
@@ -67,19 +67,42 @@ export const en: Dictionary = {
       items: [
         {
           years: "2023 — 25",
-          line: "untitled bank · co-ceo & cto · ~100 people, in-house emv/3ds/hsm, licence pulled · uz",
+          name: "untitled bank",
+          href: "https://untitlednow.com/",
+          line: "co-ceo & cto · built to ~150 people, in-house emv/3ds/hsm · regulator pulled the licence pre-launch · uz",
         },
         {
           years: "2022 — 23",
-          line: "onlyfans · head of engineering · payments, creator tools, dora · uk",
+          name: "onlyfans",
+          line: "head of engineering · payments, creator tools, dora · uk",
         },
         {
           years: "2021 — 23",
-          line: "precious payload · co-founder & cto · satellite mission saas · uae",
+          name: "precious payload",
+          href: "https://www.linkedin.com/company/preciouspayload",
+          line: "co-founder & cto · satellite mission saas · uae",
         },
         {
           years: "2020 — 21",
-          line: "palebluedot · cto · fabble, onespace, codewards · uae",
+          name: "palebluedot",
+          line: "cto · fabble, onespace, codewards · uae",
+        },
+        {
+          years: "2017 — 18",
+          name: "moeco",
+          href: "https://moeco.io/",
+          line: "tech lead → co-cto · iot for supply chains · de",
+        },
+        {
+          years: "2015 — 20",
+          name: "rentateam",
+          href: "https://www.rentateam.ru/",
+          line: "co-founder & cto · studio: dodo, vw, vcv, timepad · ru",
+        },
+        {
+          years: "2010 — 15",
+          name: "ministry of digital",
+          line: "full-stack → team lead · internal systems · ru",
         },
       ],
     },
@@ -88,7 +111,7 @@ export const en: Dictionary = {
       metaWith: "mike zharchev",
       metaEpisodes: "{count} eps · S{season}",
       metaOnAir: "since {since}",
-      footTemplate: "life & people, not it · with m. zharchev, since {since}",
+      footTemplate: "life & people, no tech talk · with m. zharchev, since {since}",
       metaFallback: [
         { key: "WITH", value: "mike zharchev" },
         { key: "ON AIR", value: "since mar 2024 · S2" },
@@ -98,7 +121,7 @@ export const en: Dictionary = {
       ticker: "★ ON AIR · SHITBUSTARDS · LIFE · PEOPLE · S2 · ",
       tickerBrand: "SHITBUSTARDS",
       onAir: "ON AIR",
-      foot: "life & people, not it · with m. zharchev, since mar 2024",
+      foot: "life & people, no tech talk · with m. zharchev, since mar 2024",
     },
     signal: {
       meta: [
@@ -130,7 +153,7 @@ export const en: Dictionary = {
     contact: {
       heading: "/ write",
       headingGlitch: "// write",
-      hint: "i read everything. replies within a week, sometimes slower — not from politeness, from load.",
+      hint: "mentoring, architecture reviews, engineering cost audits — all good reasons to write. i read everything and reply myself, so it can take a week.",
     },
   },
   maskPage: {
@@ -190,7 +213,6 @@ export const en: Dictionary = {
     lines: [
       "made between meetings · moscow utc+3",
       "sometimes listening, sometimes building",
-      "not a pitch deck",
     ],
     home: "home",
     about: "about",

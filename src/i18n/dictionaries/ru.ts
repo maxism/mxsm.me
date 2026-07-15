@@ -4,7 +4,7 @@ export const ru: Dictionary = {
   meta: {
     title: "Макс Ульянов — команды, системы, звук",
     description:
-      "Макс Ульянов — CTO MTS.ai, со-основатель Untitled Team. Москва. Подкаст Шитбастардс, mxsm/signal, mxsm/mask.",
+      "Макс Ульянов — CTO MTS.ai. 15 лет собирает команды и инженерные системы: необанк с нуля до ~150 человек, платежи OnlyFans, космический SaaS. Подкаст Шитбастардс, эксперименты с WebGL и звуком.",
     ogDescription: "команды, системы, звук — и side projects, когда календарь позволяет.",
     ogLocale: "ru_RU",
   },
@@ -28,8 +28,8 @@ export const ru: Dictionary = {
   },
   plates: {
     identity: {
-      bio: "инженер и математик — как мама говорила, и не врала.",
-      bioEm: "из этого — команды и системы. звук и картинка, когда календарь отпускает.",
+      bio: "собираю команды и системы с нуля — и распутываю те, что выросли быстрее договорённостей.",
+      bioEm: "cto mts.ai. до этого — банк на ~150 человек, платежи onlyfans, спутниковый saas. звук и пиксели, когда календарь отпускает.",
       aboutLink: "about ↗",
     },
     currently: {
@@ -54,7 +54,7 @@ export const ru: Dictionary = {
         {
           n: "02",
           name: "Untitled Team",
-          prose: "co-founder с 2025 — сообщество классных людей",
+          prose: "сооснователь с 2025 — команда, собранная в untitled bank: сохранили и растим до следующего большого проекта",
           link: { href: "https://untitlednow.com/", label: "untitlednow.com ↗" },
         },
       ],
@@ -67,28 +67,51 @@ export const ru: Dictionary = {
       items: [
         {
           years: "2023 — 25",
-          line: "untitled bank · co-ceo & cto · ~100 человек, in-house emv/3ds/hsm, licence pulled · uz",
+          name: "untitled bank",
+          href: "https://untitlednow.com/",
+          line: "co-ceo & cto · собрали до ~150 человек, свой emv/3ds/hsm · регулятор отозвал лицензию до запуска · uz",
         },
         {
           years: "2022 — 23",
-          line: "onlyfans · head of engineering · payments, creator tools, dora · uk",
+          name: "onlyfans",
+          line: "head of engineering · payments, creator tools, dora · uk",
         },
         {
           years: "2021 — 23",
-          line: "precious payload · co-founder & cto · satellite mission saas · uae",
+          name: "precious payload",
+          href: "https://www.linkedin.com/company/preciouspayload",
+          line: "co-founder & cto · satellite mission saas · uae",
         },
         {
           years: "2020 — 21",
-          line: "palebluedot · cto · fabble, onespace, codewards · uae",
+          name: "palebluedot",
+          line: "cto · fabble, onespace, codewards · uae",
+        },
+        {
+          years: "2017 — 18",
+          name: "moeco",
+          href: "https://moeco.io/",
+          line: "tech lead → co-cto · iot для логистики · de",
+        },
+        {
+          years: "2015 — 20",
+          name: "rentateam",
+          href: "https://www.rentateam.ru/",
+          line: "co-founder & cto · студия: dodo, vw, vcv, timepad · ru",
+        },
+        {
+          years: "2010 — 15",
+          name: "минцифры",
+          line: "fullstack → team lead · внутренние системы · ru",
         },
       ],
     },
     podcast: {
       metaPlate: "04 · ШИТБАСТАРДС",
       metaWith: "mike zharchev",
-      metaEpisodes: "{count} · S{season}",
+      metaEpisodes: "{count} эп. · S{season}",
       metaOnAir: "since {since}",
-      footTemplate: "жизнь и люди, не it · с m. zharchev, с {since}",
+      footTemplate: "про жизнь и людей — без айти · с m. zharchev, с {since}",
       metaFallback: [
         { key: "WITH", value: "mike zharchev" },
         { key: "ON AIR", value: "since mar 2024 · S2" },
@@ -98,7 +121,7 @@ export const ru: Dictionary = {
       ticker: "★ ON AIR · ШИТБАСТАРДС · ЖИЗНЬ · ЛЮДИ · S2 · ",
       tickerBrand: "ШИТБАСТАРДС",
       onAir: "ON AIR",
-      foot: "жизнь и люди, не it · с m. zharchev, с марта 2024",
+      foot: "про жизнь и людей — без айти · с m. zharchev, с марта 2024",
     },
     signal: {
       meta: [
@@ -130,7 +153,7 @@ export const ru: Dictionary = {
     contact: {
       heading: "/ написать",
       headingGlitch: "// написать",
-      hint: "читаю всё. отвечаю в течение недели, иногда дольше — не из вежливости, из загрузки.",
+      hint: "менторство, architecture review, аудит инженерных расходов — хорошие поводы написать. читаю всё и отвечаю сам, поэтому иногда до недели.",
     },
   },
   maskPage: {
@@ -190,7 +213,6 @@ export const ru: Dictionary = {
     lines: [
       "между встречами · москва utc+3",
       "иногда слушаю, иногда строю",
-      "не pitch deck",
     ],
     home: "главная",
     about: "about",

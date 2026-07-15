@@ -10,6 +10,8 @@ export type Role = {
 
 export type ArchiveItem = {
   years: string;
+  name: string;
+  href?: string;
   line: string;
 };
 

@@ -11,6 +11,7 @@ const sample: Episode = {
   episodeNumber: 5,
   imageUrl: "",
   audioUrl: "",
+  url: "",
 };
 
 describe("episodes", () => {

@@ -341,7 +341,7 @@ main {
 .mono {
   font-family: var(--serif);
   font-weight: 200;
-  font-size: clamp(64px, 16vw, 240px);
+  font-size: clamp(56px, 14vw, 200px);
   line-height: 0.86;
   letter-spacing: -0.05em;
   margin: clamp(28px, 6vh, 80px) 0 0;
@@ -377,7 +377,7 @@ main {
   line-height: 1.4;
   letter-spacing: -0.01em;
   color: var(--ink-2);
-  max-width: 32ch;
+  max-width: 42ch;
   margin-top: clamp(20px, 3vh, 36px);
 }
 .bio em {
@@ -715,6 +715,15 @@ main {
   line-height: 1.35;
   letter-spacing: -0.01em;
   color: var(--ink-2);
+}
+.timeline-line a {
+  color: var(--ink);
+  border-bottom: 1px solid var(--rule);
+  transition: color 0.2s, border-color 0.2s;
+}
+.timeline-line a:hover {
+  color: var(--hot);
+  border-color: var(--hot);
 }
 .archive-more {
   display: inline-block;
