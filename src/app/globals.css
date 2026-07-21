@@ -719,7 +719,9 @@ main {
 .timeline-line a {
   color: var(--ink);
   border-bottom: 1px solid var(--rule);
-  transition: color 0.2s, border-color 0.2s;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
 }
 .timeline-line a:hover {
   color: var(--hot);
@@ -734,7 +736,10 @@ main {
   color: var(--ink-2);
   padding: 6px 10px;
   border: 1px solid var(--rule);
-  transition: color 0.15s, border-color 0.15s, background 0.12s;
+  transition:
+    color 0.15s,
+    border-color 0.15s,
+    background 0.12s;
 }
 .archive-more:hover {
   color: var(--bg);
@@ -832,7 +837,9 @@ main {
 .role-prose a {
   color: var(--ink);
   border-bottom: 1px solid var(--rule);
-  transition: color 0.15s, border-color 0.15s;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
 }
 .role-prose a:hover {
   color: var(--hot);
@@ -1977,7 +1984,10 @@ main {
   border: 1px solid rgba(232, 226, 210, 0.15);
   padding: 8px 16px;
   cursor: pointer;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  transition:
+    color 0.2s,
+    border-color 0.2s,
+    background 0.2s;
   backdrop-filter: blur(6px);
 }
 .mask-btn:hover {
@@ -2046,7 +2056,9 @@ main {
   height: min(48vw, 360px);
   border: 1px solid rgba(200, 190, 170, 0.2);
   border-radius: 50%;
-  transition: border-color 0.4s, box-shadow 0.4s;
+  transition:
+    border-color 0.4s,
+    box-shadow 0.4s;
 }
 .scanner-face-ring--found {
   border-color: rgba(200, 190, 170, 0.6);
@@ -2076,7 +2088,10 @@ main {
 }
 .scanner-capture {
   opacity: 0.4;
-  transition: opacity 0.3s, color 0.2s, border-color 0.2s;
+  transition:
+    opacity 0.3s,
+    color 0.2s,
+    border-color 0.2s;
 }
 .scanner-capture:not(:disabled) {
   opacity: 1;
@@ -2109,7 +2124,9 @@ main {
   border: 1px solid rgba(232, 226, 210, 0.1);
   padding: 5px 12px;
   cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
 }
 .mask-mat-btn:hover {
   color: rgba(232, 226, 210, 0.75);

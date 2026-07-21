@@ -1,12 +1,7 @@
 import Link from "next/link";
 import { PlateHead } from "@/components/ui/PlateHead";
 import { localePath, type Locale } from "@/i18n/config";
-import type {
-  AboutContent,
-  AboutInline,
-  AboutParagraph,
-  AboutSection,
-} from "@/i18n/about/types";
+import type { AboutContent, AboutInline, AboutParagraph, AboutSection } from "@/i18n/about/types";
 
 type AboutPageProps = {
   content: AboutContent;
@@ -37,11 +32,7 @@ function AboutParagraphBlock({ paragraph }: { paragraph: AboutParagraph }) {
     return <p className="about-p">{paragraph}</p>;
   }
 
-  return (
-    <p className="about-p">
-      {paragraph.map((part, i) => renderInline(part, i))}
-    </p>
-  );
+  return <p className="about-p">{paragraph.map((part, i) => renderInline(part, i))}</p>;
 }
 
 function AboutSectionBlock({ section }: { section: AboutSection }) {

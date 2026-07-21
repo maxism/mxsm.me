@@ -1,5 +1,5 @@
 import { getAboutContent } from "@/i18n/about/get-about";
-import type { AboutContent } from "@/i18n/about/types";
+import type { AboutContent, AboutParagraph } from "@/i18n/about/types";
 import type { Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import type { Dictionary } from "@/i18n/types";
@@ -17,6 +17,16 @@ function personSummary(locale: Locale): string {
   return content.meta.description;
 }
 
+function formatAboutParagraph(paragraph: AboutParagraph): string {
+  if (typeof paragraph === "string") {
+    return paragraph;
+  }
+
+  return paragraph
+    .map((part) => (typeof part === "string" ? part : `[${part.label}](${part.href})`))
+    .join("");
+}
+
 function formatAboutAsMarkdown(content: AboutContent, canonicalUrl: string): string {
   const lines: string[] = [
     `# ${content.meta.title}`,
@@ -32,7 +42,7 @@ function formatAboutAsMarkdown(content: AboutContent, canonicalUrl: string): str
     lines.push("");
 
     for (const paragraph of section.paragraphs) {
-      lines.push(paragraph);
+      lines.push(formatAboutParagraph(paragraph));
       lines.push("");
     }
 
