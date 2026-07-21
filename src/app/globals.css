@@ -1567,17 +1567,19 @@ main {
 .about-p:last-child {
   margin-bottom: 0;
 }
+.about-p a,
+.about-note a {
+  color: var(--hot);
+}
+.about-p a:hover,
+.about-note a:hover {
+  opacity: 0.75;
+}
 .about-note {
   font-family: var(--mono);
   font-size: 11px;
   color: var(--ink-3);
   margin: 16px 0 0;
-}
-.about-note a {
-  color: var(--hot);
-}
-.about-note a:hover {
-  opacity: 0.75;
 }
 
 /* ─── colophon footer ──────────────────────────────── */

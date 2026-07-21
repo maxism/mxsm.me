@@ -1,13 +1,48 @@
 import Link from "next/link";
 import { PlateHead } from "@/components/ui/PlateHead";
 import { localePath, type Locale } from "@/i18n/config";
-import type { AboutContent } from "@/i18n/about/types";
-import type { AboutSection } from "@/i18n/about/types";
+import type {
+  AboutContent,
+  AboutInline,
+  AboutParagraph,
+  AboutSection,
+} from "@/i18n/about/types";
 
 type AboutPageProps = {
   content: AboutContent;
   locale: Locale;
 };
+
+function linkRel(href: string): string | undefined {
+  if (href.startsWith("mailto:") || href.startsWith("/") || href.startsWith("#")) {
+    return undefined;
+  }
+  return "noopener noreferrer me";
+}
+
+function renderInline(part: AboutInline, key: number) {
+  if (typeof part === "string") {
+    return part;
+  }
+
+  return (
+    <a key={key} href={part.href} rel={linkRel(part.href)}>
+      {part.label}
+    </a>
+  );
+}
+
+function AboutParagraphBlock({ paragraph }: { paragraph: AboutParagraph }) {
+  if (typeof paragraph === "string") {
+    return <p className="about-p">{paragraph}</p>;
+  }
+
+  return (
+    <p className="about-p">
+      {paragraph.map((part, i) => renderInline(part, i))}
+    </p>
+  );
+}
 
 function AboutSectionBlock({ section }: { section: AboutSection }) {
   const hasLink = "link" in section && section.link;
@@ -16,9 +51,7 @@ function AboutSectionBlock({ section }: { section: AboutSection }) {
     <section className="about-section" id={section.id}>
       <h2 className="about-h">{section.heading}</h2>
       {section.paragraphs.map((p, i) => (
-        <p key={i} className="about-p">
-          {p}
-        </p>
+        <AboutParagraphBlock key={i} paragraph={p} />
       ))}
       {hasLink && (
         <p className="about-note">

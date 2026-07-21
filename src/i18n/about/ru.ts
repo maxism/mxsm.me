@@ -1,4 +1,7 @@
 import type { AboutContent } from "@/i18n/about/types";
+import { contacts, SHITBUSTARDS_ORIGIN } from "@/lib/shared-data";
+
+const [github, linkedin, telegram] = contacts;
 
 export const aboutRu: AboutContent = {
   meta: {
@@ -24,7 +27,10 @@ export const aboutRu: AboutContent = {
       paragraphs: [
         "Макс Ульянов, @maxism. he/him. Москва, UTC+3.",
         "инженер и математик — мама решила раньше всех и оказалась права.",
-        "m@mxsm.me · 15 лет — инжиниринг, продукт, оргстроительство: от кода и архитектуры до найма и того, как на самом деле идёт неделя.",
+        [
+          { href: "mailto:m@mxsm.me", label: "m@mxsm.me" },
+          " · 15 лет — инжиниринг, продукт, оргстроительство: от кода и архитектуры до найма и того, как на самом деле идёт неделя.",
+        ],
         "обычно прихожу туда, где нужно собрать команду и систему с нуля — или распутать то, что выросло быстрее, чем успели договориться.",
         "МИФИ, магистр (2005–2010). до этого — ФМЛ №1580.",
       ],
@@ -35,7 +41,11 @@ export const aboutRu: AboutContent = {
       paragraphs: [
         "CTO @ MTS.ai — с декабря 2025. нейропоиск. под NDA деталей нет, и это нормально: работа есть, хвастовства нет.",
         "сооснователь Untitled Team — с 2025. команда, собранная в Untitled Bank: после закрытия мы её сохранили и растим — людей и уровень — до следующего большого проекта. с Майком Жарчевым и Артёмом Харченко.",
-        "подкаст Шитбастардс — с марта 2024. про жизнь и людей — без айти. соведущий — Майк Жарчев. shitbustards.ru.",
+        [
+          "подкаст Шитбастардс — с марта 2024. про жизнь и людей — без айти. соведущий — Майк Жарчев. ",
+          { href: SHITBUSTARDS_ORIGIN, label: "shitbustards.ru" },
+          ".",
+        ],
         "mxsm/signal — сорвалось из головы. webgl, web audio, параллельный текст. без замысла — вход с главной, plate 05.",
         "mxsm/mask — мой внутренний мир. лицо в браузере, материалы на разворот.",
       ],
@@ -74,9 +84,22 @@ export const aboutRu: AboutContent = {
       id: "reach",
       heading: "/ связь",
       paragraphs: [
-        "пиши на m@mxsm.me — лучший способ дойти до меня.",
+        [
+          "пиши на ",
+          { href: "mailto:m@mxsm.me", label: "m@mxsm.me" },
+          " — лучший способ дойти до меня.",
+        ],
         "хорошие поводы: менторство, architecture review, аудит инженерных расходов. читаю всё и отвечаю сам, поэтому иногда до недели.",
-        "github · linkedin · telegram — на главной, plate 07. подкаст — shitbustards.ru.",
+        [
+          { href: github.href, label: "github" },
+          " · ",
+          { href: linkedin.href, label: "linkedin" },
+          " · ",
+          { href: telegram.href, label: "telegram" },
+          ". подкаст — ",
+          { href: SHITBUSTARDS_ORIGIN, label: "shitbustards.ru" },
+          ".",
+        ],
       ],
     },
   ],

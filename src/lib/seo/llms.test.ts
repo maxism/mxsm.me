@@ -28,8 +28,13 @@ describe("llms exports", () => {
 
     expect(ru).toContain("# Макс Ульянов");
     expect(ru).toContain("## / кто");
+    expect(ru).toContain("[github](https://github.com/maxism)");
+    expect(ru).toContain("[linkedin](https://www.linkedin.com/in/maxism/)");
+    expect(ru).toContain("[telegram](https://t.me/maxism)");
+    expect(ru).toContain("[shitbustards.ru](https://shitbustards.ru)");
     expect(en).toContain("# Max Ulianov");
     expect(en).toContain("## / who");
+    expect(en).toContain("[github](https://github.com/maxism)");
   });
 
   it("buildHomeText includes archive and contacts", () => {

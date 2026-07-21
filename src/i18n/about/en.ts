@@ -1,4 +1,7 @@
 import type { AboutContent } from "@/i18n/about/types";
+import { contacts, SHITBUSTARDS_ORIGIN } from "@/lib/shared-data";
+
+const [github, linkedin, telegram] = contacts;
 
 export const aboutEn: AboutContent = {
   meta: {
@@ -24,7 +27,10 @@ export const aboutEn: AboutContent = {
       paragraphs: [
         "Max Ulianov, @maxism. he/him. Moscow, UTC+3.",
         "engineer and mathematician at the core — mom called it before anyone else, and she was right.",
-        "m@mxsm.me · 15 years — engineering, product, org design: from code and architecture to hiring and how the week actually runs.",
+        [
+          { href: "mailto:m@mxsm.me", label: "m@mxsm.me" },
+          " · 15 years — engineering, product, org design: from code and architecture to hiring and how the week actually runs.",
+        ],
         "i usually show up where a team and a system need to be built from zero — or where something outgrew the agreements faster than anyone renegotiated them.",
         "MEPhI, master's (2005–2010). before that — specialized math & physics school #1580.",
       ],
@@ -35,7 +41,11 @@ export const aboutEn: AboutContent = {
       paragraphs: [
         "CTO @ MTS.ai — since Dec 2025. neural search. NDA on details, by design: the work exists, the bragging does not.",
         "co-founder Untitled Team — since 2025. the team we built at Untitled Bank, kept together after the shutdown and growing — in people and in level — toward the next big project. with Mike Zharchev and Artem Kharchenko.",
-        "SHITBUSTARDS podcast — since Mar 2024. life and people, no tech talk. co-host Mike Zharchev. shitbustards.ru.",
+        [
+          "SHITBUSTARDS podcast — since Mar 2024. life and people, no tech talk. co-host Mike Zharchev. ",
+          { href: SHITBUSTARDS_ORIGIN, label: "shitbustards.ru" },
+          ".",
+        ],
         "mxsm/signal — spilled out of my head. webgl, web audio, overlapping text. no thesis — enter from the home page, plate 05.",
         "mxsm/mask — my inner world. a face in the browser, materials you can flip.",
       ],
@@ -74,9 +84,22 @@ export const aboutEn: AboutContent = {
       id: "reach",
       heading: "/ reach",
       paragraphs: [
-        "write to m@mxsm.me — the best way to reach me.",
+        [
+          "write to ",
+          { href: "mailto:m@mxsm.me", label: "m@mxsm.me" },
+          " — the best way to reach me.",
+        ],
         "good reasons to write: mentoring, architecture reviews, engineering cost audits. i read everything and reply myself, so it can take a week.",
-        "github · linkedin · telegram — on the home page, plate 07. podcast — shitbustards.ru.",
+        [
+          { href: github.href, label: "github" },
+          " · ",
+          { href: linkedin.href, label: "linkedin" },
+          " · ",
+          { href: telegram.href, label: "telegram" },
+          ". podcast — ",
+          { href: SHITBUSTARDS_ORIGIN, label: "shitbustards.ru" },
+          ".",
+        ],
       ],
     },
   ],

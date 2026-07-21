@@ -1,15 +1,26 @@
 import type { TitleBlockRow } from "@/lib/shared-data";
 
+/** Plain text or an inline link within an about paragraph. */
+export type AboutInline =
+  | string
+  | {
+      href: string;
+      label: string;
+    };
+
+/** A paragraph is either a plain string or a sequence of text/link parts. */
+export type AboutParagraph = string | AboutInline[];
+
 export type AboutSection =
   | {
       id: string;
       heading: string;
-      paragraphs: string[];
+      paragraphs: AboutParagraph[];
     }
   | {
       id: string;
       heading: string;
-      paragraphs: string[];
+      paragraphs: AboutParagraph[];
       note: string;
       link: { href: string; label: string };
     };
