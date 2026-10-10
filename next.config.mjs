@@ -1,5 +1,3 @@
-import type { NextConfig } from "next";
-
 const isDev = process.env.NODE_ENV === "development";
 
 const yandexMetrikaOrigins = [
@@ -65,7 +63,8 @@ const securityHeaders = [
   },
 ];
 
-const nextConfig: NextConfig = {
+/** @type {import("next").NextConfig} */
+const nextConfig = {
   async headers() {
     return [
       {
