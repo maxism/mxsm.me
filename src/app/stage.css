@@ -1,4 +1,4 @@
-/* Срез — the window is a cut. The name stays. The world moves through it. */
+/* Шов — paper above, the field inside the lower half of the name. */
 
 .sr-only {
   position: absolute;
@@ -14,20 +14,23 @@
 
 html:has(.stage) {
   scroll-snap-type: y proximity;
-  background: #07080c;
+  background: #efeae0;
+  color-scheme: light;
 }
 html:has(.stage) body {
-  background: #07080c;
-  color: #f4f1ea;
+  background: #efeae0;
+  color: #16140f;
 }
 
 .stage {
-  --bg: #07080c;
-  --ink: #f4f1ea;
-  --ink-2: rgba(244, 241, 234, 0.72);
-  --ink-3: rgba(244, 241, 234, 0.46);
-  --ink-4: rgba(244, 241, 234, 0.22);
+  --bg: #efeae0;
+  --paper: #efeae0;
+  --ink: #16140f;
+  --ink-2: rgba(22, 20, 15, 0.72);
+  --ink-3: rgba(22, 20, 15, 0.5);
+  --ink-4: rgba(22, 20, 15, 0.22);
   --rule: transparent;
+  --seam: 0.66;
   position: relative;
 }
 
@@ -39,10 +42,11 @@ html:has(.stage) body {
   height: 100%;
   max-width: none;
   pointer-events: none;
+  opacity: 0;
   transition: opacity 0.45s ease;
 }
-.stage.is-channel #field {
-  opacity: 0;
+.stage.is-hero:has(.name-cut) #field {
+  opacity: 1;
 }
 
 .stage main {
@@ -50,32 +54,37 @@ html:has(.stage) body {
   z-index: 2;
 }
 
+.seam-paper {
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  left: 148px;
+  right: 0;
+  height: calc(var(--seam) * 100dvh + 1px);
+  background: var(--paper);
+  border-bottom: 1px solid var(--hot);
+  pointer-events: none;
+}
 .name-cut {
   position: fixed;
-  z-index: 5;
-  left: clamp(156px, 16vw, 220px);
-  right: 5vw;
-  bottom: 6vh;
+  z-index: 6;
+  left: clamp(168px, 16vw, 228px);
+  right: 4vw;
+  top: calc(var(--seam) * 100dvh);
   margin: 0;
+  transform: translateY(-50%);
   pointer-events: none;
-  mix-blend-mode: difference;
   font-family: var(--font-wide), sans-serif;
   font-weight: 500;
-  font-size: clamp(44px, 7.6vw, 128px);
-  line-height: 0.9;
-  letter-spacing: -0.05em;
-  color: #f7f4ee;
+  font-size: clamp(48px, 7.2vw, 120px);
+  line-height: 0.84;
+  letter-spacing: -0.055em;
   white-space: nowrap;
+  color: #16140f;
+  clip-path: inset(0 0 50% 0);
 }
-.stage.is-channel .name-cut {
-  mix-blend-mode: normal;
-  color: #14120c;
-}
+.stage:not(.is-hero) .seam-paper,
 .stage:not(.is-hero) .name-cut {
-  font-size: clamp(28px, 3.6vw, 56px);
-  bottom: 3vh;
-}
-.stage.is-portal .name-cut {
   visibility: hidden;
 }
 
@@ -91,7 +100,8 @@ html:has(.stage) body {
   justify-content: center;
   gap: 13px;
   padding: 28px 0 28px 22px;
-  color: #f4f1ea;
+  background: var(--paper);
+  color: #16140f;
 }
 .rail-link {
   font-family: var(--font-mono), ui-monospace, monospace;
@@ -128,6 +138,9 @@ html:has(.stage) body {
 .stage.is-channel .rail-lang a {
   color: #14120c;
 }
+.stage.is-channel .rail {
+  background: #f0dc3a;
+}
 .rail-lang {
   position: absolute;
   left: 22px;
@@ -140,10 +153,10 @@ html:has(.stage) body {
   letter-spacing: 0.12em;
 }
 .rail-lang a {
-  color: rgba(244, 241, 234, 0.4);
+  color: rgba(22, 20, 15, 0.45);
 }
 .rail-lang a[aria-current] {
-  color: #f4f1ea;
+  color: #16140f;
 }
 
 .stage .plate {
@@ -151,8 +164,17 @@ html:has(.stage) body {
   min-height: 100dvh;
   padding: clamp(64px, 12vh, 120px) clamp(24px, 4vw, 64px) 28vh clamp(156px, 16vw, 220px);
   border: none;
-  background: transparent;
+  background: var(--paper);
+  position: relative;
+  z-index: 3;
   scroll-snap-align: start;
+}
+.stage .plate-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  background: transparent;
 }
 .stage .plate-hero::before,
 .stage .plate-hero::after,
@@ -185,12 +207,6 @@ html:has(.stage) body {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
-}
-.stage .plate-hero {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
 }
 .stage .hero-foot {
   margin-top: 28px;
@@ -295,7 +311,7 @@ html:has(.stage) body {
   font-size: 34vw;
   line-height: 0.78;
   letter-spacing: -0.06em;
-  color: rgba(244, 241, 234, 0.13);
+  color: rgba(22, 20, 15, 0.14);
   user-select: none;
 }
 @supports (animation-timeline: view()) {
@@ -367,6 +383,7 @@ html:has(.stage) body {
 .stage .plate-signal,
 .stage .plate-mask {
   padding: 0;
+  background: #07080c;
 }
 .stage .sig-stage-ui {
   align-items: flex-start;

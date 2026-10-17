@@ -4,23 +4,14 @@
   html:has(.stage) {
     scroll-snap-type: none;
   }
-  .name-cut {
-    display: none;
+  .seam-paper {
+    left: 0;
   }
-  .stage .hero-name {
-    position: relative;
-    width: auto;
-    height: auto;
-    margin: 2vh 0 0;
-    overflow: visible;
-    clip: auto;
-    white-space: normal;
-    font-family: var(--font-wide), sans-serif;
-    font-weight: 500;
-    font-size: clamp(48px, 16vw, 84px);
-    line-height: 0.86;
-    letter-spacing: -0.055em;
-    color: var(--ink);
+  .name-cut {
+    left: 16px;
+    right: 16px;
+    font-size: clamp(30px, 8.2vw, 42px);
+    clip-path: none;
   }
   .stage .live-caption {
     margin-top: 28px;
@@ -41,8 +32,8 @@
     padding: env(safe-area-inset-top) 8px 0 12px;
     overflow-x: auto;
     scrollbar-width: none;
-    background: rgba(7, 8, 12, 0.9);
-    color: #f4f1ea;
+    background: var(--paper);
+    color: #16140f;
     -webkit-overflow-scrolling: touch;
   }
   .rail-link {
@@ -71,10 +62,10 @@
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    color: rgba(244, 241, 234, 0.45);
+    color: rgba(22, 20, 15, 0.45);
   }
   .rail-lang a[aria-current] {
-    color: #f4f1ea;
+    color: #16140f;
   }
   .rail-meter {
     top: auto;

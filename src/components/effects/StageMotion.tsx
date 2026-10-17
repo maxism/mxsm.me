@@ -20,6 +20,13 @@ export function StageMotion() {
       const progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
       document.documentElement.style.setProperty("--p", progress.toFixed(4));
 
+      const hero = document.getElementById("plate-01");
+      const heroSeen = hero
+        ? Math.min(1, Math.max(0, -hero.getBoundingClientRect().top / window.innerHeight))
+        : 0;
+      const seam = 0.66 - heroSeen * 0.2;
+      document.documentElement.style.setProperty("--seam", seam.toFixed(4));
+
       const mid = window.innerHeight * 0.46;
       let current = "";
       document.querySelectorAll<HTMLElement>(".stage .plate[id]").forEach((el) => {
@@ -28,7 +35,7 @@ export function StageMotion() {
       });
 
       stage.classList.toggle("is-channel", current === "plate-04");
-      stage.classList.toggle("is-hero", current === "plate-01" || current === "");
+      stage.classList.toggle("is-hero", current === "plate-01");
       stage.classList.toggle("is-portal", current === "plate-05" || current === "plate-06");
 
       const rail = document.querySelector<HTMLElement>(".rail");

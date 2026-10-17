@@ -6,15 +6,18 @@ type NameGlassProps = {
   name: string;
 };
 
-/** One fixed word. Hidden off the home page so about stays a column of text. */
+/** Paper above the seam, the name sliced on the line, the field below. */
 export function NameGlass({ name }: NameGlassProps) {
   const pathname = usePathname();
   const home = pathname === "/" || pathname === "/en";
   if (!home) return null;
 
   return (
-    <p className="name-cut" aria-hidden="true">
-      {name}
-    </p>
+    <>
+      <div className="seam-paper" aria-hidden="true" />
+      <p className="name-cut" aria-hidden="true">
+        {name}
+      </p>
+    </>
   );
 }
