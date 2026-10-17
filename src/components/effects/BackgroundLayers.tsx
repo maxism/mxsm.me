@@ -1,48 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { FieldBackground } from "@/components/effects/FieldBackground";
 
-declare global {
-  interface Window {
-    mxsmDust?: { boot: () => void; dispose: () => void };
-  }
-}
-
-function loadScript(src: string) {
-  return new Promise<void>((resolve, reject) => {
-    if (document.querySelector('script[src="' + src + '"]')) {
-      resolve();
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = src;
-    script.async = false;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Failed to load " + src));
-    document.body.appendChild(script);
-  });
-}
-
-/** Canvas + scan/grain; dust-init.js (palette-runtime loaded in root layout) */
+/** Site backdrop: the cut, not the dust field. */
 export function BackgroundLayers() {
-  useEffect(() => {
-    document.documentElement.style.overflow = "";
-    document.body.style.overflow = "";
-
-    loadScript("/dust-init.js")
-      .then(() => {
-        requestAnimationFrame(() => window.mxsmDust?.boot());
-      })
-      .catch((err) => console.error("[background]", err));
-
-    return () => window.mxsmDust?.dispose();
-  }, []);
-
-  return (
-    <>
-      <canvas id="dust" aria-hidden="true" />
-      <div id="scan" aria-hidden="true" />
-      <div id="grain" aria-hidden="true" />
-    </>
-  );
+  return <FieldBackground />;
 }

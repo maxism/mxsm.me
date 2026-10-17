@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
-import { fetchMusicFeedWithFallback } from "@/lib/lastfm-client";
+import { useMusicFeed } from "@/hooks/use-music-feed";
 import {
   formatRelativePlayedAt,
   LASTFM_PROFILE_URL,
@@ -20,33 +20,8 @@ type NowPlayingProps = {
   copy: MusicFeedCopy;
 };
 
-const POLL_MS = 30_000;
-
 export function NowPlaying({ initial, locale, copy }: NowPlayingProps) {
-  const [feed, setFeed] = useState<MusicFeedState>(initial);
-  const [loading, setLoading] = useState(!initial.ok && !initial.current);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function poll() {
-      const next = await fetchMusicFeedWithFallback();
-      if (!cancelled) {
-        setFeed(next);
-        setLoading(false);
-      }
-    }
-
-    if (!initial.ok) void poll();
-
-    const id = window.setInterval(poll, POLL_MS);
-    return () => {
-      cancelled = true;
-      window.clearInterval(id);
-    };
-  }, [initial.ok]);
-
-  const track = feed.ok ? feed.current : null;
+  const { feed, loading, track } = useMusicFeed(initial);
   const recent = feed.ok ? feed.recent.filter((t) => !t.isPlaying).slice(0, 4) : [];
 
   useEffect(() => {

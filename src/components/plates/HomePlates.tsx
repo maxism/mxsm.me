@@ -22,7 +22,7 @@ type HomePlatesProps = {
 export function HomePlates({ dict, locale, podcast, music }: HomePlatesProps) {
   return (
     <>
-      <PlateIdentity dict={dict} locale={locale} />
+      <PlateIdentity dict={dict} locale={locale} music={music} />
       <PlateCurrently dict={dict} locale={locale} music={music} />
       <PlateArchive dict={dict} locale={locale} />
       <PlatePodcast dict={dict} podcast={podcast} />

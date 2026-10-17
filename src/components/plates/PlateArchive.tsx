@@ -23,22 +23,30 @@ export function PlateArchive({ dict, locale }: PlateArchiveProps) {
       <p className="archive-teaser">{p.teaser}</p>
 
       <ol className="timeline">
-        {p.items.map((item) => (
-          <li key={item.years + item.name} className="timeline-item">
-            <span className="timeline-years">{item.years}</span>
-            <span className="timeline-line">
-              {item.href ? (
-                <a href={item.href} target="_blank" rel="noopener noreferrer">
-                  {item.name}
-                </a>
-              ) : (
-                item.name
-              )}
-              {" · "}
-              {item.line}
-            </span>
-          </li>
-        ))}
+        {p.items.map((item) => {
+          const year = item.years.match(/\d{4}/)?.[0] ?? item.years;
+          return (
+            <li key={item.years + item.name} className="timeline-item year-frame">
+              <span className="year-giant" aria-hidden="true">
+                {year}
+              </span>
+              <p className="year-caption">
+                <span className="timeline-years">{item.years}</span>
+                <span className="timeline-line">
+                  {item.href ? (
+                    <a href={item.href} target="_blank" rel="noopener noreferrer">
+                      {item.name}
+                    </a>
+                  ) : (
+                    item.name
+                  )}
+                  {" · "}
+                  {item.line}
+                </span>
+              </p>
+            </li>
+          );
+        })}
       </ol>
 
       <Link href={localeAboutPath(locale)} className="archive-more">

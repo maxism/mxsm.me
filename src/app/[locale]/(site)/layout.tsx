@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/JsonLd";
+import "@/app/stage.css";
 import { BackgroundLayers } from "@/components/effects/BackgroundLayers";
+import { NameGlass } from "@/components/effects/NameGlass";
 import { SiteChrome } from "@/components/effects/SiteChrome";
+import { StageMotion } from "@/components/effects/StageMotion";
 import { Footer } from "@/components/layout/Footer";
 import { Masthead } from "@/components/layout/Masthead";
 import { resolveLocale } from "@/i18n/config";
@@ -32,11 +35,15 @@ export default async function SiteLayout({ children, params }: LayoutProps) {
   return (
     <>
       <JsonLd data={webSiteJsonLd(locale)} />
-      <BackgroundLayers />
-      <SiteChrome />
-      <Masthead locale={locale} dict={dict} />
-      {children}
-      <Footer dict={dict} locale={locale} />
+      <div className="stage is-hero">
+        <BackgroundLayers />
+        <StageMotion />
+        <NameGlass name={dict.masthead.name} />
+        <SiteChrome />
+        <Masthead locale={locale} dict={dict} />
+        {children}
+        <Footer dict={dict} locale={locale} />
+      </div>
     </>
   );
 }
