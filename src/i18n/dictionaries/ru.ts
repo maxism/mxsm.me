@@ -2,10 +2,10 @@ import type { Dictionary } from "@/i18n/types";
 
 export const ru: Dictionary = {
   meta: {
-    title: "Макс Ульянов — команды, системы, звук",
+    title: "Макс Ульянов — CTO в MTS.ai",
     description:
-      "Макс Ульянов — CTO MTS.ai. 15 лет собирает команды и инженерные системы: необанк с нуля до ~150 человек, платежи OnlyFans, космический SaaS. Подкаст Шитбастардс, эксперименты с WebGL и звуком.",
-    ogDescription: "команды, системы, звук — и side projects, когда календарь позволяет.",
+      "Макс Ульянов, CTO в MTS.ai. Москва. Раньше собирал необанк, занимался платежами в OnlyFans и спутниковым SaaS. Ведёт подкаст «Шитбастардс».",
+    ogDescription: "CTO в MTS.ai, Москва.",
     ogLocale: "ru_RU",
   },
   masthead: {
@@ -28,8 +28,8 @@ export const ru: Dictionary = {
   },
   plates: {
     identity: {
-      bio: "собираю команды и системы с нуля — и распутываю те, что выросли быстрее договорённостей.",
-      bioEm: "cto mts.ai. до этого — банк на ~150 человек, платежи onlyfans, спутниковый saas. звук и пиксели, когда календарь отпускает.",
+      bio: "CTO в MTS.ai. Живу в Москве.",
+      bioEm: "До этого собирал банк примерно на 150 человек, платежи в OnlyFans и спутниковый SaaS.",
       aboutLink: "about ↗",
     },
     currently: {
@@ -49,12 +49,12 @@ export const ru: Dictionary = {
           n: "01",
           name: "MTS.ai",
           href: "https://mts.ai/",
-          prose: "cto с декабря 2025 — нейропоиск, москва. большая часть под nda.",
+          prose: "CTO с декабря 2025, нейропоиск, Москва. Подробности под NDA.",
         },
         {
           n: "02",
           name: "Untitled Team",
-          prose: "сооснователь с 2025 — команда, собранная в untitled bank: сохранили и растим до следующего большого проекта",
+          prose: "Сооснователь с 2025. Команда из Untitled Bank, после закрытия банка остались вместе.",
           link: { href: "https://untitlednow.com/", label: "untitlednow.com ↗" },
         },
       ],
@@ -62,47 +62,47 @@ export const ru: Dictionary = {
     archive: {
       heading: "/ было",
       headingGlitch: "// было",
-      teaser: "2010 → 2025 · 7 остановок · 5 стран — banking, adult, space, iot, gov",
-      aboutLink: "полный путь на about ↗",
+      teaser: "С 2010 года. Семь мест, пять стран.",
+      aboutLink: "подробнее на about ↗",
       items: [
         {
           years: "2023 — 25",
           name: "untitled bank",
           href: "https://untitlednow.com/",
-          line: "co-ceo & cto · собрали до ~150 человек, свой emv/3ds/hsm · регулятор отозвал лицензию до запуска · uz",
+          line: "Co-CEO и CTO. Команда примерно до 150 человек, свои EMV, 3DS и HSM. Лицензию отозвали до запуска. Узбекистан.",
         },
         {
           years: "2022 — 23",
           name: "onlyfans",
-          line: "head of engineering · payments, creator tools, dora · uk",
+          line: "Head of Engineering. Платежи, инструменты для авторов, DORA. Великобритания.",
         },
         {
           years: "2021 — 23",
           name: "precious payload",
           href: "https://www.linkedin.com/company/preciouspayload",
-          line: "co-founder & cto · satellite mission saas · uae",
+          line: "Сооснователь и CTO. SaaS для спутниковых миссий. ОАЭ.",
         },
         {
           years: "2020 — 21",
           name: "palebluedot",
-          line: "cto · fabble, onespace, codewards · uae",
+          line: "CTO. Fabble, OneSpace, Codewards. ОАЭ.",
         },
         {
           years: "2017 — 18",
           name: "moeco",
           href: "https://moeco.io/",
-          line: "tech lead → co-cto · iot для логистики · de",
+          line: "Tech lead, потом co-CTO. IoT для логистики. Германия.",
         },
         {
           years: "2015 — 20",
           name: "rentateam",
           href: "https://www.rentateam.ru/",
-          line: "co-founder & cto · студия: dodo, vw, vcv, timepad · ru",
+          line: "Сооснователь и CTO. Студия: Dodo, Volkswagen, VCV, Timepad. Россия.",
         },
         {
           years: "2010 — 15",
           name: "минцифры",
-          line: "fullstack → team lead · внутренние системы · ru",
+          line: "От разработчика до тимлида. Внутренние системы. Россия.",
         },
       ],
     },
@@ -111,7 +111,7 @@ export const ru: Dictionary = {
       metaWith: "mike zharchev",
       metaEpisodes: "{count} эп. · S{season}",
       metaOnAir: "since {since}",
-      footTemplate: "про жизнь и людей — без айти · с m. zharchev, с {since}",
+      footTemplate: "Про жизнь и людей, без рабочих тем. С Майком Жарчевым, с {since}.",
       metaFallback: [
         { key: "WITH", value: "mike zharchev" },
         { key: "ON AIR", value: "since mar 2024 · S2" },
@@ -121,44 +121,44 @@ export const ru: Dictionary = {
       ticker: "★ ON AIR · ШИТБАСТАРДС · ЖИЗНЬ · ЛЮДИ · S2 · ",
       tickerBrand: "ШИТБАСТАРДС",
       onAir: "ON AIR",
-      foot: "про жизнь и людей — без айти · с m. zharchev, с марта 2024",
+      foot: "Про жизнь и людей, без рабочих тем. С Майком Жарчевым, с марта 2024.",
     },
     signal: {
       meta: [
-        { key: "TYPE", value: "brain dump" },
+        { key: "TYPE", value: "звук и текст" },
         { key: "STACK", value: "webgl · web audio" },
       ],
       heading: "/ signal",
       headingGlitch: "// signal",
-      quote: ["сорвалось из головы", "без замысла", "без объяснений."],
+      quote: ["Звук", "Текст", "WebGL"],
       metaRows: [
-        { key: "stack", value: "webgl · web audio · tts" },
-        { key: "origin", value: "сорвалось из головы" },
-        { key: "session", value: "каждый визит свой" },
+        { key: "stack", value: "WebGL, Web Audio, синтез речи" },
+        { key: "origin", value: "с главной" },
+        { key: "session", value: "каждый заход отличается" },
       ],
-      cta: "войти в signal ↗",
-      ctaHint: "полный экран · звук · клик или движение",
+      cta: "открыть signal ↗",
+      ctaHint: "Полный экран, со звуком. Клик или движение, чтобы начать.",
       exitLabel: "← mxsm",
     },
     mask: {
       meta: [
-        { key: "TYPE", value: "inner world" },
+        { key: "TYPE", value: "pin art · glass" },
         { key: "STACK", value: "three.js · webgl" },
       ],
       heading: "/ mask",
       headingGlitch: "// mask",
-      ctaHint: "тяни · крути · клик для разворота",
+      ctaHint: "Можно тянуть, крутить и нажать, чтобы перевернуть.",
       exitLabel: "← mxsm",
     },
     contact: {
       heading: "/ написать",
       headingGlitch: "// написать",
-      hint: "менторство, architecture review, аудит инженерных расходов — хорошие поводы написать. читаю всё и отвечаю сам, поэтому иногда до недели.",
+      hint: "Могу поговорить про менторство, разбор архитектуры и расходы на разработку. Письма читаю сам. Ответ иногда занимает больше недели.",
     },
   },
   maskPage: {
     title: "mxsm / mask",
-    description: "мой внутренний мир — пин-арт с одной стороны, стекло с другой",
+    description: "Маска в браузере: с одной стороны пин-арт, с другой стекло.",
     exitLabel: "← mxsm",
     materialsTagline: "glass · dispersion · holographic · glitch · ghost · blood · x-ray · rot · void",
     scanFace: "скан лица",
@@ -190,29 +190,29 @@ export const ru: Dictionary = {
     seo: {
       title: "mxsm / mask",
       paragraphs: [
-        "mxsm/mask — мой внутренний мир, свёрнутый в лицо в браузере. пин-арт с одной стороны, стекло с другой.",
-        "выбери материал, отсканируй лицо через камеру или загрузи OBJ. three.js, без установки.",
-        "макс ульянов, 2026.",
+        "mxsm/mask — маска в браузере. С одной стороны пин-арт, с другой стекло.",
+        "Можно выбрать материал, отсканировать лицо камерой или загрузить OBJ. Сделано на Three.js, ничего ставить не нужно.",
+        "Макс Ульянов, 2026.",
       ],
     },
   },
   signalPage: {
     title: "mxsm / signal",
-    description: "сорвалось из головы — fullscreen, звук, текст, тоннель. без кнопок.",
-    ogDescription: "сорвалось из головы — без замысла и объяснений",
+    description: "Полный экран: звук, текст и тоннель. WebGL и Web Audio.",
+    ogDescription: "Звук, текст и тоннель на весь экран.",
     seo: {
       title: "mxsm / signal",
       paragraphs: [
-        "mxsm/signal — сорвалось из головы. без замысла. fullscreen в браузере: звук, текстовые потоки, тоннель.",
-        "webgl и web audio. клик или движение — чтобы разбудить. каждый заход отличается.",
-        "макс ульянов, 2025–2026.",
+        "mxsm/signal — полный экран в браузере: звук, текст и тоннель.",
+        "WebGL и Web Audio. Чтобы начать, кликните или поводите курсором. Каждый заход отличается.",
+        "Макс Ульянов, 2025–2026.",
       ],
     },
   },
   footer: {
     lines: [
-      "между встречами · москва utc+3",
-      "иногда слушаю, иногда строю",
+      "Москва, UTC+3",
+      "m@mxsm.me",
     ],
     home: "главная",
     about: "about",

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/JsonLd";
 import "@/app/stage.css";
+import "@/app/stage-mobile.css";
 import { BackgroundLayers } from "@/components/effects/BackgroundLayers";
 import { NameGlass } from "@/components/effects/NameGlass";
 import { SiteChrome } from "@/components/effects/SiteChrome";

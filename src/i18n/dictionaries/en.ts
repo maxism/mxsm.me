@@ -2,10 +2,10 @@ import type { Dictionary } from "@/i18n/types";
 
 export const en: Dictionary = {
   meta: {
-    title: "Max Ulianov — teams, systems, sound",
+    title: "Max Ulianov — CTO at MTS.ai",
     description:
-      "Max Ulianov — CTO at MTS.ai. 15 years building teams and engineering systems: a neobank from zero to ~150 people, payments at OnlyFans, satellite SaaS. SHITBUSTARDS podcast, WebGL and sound experiments.",
-    ogDescription: "teams, systems, sound — and side projects when the calendar allows.",
+      "Max Ulianov, CTO at MTS.ai. Moscow. Previously built a neobank, worked on payments at OnlyFans, and built satellite SaaS. Co-hosts the Shitbustards podcast.",
+    ogDescription: "CTO at MTS.ai, Moscow.",
     ogLocale: "en_US",
   },
   masthead: {
@@ -28,8 +28,8 @@ export const en: Dictionary = {
   },
   plates: {
     identity: {
-      bio: "i build teams and systems from zero — and untangle the ones that grew faster than their agreements.",
-      bioEm: "cto at mts.ai. before that — a ~150-person bank, payments at onlyfans, satellite saas. sound and pixels when the calendar allows.",
+      bio: "CTO at MTS.ai. I live in Moscow.",
+      bioEm: "Before that I built a bank of about 150 people, payments at OnlyFans, and satellite SaaS.",
       aboutLink: "about ↗",
     },
     currently: {
@@ -49,12 +49,12 @@ export const en: Dictionary = {
           n: "01",
           name: "MTS.ai",
           href: "https://mts.ai/",
-          prose: "cto since dec 2025 — neural search, moscow. most of it under nda.",
+          prose: "CTO since December 2025, neural search, Moscow. Details are under NDA.",
         },
         {
           n: "02",
           name: "Untitled Team",
-          prose: "co-founder since 2025 — the team behind untitled bank, kept together and growing toward the next big project",
+          prose: "Co-founder since 2025. The Untitled Bank team, still together after the bank closed.",
           link: { href: "https://untitlednow.com/", label: "untitlednow.com ↗" },
         },
       ],
@@ -62,47 +62,47 @@ export const en: Dictionary = {
     archive: {
       heading: "/ before",
       headingGlitch: "// before",
-      teaser: "2010 → 2025 · 7 stops · 5 countries — banking, adult, space, iot, gov",
-      aboutLink: "full path on about ↗",
+      teaser: "Since 2010. Seven places, five countries.",
+      aboutLink: "more on about ↗",
       items: [
         {
           years: "2023 — 25",
           name: "untitled bank",
           href: "https://untitlednow.com/",
-          line: "co-ceo & cto · built to ~150 people, in-house emv/3ds/hsm · regulator pulled the licence pre-launch · uz",
+          line: "Co-CEO and CTO. A team of about 150, in-house EMV, 3DS and HSM. The licence was pulled before launch. Uzbekistan.",
         },
         {
           years: "2022 — 23",
           name: "onlyfans",
-          line: "head of engineering · payments, creator tools, dora · uk",
+          line: "Head of Engineering. Payments, creator tools, DORA. United Kingdom.",
         },
         {
           years: "2021 — 23",
           name: "precious payload",
           href: "https://www.linkedin.com/company/preciouspayload",
-          line: "co-founder & cto · satellite mission saas · uae",
+          line: "Co-founder and CTO. SaaS for satellite missions. UAE.",
         },
         {
           years: "2020 — 21",
           name: "palebluedot",
-          line: "cto · fabble, onespace, codewards · uae",
+          line: "CTO. Fabble, OneSpace, Codewards. UAE.",
         },
         {
           years: "2017 — 18",
           name: "moeco",
           href: "https://moeco.io/",
-          line: "tech lead → co-cto · iot for supply chains · de",
+          line: "Tech lead, then co-CTO. IoT for logistics. Germany.",
         },
         {
           years: "2015 — 20",
           name: "rentateam",
           href: "https://www.rentateam.ru/",
-          line: "co-founder & cto · studio: dodo, vw, vcv, timepad · ru",
+          line: "Co-founder and CTO. Studio work: Dodo, Volkswagen, VCV, Timepad. Russia.",
         },
         {
           years: "2010 — 15",
           name: "ministry of digital",
-          line: "full-stack → team lead · internal systems · ru",
+          line: "From full-stack developer to team lead. Internal systems. Russia.",
         },
       ],
     },
@@ -111,7 +111,7 @@ export const en: Dictionary = {
       metaWith: "mike zharchev",
       metaEpisodes: "{count} eps · S{season}",
       metaOnAir: "since {since}",
-      footTemplate: "life & people, no tech talk · with m. zharchev, since {since}",
+      footTemplate: "About life and people, not about work. With Mike Zharchev, since {since}.",
       metaFallback: [
         { key: "WITH", value: "mike zharchev" },
         { key: "ON AIR", value: "since mar 2024 · S2" },
@@ -121,44 +121,44 @@ export const en: Dictionary = {
       ticker: "★ ON AIR · SHITBUSTARDS · LIFE · PEOPLE · S2 · ",
       tickerBrand: "SHITBUSTARDS",
       onAir: "ON AIR",
-      foot: "life & people, no tech talk · with m. zharchev, since mar 2024",
+      foot: "About life and people, not about work. With Mike Zharchev, since March 2024.",
     },
     signal: {
       meta: [
-        { key: "TYPE", value: "brain dump" },
+        { key: "TYPE", value: "sound and text" },
         { key: "STACK", value: "webgl · web audio" },
       ],
       heading: "/ signal",
       headingGlitch: "// signal",
-      quote: ["spilled from my head", "no thesis", "no explanation."],
+      quote: ["Sound", "Text", "WebGL"],
       metaRows: [
-        { key: "stack", value: "webgl · web audio · tts" },
-        { key: "origin", value: "spilled from my head" },
-        { key: "session", value: "unique each visit" },
+        { key: "stack", value: "WebGL, Web Audio, speech synthesis" },
+        { key: "origin", value: "from the home page" },
+        { key: "session", value: "different each visit" },
       ],
-      cta: "enter signal ↗",
-      ctaHint: "fullscreen · sound on · click or move to wake",
+      cta: "open signal ↗",
+      ctaHint: "Fullscreen, with sound. Click or move to start.",
       exitLabel: "← mxsm",
     },
     mask: {
       meta: [
-        { key: "TYPE", value: "inner world" },
+        { key: "TYPE", value: "pin art · glass" },
         { key: "STACK", value: "three.js · webgl" },
       ],
       heading: "/ mask",
       headingGlitch: "// mask",
-      ctaHint: "drag to rotate · click to flip",
+      ctaHint: "Drag to turn it, click to flip it.",
       exitLabel: "← mxsm",
     },
     contact: {
       heading: "/ write",
       headingGlitch: "// write",
-      hint: "mentoring, architecture reviews, engineering cost audits — all good reasons to write. i read everything and reply myself, so it can take a week.",
+      hint: "I can talk about mentoring, an architecture review, or engineering costs. I read the mail myself. A reply can take more than a week.",
     },
   },
   maskPage: {
     title: "mxsm / mask",
-    description: "my inner world — pin art on one side, refracting glass on the other",
+    description: "A mask in the browser: pin art on one side, glass on the other.",
     exitLabel: "← mxsm",
     materialsTagline: "glass · dispersion · holographic · glitch · ghost · blood · x-ray · rot · void",
     scanFace: "scan face",
@@ -190,29 +190,29 @@ export const en: Dictionary = {
     seo: {
       title: "mxsm / mask",
       paragraphs: [
-        "mxsm/mask — my inner world, rendered as a face in the browser. pin art on one side, glass on the other.",
-        "pick a material, scan your face with the webcam, or drop an OBJ. three.js, no install.",
-        "max ulianov, 2026.",
+        "mxsm/mask is a mask in the browser. Pin art on one side, glass on the other.",
+        "Pick a material, scan a face with the camera, or upload an OBJ. Built with Three.js, nothing to install.",
+        "Max Ulianov, 2026.",
       ],
     },
   },
   signalPage: {
     title: "mxsm / signal",
-    description: "spilled from my head — fullscreen, sound, text, a tunnel. no buttons.",
-    ogDescription: "spilled from my head — no thesis, no explanation",
+    description: "Fullscreen: sound, text, and a tunnel. WebGL and Web Audio.",
+    ogDescription: "Sound, text, and a tunnel, fullscreen.",
     seo: {
       title: "mxsm / signal",
       paragraphs: [
-        "mxsm/signal — something that spilled out of my head. no thesis behind it. fullscreen in the browser: sound on, text streams, a tunnel.",
-        "webgl plus web audio. click or move to wake it — each session runs differently.",
-        "max ulianov, 2025–2026.",
+        "mxsm/signal is fullscreen in the browser: sound, text, and a tunnel.",
+        "WebGL and Web Audio. Click or move the cursor to start. Each visit is different.",
+        "Max Ulianov, 2025–2026.",
       ],
     },
   },
   footer: {
     lines: [
-      "made between meetings · moscow utc+3",
-      "sometimes listening, sometimes building",
+      "Moscow, UTC+3",
+      "m@mxsm.me",
     ],
     home: "home",
     about: "about",

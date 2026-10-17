@@ -6,7 +6,7 @@ type NameGlassProps = {
   name: string;
 };
 
-/** Fixed misregistered name. Hidden off the home page so about stays readable. */
+/** One fixed word. Hidden off the home page so about stays a column of text. */
 export function NameGlass({ name }: NameGlassProps) {
   const pathname = usePathname();
   const home = pathname === "/" || pathname === "/en";
@@ -14,8 +14,7 @@ export function NameGlass({ name }: NameGlassProps) {
 
   return (
     <p className="name-cut" aria-hidden="true">
-      <span className="name-a">{name}</span>
-      <span className="name-b">{name}</span>
+      {name}
     </p>
   );
 }

@@ -15,7 +15,7 @@ export function PlateIdentity({ dict, locale, music }: PlateIdentityProps) {
 
   return (
     <section className="plate plate-hero" id="plate-01" aria-labelledby="h-01">
-      <h1 className="sr-only" id="h-01">
+      <h1 className="hero-name" id="h-01">
         {dict.masthead.name}
       </h1>
 

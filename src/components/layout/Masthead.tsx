@@ -18,6 +18,7 @@ export function Masthead({ locale, dict }: MastheadProps) {
 
   return (
     <nav className="rail" aria-label={dict.nav.primary}>
+      <span className="rail-meter" aria-hidden="true" />
       <Link href={localePath(locale)} data-plate="plate-01" className="rail-link">
         {dict.masthead.place}
       </Link>

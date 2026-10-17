@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-/** Scroll shear on the name, channel-change on the podcast, current mark on the rail. */
+/** Marks the podcast channel, the hero, and the portals. The name does not shear. */
 export function StageMotion() {
   const pathname = usePathname();
 
@@ -12,25 +12,13 @@ export function StageMotion() {
     if (!stage) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const root = document.documentElement;
-    root.style.setProperty("--shear", "8px");
-    root.style.setProperty("--shear-y", "-4px");
-
-    let lastY = window.scrollY;
-    let vel = 0;
     let raf = 0;
 
     const apply = () => {
       raf = 0;
-      const y = window.scrollY;
-      if (!reducedMotion) {
-        const dy = y - lastY;
-        lastY = y;
-        vel = vel * 0.7 + dy * 0.3;
-        const mag = Math.max(-26, Math.min(26, vel * 0.45));
-        root.style.setProperty("--shear", `${8 + mag}px`);
-        root.style.setProperty("--shear-y", `${-4 + mag * 0.18}px`);
-      }
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      document.documentElement.style.setProperty("--p", progress.toFixed(4));
 
       const mid = window.innerHeight * 0.46;
       let current = "";
@@ -41,12 +29,30 @@ export function StageMotion() {
 
       stage.classList.toggle("is-channel", current === "plate-04");
       stage.classList.toggle("is-hero", current === "plate-01" || current === "");
+      stage.classList.toggle("is-portal", current === "plate-05" || current === "plate-06");
 
+      const rail = document.querySelector<HTMLElement>(".rail");
+      let active: HTMLAnchorElement | null = null;
       document.querySelectorAll<HTMLAnchorElement>(".rail a[data-plate]").forEach((link) => {
         if (link.getAttribute("aria-current") === "page") return;
-        if (link.dataset.plate === current) link.setAttribute("aria-current", "true");
-        else link.removeAttribute("aria-current");
+        if (link.dataset.plate === current) {
+          link.setAttribute("aria-current", "true");
+          active = link;
+        } else link.removeAttribute("aria-current");
       });
+
+      if (rail && active && window.matchMedia("(max-width: 760px)").matches) {
+        const link = active as HTMLAnchorElement;
+        const railBox = rail.getBoundingClientRect();
+        const linkBox = link.getBoundingClientRect();
+        const inset = 12;
+        const clipped =
+          linkBox.left < railBox.left + inset || linkBox.right > railBox.right - inset;
+        if (clipped) {
+          const left = link.offsetLeft - inset;
+          rail.scrollTo({ left: Math.max(0, left), behavior: reducedMotion ? "auto" : "smooth" });
+        }
+      }
     };
 
     const onScroll = () => {
@@ -60,7 +66,7 @@ export function StageMotion() {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       if (raf) cancelAnimationFrame(raf);
-      stage.classList.remove("is-channel", "is-hero");
+      stage.classList.remove("is-channel", "is-hero", "is-portal");
     };
   }, [pathname]);
 

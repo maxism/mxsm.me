@@ -7,8 +7,8 @@ export const aboutEn: AboutContent = {
   meta: {
     title: "Max Ulianov — about · CTO @ MTS.ai",
     description:
-      "Max Ulianov — CTO at MTS.ai, co-founder of Untitled Team, SHITBUSTARDS podcast, mxsm/signal. Moscow. 15 years in engineering and org building.",
-    ogDescription: "who, what, where from — without the linkedin voice.",
+      "Max Ulianov, CTO at MTS.ai. Moscow. What he does now, where he worked, and how to reach him.",
+    ogDescription: "Who I am, what I do, and where I worked.",
   },
   plate: {
     rows: [
@@ -18,66 +18,65 @@ export const aboutEn: AboutContent = {
     ],
     heading: "/\u2009about",
     headingGlitch: "// about",
-    lede: "not a resume, not a pitch deck. longer notes for people who want context — and for machines that read sites aloud. the home page is the compressed version; here there is a bit more room between the lines.",
+    lede: "A bit more than the home page: who I am, what I do, and where I worked.",
   },
   sections: [
     {
       id: "who",
       heading: "/ who",
       paragraphs: [
-        "Max Ulianov, @maxism. he/him. Moscow, UTC+3.",
-        "engineer and mathematician at the core — mom called it before anyone else, and she was right.",
+        "Max Ulianov, @maxism. Moscow, UTC+3.",
+        "I'm an engineer. For fifteen years I've worked on software, product, and teams.",
         [
           { href: "mailto:m@mxsm.me", label: "m@mxsm.me" },
-          " · 15 years — engineering, product, org design: from code and architecture to hiring and how the week actually runs.",
+          " is the best address.",
         ],
-        "i usually show up where a team and a system need to be built from zero — or where something outgrew the agreements faster than anyone renegotiated them.",
-        "MEPhI, master's (2005–2010). before that — specialized math & physics school #1580.",
+        "MEPhI, master's degree, 2005–2010. Before that, math and physics school no. 1580.",
       ],
     },
     {
       id: "now",
       heading: "/ now",
       paragraphs: [
-        "CTO @ MTS.ai — since Dec 2025. neural search. NDA on details, by design: the work exists, the bragging does not.",
-        "co-founder Untitled Team — since 2025. the team we built at Untitled Bank, kept together after the shutdown and growing — in people and in level — toward the next big project. with Mike Zharchev and Artem Kharchenko.",
+        "CTO at MTS.ai since December 2025. Neural search. Details are under NDA.",
+        "Co-founder of Untitled Team since 2025, with Mike Zharchev and Artem Kharchenko. This is the Untitled Bank team. We stayed together after the bank closed.",
         [
-          "SHITBUSTARDS podcast — since Mar 2024. life and people, no tech talk. co-host Mike Zharchev. ",
+          "Shitbustards podcast, since March 2024. About life and people, not about work. Co-host Mike Zharchev, on air as Mikos. ",
           { href: SHITBUSTARDS_ORIGIN, label: "shitbustards.ru" },
           ".",
         ],
-        "mxsm/signal — spilled out of my head. webgl, web audio, overlapping text. no thesis — enter from the home page, plate 05.",
-        "mxsm/mask — my inner world. a face in the browser, materials you can flip.",
+        "mxsm/signal is a browser experiment: sound and text in WebGL. It opens from the home page.",
+        "mxsm/mask is a mask in the browser. Pin art on one side, glass on the other.",
       ],
     },
     {
       id: "work",
       heading: "/ work",
       paragraphs: [
-        "most days: hire people and keep them, set how work moves from idea to production, fix what breaks at scale.",
-        "people & org: ladders, performance, coaching leads, succession — the parts that survive after the launch party.",
-        "delivery: cadence, budgets, incidents, DORA — without the all-hands slide about 'transparency'.",
-        "platforms: distributed systems, data, mobile, cloud — where a bad deploy costs real money.",
-        "stack: go · java · kotlin · python · ts/js · node · react/vue · docker/k8s · postgres · redis · kafka · … — picked for the problem, not for a twitter thread.",
+        "Most of the time I hire people, keep the team together, and follow work through to production.",
+        "People: ladders, reviews, conversations with leads, who covers for whom.",
+        "Process: pace of work, budgets, incidents, DORA metrics.",
+        "Systems: distributed systems, data, mobile, cloud.",
+        "Stack depends on the job: Go, Java, Kotlin, Python, TypeScript, React, Vue, Docker, Kubernetes, Postgres, Redis, Kafka. Whatever else the work needs.",
       ],
     },
     {
       id: "path",
       heading: "/ path",
       paragraphs: [
-        "geography: Russia → Germany → UAE → UK → Uzbekistan → Russia again.",
-        "banking (Untitled Bank), adult (OnlyFans), space (Precious Payload), iot (Moeco), studio (RentaTeam), gov (Ministry of Digital) — different industries, similar work: scale, regulation, payments, teams.",
-        "shipped Launch.ctrl, Fabble, OneSpace, Codewards. via studio — Dodo, VW, VCV, Timepad.",
+        "I've worked in Russia, Germany, the UAE, the UK, and Uzbekistan. I'm in Russia again.",
+        "Industries: banking (Untitled Bank), adult (OnlyFans), space (Precious Payload), IoT (Moeco), a client studio (RentaTeam), government (the Ministry of Digital).",
+        "Products: Launch.ctrl, Fabble, OneSpace, Codewards. Through the studio: Dodo, Volkswagen, VCV, Timepad.",
       ],
-      note: "full timeline with dates — on the home page, plate 03.",
+      note: "Dates for each job are on the home page.",
       link: { href: "/en#plate-03", label: "archive on mxsm.me ↗" },
     },
     {
       id: "talks",
       heading: "/ talks",
       paragraphs: [
-        "PLUS-Forum Digital Uzbekistan, May 2025, Tashkent — with Mike Zharchev: building a bank called Untitled, and where reality breaks faster than the roadmap.",
-        "for unfiltered talk about life and people — that is SHITBUSTARDS, not this page.",
+        "PLUS-Forum Digital Uzbekistan, May 2025, Tashkent. With Mike Zharchev, on how we built Untitled Bank.",
+        "Conversations that aren't about work are on the Shitbustards podcast.",
       ],
     },
     {
@@ -85,18 +84,18 @@ export const aboutEn: AboutContent = {
       heading: "/ reach",
       paragraphs: [
         [
-          "write to ",
+          "Write to ",
           { href: "mailto:m@mxsm.me", label: "m@mxsm.me" },
-          " — the best way to reach me.",
+          ".",
         ],
-        "good reasons to write: mentoring, architecture reviews, engineering cost audits. i read everything and reply myself, so it can take a week.",
+        "Worth writing about: mentoring, an architecture review, or engineering costs. I reply myself, and it can take more than a week.",
         [
           { href: github.href, label: "github" },
           " · ",
           { href: linkedin.href, label: "linkedin" },
           " · ",
           { href: telegram.href, label: "telegram" },
-          ". podcast — ",
+          ". Podcast — ",
           { href: SHITBUSTARDS_ORIGIN, label: "shitbustards.ru" },
           ".",
         ],
@@ -104,5 +103,5 @@ export const aboutEn: AboutContent = {
     },
   ],
   backLink: "← home",
-  archiveLink: { href: "/en#plate-03", label: "role archive" },
+  archiveLink: { href: "/en#plate-03", label: "where I worked" },
 };
