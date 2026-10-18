@@ -1818,38 +1818,39 @@ main {
 }
 
 /* ─── 404 · the number cut like the name ──────────── */
+.lost-page #field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+/* Paper above and below; the cut through the number shows the live map from the home page. */
 .lost {
-  --lost-ink-b: #2f5fd0;
   --lost-size: clamp(120px, 26vw, 420px);
   --lost-pad: clamp(16px, 4vw, 64px);
+  position: relative;
+  z-index: 1;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  padding: 32px var(--lost-pad) clamp(32px, 8vh, 72px);
   color: #f4f1ea;
-  background: #0c0b09;
 }
-@supports (color: hsl(from red h s l)) {
-  .lost {
-    --lost-ink-b: hsl(from var(--hot) calc(h + 160) calc(s * 1.1) calc(l * 0.62));
-  }
+.lost-top {
+  flex: 1;
+  background: #0c0b09;
 }
 .lost-num {
   position: relative;
-  margin: 0 calc(-1 * var(--lost-pad));
+  margin: -1px 0 0;
   padding: 0 var(--lost-pad) 0.08em;
   font-family: var(--font-wide), sans-serif;
   font-weight: 500;
   font-size: var(--lost-size);
   line-height: 0.82;
   letter-spacing: -0.06em;
-  background:
-    linear-gradient(to bottom, #0c0b09 calc(100% - var(--lost-size) * 0.42), transparent 0),
-    radial-gradient(60% 120% at 22% 80%, rgba(242, 238, 226, 0.85), rgba(242, 238, 226, 0) 70%),
-    radial-gradient(circle, var(--lost-ink-b) 34%, transparent 37%) 5px 3px / 13px 13px,
-    radial-gradient(circle, var(--hot) 40%, transparent 43%) 0 0 / 13px 13px,
-    #f2eee2;
+  background: linear-gradient(to bottom, #0c0b09 calc(100% - var(--lost-size) * 0.42), transparent 0);
 }
 .lost-num-cut {
   position: absolute;
@@ -1858,8 +1859,14 @@ main {
   color: #0c0b09;
   clip-path: inset(calc(100% - var(--lost-size) * 0.42) 0 0 0);
 }
+.lost-foot {
+  display: flex;
+  flex-direction: column;
+  padding: 40px var(--lost-pad) clamp(32px, 8vh, 72px);
+  background: #0c0b09;
+}
 .lost-line {
-  margin: 40px 0 0;
+  margin: 0;
   max-width: 36ch;
   font-family: var(--font-serif), Georgia, serif;
   font-weight: 300;
