@@ -16,6 +16,9 @@ function readHot(): [number, number, number] {
   return [fallback[0], fallback[1], fallback[2]];
 }
 
+/** Under-paper variants, picked with ?field=…; the first is the default. */
+const FIELD_MODES = ["riso", "moire", "topo", "bit"] as const;
+
 /** Living cut behind the site. One still frame when motion is reduced. */
 export function FieldBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -40,6 +43,10 @@ export function FieldBackground() {
     const uPulse = gl.getUniformLocation(prog, "u_pulse");
     const uShift = gl.getUniformLocation(prog, "u_shift");
     const uDpr = gl.getUniformLocation(prog, "u_dpr");
+    const uMode = gl.getUniformLocation(prog, "u_mode");
+    const mode = FIELD_MODES.indexOf(
+      new URLSearchParams(window.location.search).get("field") as (typeof FIELD_MODES)[number],
+    );
 
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     const mouse = { x: -1, y: -1 };
@@ -77,6 +84,7 @@ export function FieldBackground() {
       if (uPulse) gl.uniform1f(uPulse, pulse);
       if (uShift) gl.uniform1f(uShift, reducedMotion ? 0 : shift);
       if (uDpr) gl.uniform1f(uDpr, dpr);
+      if (uMode) gl.uniform1f(uMode, Math.max(0, mode));
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     };
 

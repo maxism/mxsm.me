@@ -16,6 +16,8 @@ uniform vec2 u_mouse;
 uniform float u_pulse;
 uniform float u_shift;
 uniform float u_dpr;
+// 0 riso, 1 moire, 2 topo, 3 one-bit
+uniform float u_mode;
 
 float hash(vec2 p) {
   return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -65,6 +67,23 @@ float screen(vec2 px, float angle, float cell, float tone) {
   return 1.0 - smoothstep(rad - 0.9, rad + 0.9, d);
 }
 
+// Line screen for the moire: coverage of parallel lines at an angle, line width set by tone.
+float lineScreen(vec2 px, float angle, float period, float tone) {
+  float c = cos(angle);
+  float s = sin(angle);
+  float v = abs(fract((s * px.x + c * px.y) / period) - 0.5) * period;
+  float w = (0.12 + 0.38 * clamp(tone, 0.0, 1.0)) * period;
+  return 1.0 - smoothstep(w - 0.8, w + 0.8, v);
+}
+
+float bayer2(vec2 a) {
+  a = floor(a);
+  return fract(a.x / 2.0 + a.y * a.y * 0.75);
+}
+float bayer8(vec2 a) {
+  return bayer2(0.25 * a) * 0.0625 + bayer2(0.5 * a) * 0.25 + bayer2(a);
+}
+
 void main() {
   vec2 px = gl_FragCoord.xy;
   float t = u_t * 0.03;
@@ -83,19 +102,50 @@ void main() {
   float toneA = smoothstep(0.24, 0.74, fa) * 0.82 + u_pulse * 0.1;
   float toneB = smoothstep(0.36, 0.8, fb) * 0.72;
 
-  float cell = 13.0 * u_dpr;
-  vec2 misregister = vec2(1.4 * u_dpr + u_shift * 0.7, -u_shift * 0.28);
-  float covA = screen(sp, 0.2618, cell, toneA);
-  float covB = screen(sp + misregister, 1.309, cell, toneB);
-
   vec3 paper = vec3(0.95, 0.93, 0.885);
   float luma = dot(u_hot, vec3(0.299, 0.587, 0.114));
   vec3 inkA = clamp(mix(vec3(luma), u_hot, 1.45), 0.0, 1.0);
   vec3 inkB = clamp(mix(vec3(luma), hueTurn(u_hot, 2.75), 1.6), 0.0, 1.0) * 0.78;
-
   vec3 col = paper;
-  col *= mix(vec3(1.0), inkA, covA);
-  col *= mix(vec3(1.0), inkB, covB);
+
+  if (u_mode < 0.5) {
+    // Riso: two halftone screens at their own angles, the second out of register.
+    float cell = 13.0 * u_dpr;
+    vec2 misregister = vec2(1.4 * u_dpr + u_shift * 0.7, -u_shift * 0.28);
+    col *= mix(vec3(1.0), inkA, screen(sp, 0.2618, cell, toneA));
+    col *= mix(vec3(1.0), inkB, screen(sp + misregister, 1.309, cell, toneB));
+  } else if (u_mode < 1.5) {
+    // Moire: two near-parallel line screens; the field bends them, their beat makes the image.
+    vec2 bend = (q - 0.5) * 38.0 * u_dpr;
+    float period = 7.0 * u_dpr;
+    float a = 0.42 + 0.05 * sin(t * 6.0);
+    col *= mix(vec3(1.0), inkA, lineScreen(sp + bend, a, period, toneA + 0.15));
+    col *= mix(vec3(1.0), inkB, lineScreen(sp - bend * 0.6 + vec2(u_shift, 0.0), a + 0.07 + u_shift * 0.002, period, toneB + 0.1));
+  } else if (u_mode < 2.5) {
+    // Topo: the field is a height map; contour lines, every fifth one heavier, the pointer is a hill.
+    float hill = u_mouse.x >= 0.0 ? 0.32 * exp(-pow(distance(px, m) / (180.0 * u_dpr), 2.0)) : 0.0;
+    float h = fa + hill;
+    float n = 18.0;
+    // Height change per device pixel, so lines keep one width on steep and flat ground.
+    float e = 2.0 * 1.4 / u_res.y;
+    float hx = fbm(p + vec2(e, 0.0) + 2.6 * q + vec2(1.7, 9.2)) - fa;
+    float hy = fbm(p + vec2(0.0, e) + 2.6 * q + vec2(1.7, 9.2)) - fa;
+    float g = max(length(vec2(hx, hy)) / 2.0, 1e-4);
+    float dpx = abs(fract(h * n + 0.5) - 0.5) / n / g;
+    float major = step(mod(floor(h * n + 0.5), 5.0), 0.5);
+    float w = mix(0.8, 1.9, major) * u_dpr;
+    float line = 1.0 - smoothstep(w - 0.7, w + 0.7, dpx);
+    vec3 tint = mix(paper, mix(paper, inkA, 0.55), smoothstep(0.35, 0.8, h));
+    col = mix(tint, mix(inkB, vec3(0.06), 0.5), line);
+  } else {
+    // One-bit: the field and a pool of light under the pointer, dithered to two inks on a fixed grid.
+    float pix = 4.0 * u_dpr;
+    vec2 cellPx = floor(px / pix);
+    float glow = u_mouse.x >= 0.0 ? 0.55 * exp(-pow(distance(px, m) / (220.0 * u_dpr), 2.0)) : 0.0;
+    float tone = clamp(smoothstep(0.25, 0.8, fa) * 0.78 - glow, 0.0, 1.0);
+    float on = step(bayer8(cellPx), tone);
+    col = mix(paper, mix(inkB, vec3(0.04), 0.45), on);
+  }
 
   // Paper tooth and a grain that ticks at print speed.
   col *= 0.965 + 0.05 * fbm(px * 0.035);
