@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { hexToRgb, pickFieldPalette } from "@/lib/field-palettes";
 import { FIELD_FS, FIELD_VS } from "@/lib/field-shader";
 import { getLivePalette } from "@/lib/time-palette";
 import { createProgram } from "@/lib/webgl/create-program";
@@ -15,9 +16,6 @@ function readHot(): [number, number, number] {
   const fallback = getLivePalette().chemHot;
   return [fallback[0], fallback[1], fallback[2]];
 }
-
-/** Under-paper variants, picked with ?field=…; the first is the default. */
-const FIELD_MODES = ["riso", "moire", "topo", "bit", "ascii"] as const;
 
 /** Living cut behind the site. One still frame when motion is reduced. */
 export function FieldBackground() {
@@ -43,15 +41,18 @@ export function FieldBackground() {
     const uPulse = gl.getUniformLocation(prog, "u_pulse");
     const uShift = gl.getUniformLocation(prog, "u_shift");
     const uDpr = gl.getUniformLocation(prog, "u_dpr");
-    const uMode = gl.getUniformLocation(prog, "u_mode");
-    const mode = FIELD_MODES.indexOf(
-      new URLSearchParams(window.location.search).get("field") as (typeof FIELD_MODES)[number],
-    );
+    const uPaper = gl.getUniformLocation(prog, "u_paper");
+    const uInk = gl.getUniformLocation(prog, "u_ink");
+    const uSpot = gl.getUniformLocation(prog, "u_spot");
+    const palette = pickFieldPalette(window.location.search);
+    const paper = hexToRgb(palette.paper);
+    const ink = hexToRgb(palette.ink);
+    const spot = hexToRgb(palette.spot);
 
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     const mouse = { x: -1, y: -1 };
     let pulse = 0;
-    // Scroll speed knocks the second ink out of register; it settles back when scrolling stops.
+    // Scroll speed slips the lines of type sideways; they settle back when scrolling stops.
     let lastY = window.scrollY;
     let push = 0;
     let shift = 0;
@@ -84,7 +85,9 @@ export function FieldBackground() {
       if (uPulse) gl.uniform1f(uPulse, pulse);
       if (uShift) gl.uniform1f(uShift, reducedMotion ? 0 : shift);
       if (uDpr) gl.uniform1f(uDpr, dpr);
-      if (uMode) gl.uniform1f(uMode, Math.max(0, mode));
+      if (uPaper) gl.uniform3f(uPaper, paper[0], paper[1], paper[2]);
+      if (uInk) gl.uniform3f(uInk, ink[0], ink[1], ink[2]);
+      if (uSpot) gl.uniform3f(uSpot, spot[0], spot[1], spot[2]);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     };
 
