@@ -39,6 +39,7 @@ export type Dictionary = {
       podcast: string;
       signal: string;
       mask: string;
+      rug: string;
       contact: string;
     };
   };
@@ -90,6 +91,12 @@ export type Dictionary = {
       headingGlitch: string;
       ctaHint: string;
       exitLabel: string;
+    };
+    rug: {
+      meta: TitleBlockRow[];
+      heading: string;
+      headingGlitch: string;
+      ctaHint: string;
     };
     contact: {
       heading: string;

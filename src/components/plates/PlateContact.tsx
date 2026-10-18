@@ -13,10 +13,10 @@ export function PlateContact({ dict, locale }: PlateContactProps) {
   const p = dict.plates.contact;
 
   return (
-    <section className="plate" id="plate-07" aria-labelledby="h-07">
+    <section className="plate" id="plate-08" aria-labelledby="h-08">
       <PlateHead
         title={p.heading}
-        titleId="h-07"
+        titleId="h-08"
         minimal
       />
 

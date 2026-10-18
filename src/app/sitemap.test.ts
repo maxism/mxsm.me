@@ -5,7 +5,7 @@ describe("buildSitemapEntries", () => {
   it("lists all locale URLs with hreflang alternates", () => {
     const entries = buildSitemapEntries();
 
-    expect(entries).toHaveLength(8);
+    expect(entries).toHaveLength(10);
 
     const urls = entries.map((entry) => entry.url);
     expect(urls).toEqual([
@@ -17,6 +17,8 @@ describe("buildSitemapEntries", () => {
       "https://mxsm.me/en/signal",
       "https://mxsm.me/mask",
       "https://mxsm.me/en/mask",
+      "https://mxsm.me/rug",
+      "https://mxsm.me/en/rug",
     ]);
 
     for (const entry of entries) {

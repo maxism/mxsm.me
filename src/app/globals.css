@@ -1146,7 +1146,8 @@ main {
 }
 
 .plate-signal,
-.plate-mask {
+.plate-mask,
+.plate-rug {
   min-height: 100vh;
   min-height: 100dvh;
   padding: 0;
@@ -1196,35 +1197,42 @@ main {
   pointer-events: none;
 }
 .plate-signal .plate-head,
-.plate-mask .plate-head {
+.plate-mask .plate-head,
+.plate-rug .plate-head {
   margin: 0;
   gap: clamp(10px, 2vh, 18px);
 }
 .plate-signal .plate-head .title-block,
-.plate-mask .plate-head .title-block {
+.plate-mask .plate-head .title-block,
+.plate-rug .plate-head .title-block {
   margin-bottom: clamp(12px, 2.5vh, 24px);
 }
 .plate-signal .plate-h,
-.plate-mask .plate-h {
+.plate-mask .plate-h,
+.plate-rug .plate-h {
   margin: 0;
   font-size: clamp(40px, 8vw, 108px);
   color: #e8e2d2;
 }
 .plate-signal .plate-h::first-letter,
-.plate-mask .plate-h::first-letter {
+.plate-mask .plate-h::first-letter,
+.plate-rug .plate-h::first-letter {
   color: var(--hot);
 }
 .plate-signal .title-block.inv,
-.plate-mask .title-block.inv {
+.plate-mask .title-block.inv,
+.plate-rug .title-block.inv {
   background: rgba(6, 5, 8, 0.55);
   border-color: rgba(232, 226, 210, 0.12);
 }
 .plate-signal .title-block.inv .tb-k,
-.plate-mask .title-block.inv .tb-k {
+.plate-mask .title-block.inv .tb-k,
+.plate-rug .title-block.inv .tb-k {
   color: rgba(232, 226, 210, 0.45);
 }
 .plate-signal .title-block.inv .tb-v,
-.plate-mask .title-block.inv .tb-v {
+.plate-mask .title-block.inv .tb-v,
+.plate-rug .title-block.inv .tb-v {
   color: rgba(232, 226, 210, 0.88);
 }
 
@@ -1492,7 +1500,8 @@ main {
     height: 12px;
   }
   .plate-signal,
-  .plate-mask {
+  .plate-mask,
+  .plate-rug {
     min-height: 100vh;
     min-height: 100dvh;
     padding: 0;
@@ -1884,4 +1893,99 @@ main {
 }
 .lost-home:hover {
   color: var(--hot);
+}
+
+/* ── Rug plate: a rug that weaves itself, row by row, over the one before ── */
+.rug-art-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 clamp(24px, 9vw, 160px) 0 0;
+  pointer-events: none;
+}
+.rug-art {
+  --art-h: min(78dvh, 100vw);
+  position: relative;
+  font-size: calc(var(--art-h) / 112);
+  width: 80em;
+  height: 112em;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
+}
+/* one knot = two characters tightened to 1em, on a 1em line: square knots, no seams between rows */
+.rug-art-layer {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  line-height: 1;
+  letter-spacing: -0.1em;
+  white-space: pre;
+}
+.rug-art-layer i {
+  font-style: normal;
+}
+.rug-art-layer--weave {
+  clip-path: inset(0 0 100% 0);
+  animation: rug-weave var(--weave) steps(112, end) forwards;
+}
+@keyframes rug-weave {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+.rug-art-shuttle {
+  position: absolute;
+  left: -3%;
+  right: -3%;
+  top: 0;
+  height: 1em;
+  background: rgba(244, 241, 234, 0.55);
+  mix-blend-mode: screen;
+  animation: rug-shuttle var(--weave) steps(112, end) forwards;
+}
+@keyframes rug-shuttle {
+  0% {
+    top: 0;
+    opacity: 1;
+  }
+  96% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+.rug-art-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 12px);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-align: right;
+  color: rgba(244, 241, 234, 0.46);
+}
+@media (prefers-reduced-motion: reduce) {
+  .rug-art-layer--weave {
+    clip-path: none;
+    animation: none;
+  }
+  .rug-art-shuttle {
+    display: none;
+  }
+}
+@media (max-width: 820px) {
+  .rug-art-wrap {
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0 0 clamp(28px, 6dvh, 56px);
+  }
+  .rug-art {
+    --art-h: min(52dvh, 115vw);
+  }
 }

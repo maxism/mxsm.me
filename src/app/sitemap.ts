@@ -1,5 +1,11 @@
 import type { MetadataRoute } from "next";
-import { localeAboutPath, localeMaskPath, localePath, localeSignalPath } from "@/i18n/config";
+import {
+  localeAboutPath,
+  localeMaskPath,
+  localePath,
+  localeRugPath,
+  localeSignalPath,
+} from "@/i18n/config";
 import { absoluteUrl } from "@/lib/seo/site-url";
 
 const LAST_ABOUT_SIGNAL_MOD = "2026-05-01";
@@ -31,6 +37,13 @@ const PAGE_GROUPS = [
     en: localeMaskPath("en"),
     changeFrequency: "monthly" as const,
     priority: 0.65,
+    lastmod: new Date().toISOString().slice(0, 10),
+  },
+  {
+    ru: localeRugPath("ru"),
+    en: localeRugPath("en"),
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
     lastmod: new Date().toISOString().slice(0, 10),
   },
 ] as const;

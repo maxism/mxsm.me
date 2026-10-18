@@ -5,6 +5,7 @@ import {
   PlateIdentity,
   PlateMask,
   PlatePodcast,
+  PlateRug,
   PlateSignal,
 } from "@/components/plates";
 import type { Locale } from "@/i18n/config";
@@ -26,6 +27,7 @@ export function HomePlates({ dict, locale, podcast }: HomePlatesProps) {
       <PlatePodcast dict={dict} podcast={podcast} />
       <PlateSignal dict={dict} locale={locale} />
       <PlateMask dict={dict} locale={locale} />
+      <PlateRug dict={dict} locale={locale} />
       <PlateContact dict={dict} locale={locale} />
     </>
   );

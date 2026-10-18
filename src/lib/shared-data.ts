@@ -9,7 +9,8 @@ export const navPlates = [
   { href: "#plate-04", key: "podcast" },
   { href: "#plate-05", key: "signal" },
   { href: "#plate-06", key: "mask" },
-  { href: "#plate-07", key: "contact" },
+  { href: "#plate-07", key: "rug" },
+  { href: "#plate-08", key: "contact" },
 ] as const;
 
 export const podcastPlatforms = [

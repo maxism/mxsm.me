@@ -24,6 +24,7 @@ export const ru: Dictionary = {
       podcast: "подкаст",
       signal: "signal",
       mask: "mask",
+      rug: "ковёр",
       contact: "написать",
     },
   },
@@ -151,6 +152,15 @@ export const ru: Dictionary = {
       headingGlitch: "// mask",
       ctaHint: "Маску можно крутить, а по клику переворачивать: с одной стороны пин-арт, с другой стекло.",
       exitLabel: "← mxsm",
+    },
+    rug: {
+      meta: [
+        { key: "TYPE", value: "ворс · гёль · гирих" },
+        { key: "STACK", value: "группы симметрии · svg" },
+      ],
+      heading: "/ его ворсейшество",
+      headingGlitch: "// его ворсейшество",
+      ctaHint: "Каждые несколько секунд ткётся новый ковёр: одна из шести школ, свой сид. Клик открывает тот, что на экране, и его можно перетканить и распечатать.",
     },
     contact: {
       heading: "/ написать",

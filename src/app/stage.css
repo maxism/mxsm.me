@@ -520,7 +520,8 @@ html:has(.stage) body {
   --ink-3: rgba(244, 241, 234, 0.46);
 }
 .stage .plate-signal,
-.stage .plate-mask {
+.stage .plate-mask,
+.stage .plate-rug {
   padding: 0;
   --sheet: #07080c;
 }
@@ -536,8 +537,14 @@ html:has(.stage) body {
   text-align: left;
 }
 .stage .plate-signal .plate-h,
-.stage .plate-mask .plate-h {
+.stage .plate-mask .plate-h,
+.stage .plate-rug .plate-h {
   font-size: var(--t-h2); color: #f4f1ea;
+}
+.stage .plate-rug .plate-h {
+  font-size: clamp(30px, 4.3vw, 72px);
+  max-width: 12ch;
+  line-height: 1.02;
 }
 .stage .sig-hint {
   font-family: var(--font-serif), Georgia, serif; font-size: clamp(16px, 1.4vw, 19px); line-height: 1.4;
@@ -562,7 +569,7 @@ html:has(.stage) body {
   border: none;
 }
 /* The address is the headline here; the plate name steps back to a label. */
-.stage #plate-07 .plate-h {
+.stage #plate-08 .plate-h {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-weight: 400;
   font-size: var(--t-label);

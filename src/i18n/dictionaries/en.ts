@@ -24,6 +24,7 @@ export const en: Dictionary = {
       podcast: "podcast",
       signal: "signal",
       mask: "mask",
+      rug: "rug",
       contact: "write",
     },
   },
@@ -151,6 +152,15 @@ export const en: Dictionary = {
       headingGlitch: "// mask",
       ctaHint: "Drag to rotate, click to flip: pin art on one side, glass on the other.",
       exitLabel: "← mxsm",
+    },
+    rug: {
+      meta: [
+        { key: "TYPE", value: "pile · gul · girih" },
+        { key: "STACK", value: "symmetry groups · svg" },
+      ],
+      heading: "/ his rugship",
+      headingGlitch: "// his rugship",
+      ctaHint: "A new rug is woven every few seconds: one of six schools, its own seed. Click to open the one on screen, reweave it and print it.",
     },
     contact: {
       heading: "/ write",
