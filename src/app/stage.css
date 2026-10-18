@@ -676,16 +676,22 @@ html:has(.stage) body {
   padding-bottom: 36px;
 }
 
-/* One hover for every link: the hour's colour, held while the letters decode.
-   On the podcast's yellow sheet the hour's colour could vanish, so links there keep their ink. */
+/* One hover for every link: the hour's colour.
+   Links that fill with the hour's colour on hover set their text in paper instead,
+   and on the podcast's yellow sheet links keep their own colours. */
 .stage a:hover,
-.stage a.is-decoding,
 .stage .colo a:hover {
   color: var(--hot);
 }
-.stage .zone-shb a:hover,
-.stage .zone-shb a.is-decoding {
+.stage .contact-mail:hover,
+.stage .archive-more:hover {
+  color: var(--bg);
+}
+.stage .zone-shb a:hover {
   color: inherit;
+}
+.stage .zone-shb .pod-cta--shb:hover {
+  color: var(--sb-paper);
 }
 
 @media (prefers-reduced-motion: reduce) {

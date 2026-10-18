@@ -2,37 +2,61 @@
 
 import { useEffect } from "react";
 
-/** The map's own characters; a link runs through them before it settles back into its word. */
+/** The map's own characters; a short run of them sweeps across a link before it settles. */
 const GLYPHS = "-/|\\.:+*#@";
-const DURATION_MS = 420;
+/** How many characters are scrambled at once, just ahead of the settled part. */
+const WINDOW = 2;
+const MS_PER_CHAR = 28;
+const MIN_MS = 160;
+const MAX_MS = 360;
+/** A link that has just decoded waits this long before it will decode again. */
+const COOLDOWN_MS = 600;
 
-type Running = { raf: number; restore: () => void };
+type Running = { link: HTMLAnchorElement; raf: number; restore: () => void };
 
 function textNodes(root: Node): Text[] {
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    // Decorative parts such as the rail's numbers stay put.
+    acceptNode: (n) =>
+      (n.textContent ?? "").trim() && !n.parentElement?.closest("[aria-hidden='true']")
+        ? NodeFilter.FILTER_ACCEPT
+        : NodeFilter.FILTER_REJECT,
+  });
   const nodes: Text[] = [];
-  for (let n = walker.nextNode(); n; n = walker.nextNode()) {
-    if ((n.textContent ?? "").trim()) nodes.push(n as Text);
-  }
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) nodes.push(n as Text);
   return nodes;
 }
 
 /**
- * ASCII decode on hover: a link's letters scramble through the map's glyphs left to right and
- * resolve, in the hour's colour. One delegated listener covers every link on the page.
- * Links that wrap over several lines only change colour, so paragraphs never reflow.
+ * ASCII decode on hover: a two-character cursor of map glyphs sweeps a link left to right,
+ * so the word stays readable the whole time. One link decodes at a time, so running the
+ * pointer down a list touches only the link under it. Links that wrap over several lines
+ * are left alone, so paragraphs never reflow; nothing runs when motion is reduced.
  */
 export function useLinkDecode() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const running = new Map<HTMLAnchorElement, Running>();
+    let running: Running | null = null;
+    const rested = new WeakMap<HTMLAnchorElement, number>();
+
+    const stop = () => {
+      if (!running) return;
+      cancelAnimationFrame(running.raf);
+      running.restore();
+      running = null;
+    };
 
     const decode = (link: HTMLAnchorElement) => {
-      if (running.has(link) || link.getClientRects().length !== 1) return;
+      if (running?.link === link) return;
+      if (performance.now() < (rested.get(link) ?? 0)) return;
+      if (link.getClientRects().length !== 1) return;
       const nodes = textNodes(link);
       if (nodes.length === 0) return;
+      stop();
+
       const originals = nodes.map((n) => n.textContent ?? "");
       const total = originals.reduce((sum, s) => sum + s.length, 0);
+      const duration = Math.min(MAX_MS, Math.max(MIN_MS, total * MS_PER_CHAR));
 
       // Hold the box still while glyphs of other widths pass through it.
       const box = link.getBoundingClientRect();
@@ -46,7 +70,6 @@ export function useLinkDecode() {
       link.style.width = `${box.width}px`;
       link.style.whiteSpace = "nowrap";
       if (prev.aria === null) link.setAttribute("aria-label", originals.join("").trim());
-      link.classList.add("is-decoding");
 
       const restore = () => {
         nodes.forEach((n, i) => (n.textContent = originals[i] ?? ""));
@@ -54,35 +77,31 @@ export function useLinkDecode() {
         link.style.display = prev.display;
         link.style.whiteSpace = prev.whiteSpace;
         if (prev.aria === null) link.removeAttribute("aria-label");
-        link.classList.remove("is-decoding");
-        running.delete(link);
+        rested.set(link, performance.now() + COOLDOWN_MS);
       };
 
       const start = performance.now();
       const frame = (now: number) => {
-        const k = Math.min(1, (now - start) / DURATION_MS);
-        const settled = Math.floor(k * total);
+        const k = Math.min(1, (now - start) / duration);
+        const cursor = Math.floor(k * (total + WINDOW));
         let index = 0;
         nodes.forEach((n, i) => {
-          const source = originals[i] ?? "";
           let out = "";
-          for (const ch of source) {
-            out +=
-              index < settled || ch === " "
-                ? ch
-                : GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+          for (const ch of originals[i] ?? "") {
+            const inWindow = index >= cursor - WINDOW && index < cursor;
+            out += inWindow && ch !== " " ? GLYPHS[Math.floor(Math.random() * GLYPHS.length)] : ch;
             index++;
           }
           n.textContent = out;
         });
-        if (k < 1) {
-          entry.raf = requestAnimationFrame(frame);
+        if (k < 1 && running) {
+          running.raf = requestAnimationFrame(frame);
         } else {
           restore();
+          running = null;
         }
       };
-      const entry: Running = { raf: requestAnimationFrame(frame), restore };
-      running.set(link, entry);
+      running = { link, raf: requestAnimationFrame(frame), restore };
     };
 
     const onOver = (event: PointerEvent) => {
@@ -97,10 +116,7 @@ export function useLinkDecode() {
     document.addEventListener("pointerover", onOver);
     return () => {
       document.removeEventListener("pointerover", onOver);
-      running.forEach((r) => {
-        cancelAnimationFrame(r.raf);
-        r.restore();
-      });
+      stop();
     };
   }, []);
 }
