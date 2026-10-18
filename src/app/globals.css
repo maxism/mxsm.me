@@ -1819,6 +1819,7 @@ main {
 
 /* ─── 404 · the number cut like the name ──────────── */
 .lost {
+  --lost-ink-b: #2f5fd0;
   --lost-size: clamp(120px, 26vw, 420px);
   --lost-pad: clamp(16px, 4vw, 64px);
   min-height: 100dvh;
@@ -1828,6 +1829,11 @@ main {
   padding: 32px var(--lost-pad) clamp(32px, 8vh, 72px);
   color: #f4f1ea;
   background: #0c0b09;
+}
+@supports (color: hsl(from red h s l)) {
+  .lost {
+    --lost-ink-b: hsl(from var(--hot) calc(h + 160) calc(s * 1.1) calc(l * 0.62));
+  }
 }
 .lost-num {
   position: relative;
@@ -1840,7 +1846,10 @@ main {
   letter-spacing: -0.06em;
   background:
     linear-gradient(to bottom, #0c0b09 calc(100% - var(--lost-size) * 0.42), transparent 0),
-    radial-gradient(120% 140% at 30% 100%, #fff3c4 0%, var(--hot) 40%, rgba(var(--hot-rgb), 0.3) 100%);
+    radial-gradient(60% 120% at 22% 80%, rgba(242, 238, 226, 0.85), rgba(242, 238, 226, 0) 70%),
+    radial-gradient(circle, var(--lost-ink-b) 34%, transparent 37%) 5px 3px / 13px 13px,
+    radial-gradient(circle, var(--hot) 40%, transparent 43%) 0 0 / 13px 13px,
+    #f2eee2;
 }
 .lost-num-cut {
   position: absolute;

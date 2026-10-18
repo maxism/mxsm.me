@@ -38,10 +38,16 @@ export function FieldBackground() {
     const uHot = gl.getUniformLocation(prog, "u_hot");
     const uMouse = gl.getUniformLocation(prog, "u_mouse");
     const uPulse = gl.getUniformLocation(prog, "u_pulse");
+    const uShift = gl.getUniformLocation(prog, "u_shift");
+    const uDpr = gl.getUniformLocation(prog, "u_dpr");
 
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     const mouse = { x: -1, y: -1 };
     let pulse = 0;
+    // Scroll speed knocks the second ink out of register; it settles back when scrolling stops.
+    let lastY = window.scrollY;
+    let push = 0;
+    let shift = 0;
     let frame = 0;
     let running = true;
     const t0 = performance.now();
@@ -57,6 +63,11 @@ export function FieldBackground() {
       const target = live ? 1 : 0;
       pulse += (target - pulse) * (reducedMotion ? 1 : 0.04);
       const hot = readHot();
+      const y = window.scrollY;
+      push = push * 0.86 + (y - lastY) * 0.35;
+      lastY = y;
+      const limit = 26 * dpr;
+      shift += (Math.max(-limit, Math.min(limit, push * dpr)) - shift) * 0.14;
 
       gl.useProgram(prog);
       if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
@@ -64,6 +75,8 @@ export function FieldBackground() {
       if (uHot) gl.uniform3f(uHot, hot[0], hot[1], hot[2]);
       if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
       if (uPulse) gl.uniform1f(uPulse, pulse);
+      if (uShift) gl.uniform1f(uShift, reducedMotion ? 0 : shift);
+      if (uDpr) gl.uniform1f(uDpr, dpr);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     };
 

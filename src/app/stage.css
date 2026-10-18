@@ -59,6 +59,18 @@ html:has(.stage) body {
   z-index: 2;
 }
 
+/* Paper grain over everything, rail included: the black is a sheet, not a screen. */
+.stage::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  pointer-events: none;
+  opacity: 0.09;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+
 .seam-paper,
 .name-cut {
   display: none;
@@ -213,13 +225,26 @@ html:has(.stage) body {
   flex-direction: column;
   align-items: stretch;
   min-height: 100dvh;
-  background: linear-gradient(
-    to bottom,
-    var(--paper) var(--cut-a),
-    transparent var(--cut-a),
-    transparent var(--cut-b),
-    var(--paper) var(--cut-b)
-  );
+  /* Paper has thickness: a lit edge on the cut and a soft shadow cast onto the print below it. */
+  background:
+    linear-gradient(
+      to bottom,
+      transparent var(--cut-a),
+      rgba(244, 241, 234, 0.22) var(--cut-a),
+      rgba(244, 241, 234, 0.22) calc(var(--cut-a) + 1px),
+      rgba(8, 7, 5, 0.55) calc(var(--cut-a) + 1px),
+      rgba(8, 7, 5, 0) calc(var(--cut-a) + 22px),
+      transparent calc(var(--cut-b) - 10px),
+      rgba(8, 7, 5, 0.35) var(--cut-b),
+      transparent var(--cut-b)
+    ),
+    linear-gradient(
+      to bottom,
+      var(--paper) var(--cut-a),
+      transparent var(--cut-a),
+      transparent var(--cut-b),
+      var(--paper) var(--cut-b)
+    );
   padding: 28px 0 0 148px;
   overflow: hidden;
 }

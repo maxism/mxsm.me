@@ -476,7 +476,6 @@ export function MaskExperience({ backHref, copy }: Props) {
 
       const THREE = await import("three");
       const { OBJLoader } = await import("three/examples/jsm/loaders/OBJLoader.js");
-      const { mergeVertices } = await import("three/examples/jsm/utils/BufferGeometryUtils.js");
       const { RoomEnvironment } = await import("three/examples/jsm/environments/RoomEnvironment.js");
       if (stopped) return;
       setLoadPhase("model");
@@ -623,12 +622,7 @@ export function MaskExperience({ backHref, copy }: Props) {
       let outerMesh: ThreeTypes.Mesh | null = null;
       let innerMesh: ThreeTypes.Mesh | null = null;
 
-      const buildFromGeometry = (inGeo: ThreeTypes.BufferGeometry) => {
-        // weld shared vertices so computeVertexNormals gives smooth shading, not facets
-        const welded = inGeo.clone();
-        welded.deleteAttribute("normal");
-        welded.deleteAttribute("uv");
-        const rawGeo = welded.index ? welded : mergeVertices(welded, 1e-4);
+      const buildFromGeometry = (rawGeo: ThreeTypes.BufferGeometry) => {
         if (outerMesh) { root.remove(outerMesh); outerMesh.geometry.dispose(); (outerMesh.material as ThreeTypes.Material).dispose(); }
         if (innerMesh) { root.remove(innerMesh); innerMesh.geometry.dispose(); (innerMesh.material as ThreeTypes.Material).dispose(); }
 
@@ -697,7 +691,7 @@ export function MaskExperience({ backHref, copy }: Props) {
 
       const loadDefaultMask = () => {
         new OBJLoader().load(
-          "/mask/skull-vh.obj",
+          "/mask/plague-doctor-skull.obj",
           (obj) => {
             const meshes: ThreeTypes.Mesh[] = [];
             obj.traverse((c) => {

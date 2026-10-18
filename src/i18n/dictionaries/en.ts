@@ -194,7 +194,6 @@ export const en: Dictionary = {
       paragraphs: [
         "mxsm/mask is a mask in the browser. Pin art on one side, glass on the other.",
         "Pick a material, scan a face with the camera, or upload an OBJ. Built with Three.js, nothing to install.",
-        "Skull: Visible Human, NLM 3D Anatomy via NIH 3D, CC BY 4.0.",
         "Max Ulianov, 2026.",
       ],
     },

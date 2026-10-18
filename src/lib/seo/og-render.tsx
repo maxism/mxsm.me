@@ -110,6 +110,8 @@ function OgCut({ title, lead, kicker }: OgCopy) {
           height: slitBottom - slitTop,
           display: "flex",
           backgroundImage: OG.field,
+          backgroundSize: OG.fieldSize,
+          backgroundPosition: OG.fieldPosition,
         }}
       />
 
