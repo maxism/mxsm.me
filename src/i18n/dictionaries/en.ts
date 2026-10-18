@@ -159,6 +159,48 @@ export const en: Dictionary = {
       localTime: "{time} in Moscow now",
     },
   },
+  rugPage: {
+    title: "mxsm / rug",
+    description: "A Soviet rug generator: ASCII on screen, SVG for printing on A4 or A3.",
+    exitLabel: "← mxsm",
+    schools: {
+      medallion: {
+        name: "Medallion",
+        note: "a red field, central medallion, corner quarters, scrollwork and a floral border: the rug from the wall",
+      },
+      turkmen: {
+        name: "Bukhara",
+        note: "staggered rows of octagonal guls with small diamonds between, as on Tekke and Salor rugs",
+      },
+      caucasus: {
+        name: "Caucasian",
+        note: "star medallions down the axis and corner spandrels, as in Kuba and Shirvan",
+      },
+      kursk: {
+        name: "Kursk",
+        note: "roses and leaves on a dark ground, a flat-weave from central Russia",
+      },
+      girih: {
+        name: "Girih",
+        note: "star strapwork: rays leave the midpoints of polygon edges at one angle, and the angle sets the pattern",
+      },
+      scene: {
+        name: "Pictorial",
+        note: "a stag, swans or a rocket: a rug as a framed picture",
+      },
+    },
+    seedLabel: "seed",
+    roll: "new",
+    glyphs: { blocks: "blocks", ascii: "ascii" },
+    detail: "detail",
+    detailHint: "1× is 80×112 knots, 2× is 160×224 with finer geometry",
+    print: "print",
+    saveSvg: "save svg",
+    copyLink: "copy link",
+    copied: "copied",
+    printHint: "The sheet fits the page. Pick the paper size in the print dialog and turn off headers and footers.",
+    sheetCaption: "mxsm.me/rug",
+  },
   maskPage: {
     title: "mxsm / mask",
     description: "A mask in the browser: pin art on one side, glass on the other.",

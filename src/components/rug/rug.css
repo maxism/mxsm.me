@@ -1,0 +1,272 @@
+/* /rug — everything is scoped to .rug-page so it never leaks into other routes.
+   The page is a fixed shell: nothing in it changes size when a control is used. */
+.rug-page {
+  height: 100dvh;
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  background: var(--bg);
+  color: var(--ink);
+  overflow: hidden;
+}
+
+.rug-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px 22px 18px;
+  border-right: 1px solid var(--rule);
+  overflow-y: auto;
+}
+
+.rug-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.rug-back {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.rug-back:hover {
+  color: var(--hot);
+}
+.rug-title {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  color: var(--hot);
+}
+
+.rug-side button,
+.rug-side input {
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+  background: transparent;
+  border: 1px solid var(--ink-4);
+  border-radius: 0;
+  cursor: pointer;
+}
+.rug-side button:hover {
+  color: var(--ink);
+  border-color: var(--ink-3);
+}
+.rug-side button:focus-visible,
+.rug-side input:focus-visible {
+  outline: 1px solid var(--hot);
+  outline-offset: 2px;
+}
+
+.rug-schools {
+  display: grid;
+  gap: 4px;
+}
+.rug-schools button {
+  height: 34px;
+  padding: 0 12px;
+  text-align: left;
+}
+.rug-schools button[aria-selected="true"] {
+  color: var(--bg);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+/* reserved for the longest note, so switching schools never moves what is below */
+.rug-note {
+  margin: 0;
+  height: 6.6em;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+
+.rug-seedrow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+}
+.rug-seed {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--ink-3);
+}
+.rug-seed input {
+  height: 34px;
+  min-width: 0;
+  padding: 0 10px;
+  color: var(--ink);
+  cursor: text;
+}
+.rug-roll {
+  height: 34px;
+  padding: 0 14px;
+  color: var(--hot) !important;
+  border-color: var(--hot) !important;
+}
+.rug-roll:hover {
+  color: var(--bg) !important;
+  background: var(--hot) !important;
+}
+.rug-variant {
+  margin: -6px 0 0;
+  height: 1.5em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.rug-seg {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+}
+.rug-seg button {
+  height: 32px;
+  margin-left: -1px;
+}
+.rug-seg button:first-child {
+  margin-left: 0;
+}
+.rug-seg button[aria-pressed="true"] {
+  color: var(--bg);
+  background: var(--ink);
+  border-color: var(--ink);
+  position: relative;
+}
+
+.rug-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.rug-buttons button {
+  height: 34px;
+}
+.rug-primary {
+  grid-column: 1 / -1;
+  color: var(--hot) !important;
+  border-color: var(--hot) !important;
+}
+.rug-primary:hover {
+  color: var(--bg) !important;
+  background: var(--hot) !important;
+}
+.rug-hint {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+
+/* the stage: the rug is fitted into whatever room is left, in both directions */
+.rug-stage {
+  position: relative;
+  container-type: size;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* one knot = two characters, tightened to 1em wide, on a 1em line: square knots, and the
+   cell backgrounds overlap from line to line, so no hairlines show between rows */
+.rug-ascii {
+  margin: 0;
+  /* system mono on purpose: the web mono subset has no block glyphs, and a fallback breaks the 0.6em cell */
+  font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  font-size: min(calc((100cqw - 48px) / var(--rw)), calc((100cqh - 48px) / var(--rh)));
+  line-height: 1;
+  letter-spacing: -0.1em;
+  white-space: pre;
+}
+.rug-ascii i {
+  font-style: normal;
+}
+
+.rug-sheet {
+  display: none;
+}
+
+.rug-flash {
+  position: absolute;
+  right: 20px;
+  bottom: 16px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--hot);
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+}
+.rug-flash[data-on="true"] {
+  opacity: 1;
+}
+
+@media (max-width: 820px) {
+  .rug-page {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 42dvh minmax(0, 1fr);
+  }
+  .rug-side {
+    border-right: 0;
+    border-bottom: 1px solid var(--rule);
+    padding: 14px 16px;
+    gap: 10px;
+  }
+  .rug-schools {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .rug-schools button {
+    padding: 0 4px;
+    text-align: center;
+    font-size: 11px;
+  }
+  .rug-note {
+    height: 5em;
+  }
+}
+
+@media print {
+  html,
+  body {
+    background: #fff !important;
+  }
+  .rug-page {
+    display: block;
+    height: auto;
+    overflow: visible;
+    background: #fff;
+  }
+  .rug-side,
+  .rug-ascii,
+  .rug-flash {
+    display: none !important;
+  }
+  .rug-stage {
+    display: block;
+    container-type: normal;
+  }
+  /* the vector rug is fitted to whatever paper the print dialog chooses */
+  .rug-sheet {
+    display: block !important;
+    width: 100vw;
+    height: 100vh;
+  }
+  .rug-sheet svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}

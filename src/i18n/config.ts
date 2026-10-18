@@ -35,3 +35,7 @@ export function localeAboutPath(locale: Locale): string {
 export function localeMaskPath(locale: Locale): string {
   return locale === defaultLocale ? "/mask" : "/en/mask";
 }
+
+export function localeRugPath(locale: Locale): string {
+  return locale === defaultLocale ? "/rug" : "/en/rug";
+}

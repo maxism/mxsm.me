@@ -98,6 +98,23 @@ export type Dictionary = {
       localTime: string;
     };
   };
+  rugPage: {
+    title: string;
+    description: string;
+    exitLabel: string;
+    schools: Record<"medallion" | "turkmen" | "caucasus" | "kursk" | "girih" | "scene", { name: string; note: string }>;
+    seedLabel: string;
+    roll: string;
+    glyphs: { blocks: string; ascii: string };
+    detail: string;
+    detailHint: string;
+    print: string;
+    saveSvg: string;
+    copyLink: string;
+    copied: string;
+    printHint: string;
+    sheetCaption: string;
+  };
   maskPage: {
     title: string;
     description: string;
