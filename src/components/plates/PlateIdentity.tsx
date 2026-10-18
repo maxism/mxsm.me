@@ -15,6 +15,9 @@ export function PlateIdentity({ dict, locale }: PlateIdentityProps) {
       <div className="hero-sheet">
         <h1 className="hero-name" id="h-01" data-glitch={dict.masthead.name}>
           {dict.masthead.name}
+          <span className="hero-name-cut" aria-hidden="true">
+            {dict.masthead.name}
+          </span>
         </h1>
 
         <p className="live-caption live-bio">

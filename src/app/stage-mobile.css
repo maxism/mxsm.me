@@ -14,10 +14,13 @@
     padding: 16px 16px 28px;
     background: transparent;
   }
+  .stage .plate-hero {
+    --name-size: clamp(48px, 15vw, 72px);
+    --name-gap: 48px;
+  }
   .hero-name {
-    font-size: clamp(48px, 15vw, 72px);
     white-space: normal;
-    margin-top: 0;
+    margin-top: auto;
   }
   .stage .live-caption {
     margin-top: 0;
@@ -116,10 +119,6 @@
   .stage .ep-list--shb .ep-m {
     grid-column: 2;
   }
-  .stage .year-giant {
-    font-size: 22cqi;
-    animation: none;
-  }
   .stage .plate {
     padding: calc(56px + env(safe-area-inset-top)) 18px 28px;
     scroll-margin-top: calc(52px + env(safe-area-inset-top));
@@ -127,18 +126,20 @@
   .stage .plate-hero {
     padding: calc(52px + env(safe-area-inset-top)) 0 0;
   }
-  .stage .year-frame {
-    min-height: auto;
-    flex-direction: column;
-    align-items: flex-start;
-    overflow: visible;
-    padding: 8vh 0 4vh;
+  .stage .archive {
+    display: block;
   }
-  .stage .year-caption {
-    position: relative;
-    top: auto;
-    bottom: auto;
-    margin-bottom: 12px;
+  .stage .archive-year-col {
+    display: none;
+  }
+  .stage .archive-list {
+    padding-bottom: 0;
+  }
+  .stage .archive-item {
+    min-height: 0;
+  }
+  .stage .archive-list.is-live .archive-item:not(.is-on) {
+    opacity: 1;
   }
   .stage .sig-stage-ui {
     padding: calc(64px + env(safe-area-inset-top)) 18px 24px;

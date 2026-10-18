@@ -102,7 +102,7 @@ html:has(.stage) body {
   pointer-events: none; opacity: 0;
 }
 .passage {
-  position: fixed; inset: 0; z-index: 0; pointer-events: none; background: var(--hot);
+  position: fixed; inset: 0; z-index: 4; pointer-events: none; background: var(--hot);
   clip-path: polygon(0 var(--src-top), var(--tab) var(--src-top), var(--tab) var(--src), var(--stem) var(--src), var(--stem) calc(100% - var(--floor)), var(--run) calc(100% - var(--floor)), var(--run) 100%, 0 100%);
   transition: clip-path 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
 }
@@ -146,20 +146,47 @@ html:has(.stage) body {
   min-height: 100dvh;
   padding: clamp(48px, 8vh, 88px) clamp(24px, 4vw, 64px) 12vh clamp(156px, 16vw, 220px);
   border: none;
-  background: transparent;
+  background: var(--paper);
   color: #f4f1ea;
   position: relative;
   z-index: 3;
   scroll-snap-align: start;
 }
+
+/* The cut: the paper parts through the lower half of the name and the field shows. */
+@property --open {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
 .stage .plate-hero {
+  --name-size: clamp(64px, 10.6vw, 200px);
+  --name-gap: 64px;
+  --cut-a: calc(100% - var(--name-gap) - var(--name-size) * 0.42 - var(--open));
+  --cut-b: calc(100% - var(--name-gap) * 0.3 + var(--open));
   display: flex;
   flex-direction: column;
   align-items: stretch;
   min-height: 100dvh;
-  background: transparent;
+  background: linear-gradient(
+    to bottom,
+    var(--paper) var(--cut-a),
+    transparent var(--cut-a),
+    transparent var(--cut-b),
+    var(--paper) var(--cut-b)
+  );
   padding: 28px 0 0 148px;
   overflow: hidden;
+}
+@supports (animation-timeline: scroll()) {
+  .stage .plate-hero {
+    animation: cut-open linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 100vh;
+  }
+}
+@keyframes cut-open {
+  to { --open: 60vh; }
 }
 .hero-sheet {
   display: flex;
@@ -193,14 +220,22 @@ html:has(.stage) body {
 }
 .hero-name {
   order: 3;
+  position: relative;
   margin: auto 0 0;
   font-family: var(--font-wide), sans-serif;
   font-weight: 500;
-  font-size: clamp(64px, 10.6vw, 200px);
+  font-size: var(--name-size);
   line-height: 0.92;
   letter-spacing: -0.06em;
   white-space: nowrap;
   color: #f4f1ea;
+}
+.hero-name-cut {
+  position: absolute;
+  inset: 0;
+  color: var(--paper);
+  pointer-events: none;
+  clip-path: inset(calc(100% - var(--name-size) * 0.42 - var(--open)) -4% -0.4em -4%);
 }
 .stage .hero-foot {
   order: 2;
@@ -265,50 +300,71 @@ html:has(.stage) body {
   color: var(--hot);
 }
 
-.stage .timeline {
+/* Archive: a short readable list, one year rolling beside it. */
+.stage .archive {
   border: none;
+  display: grid;
+  grid-template-columns: minmax(0, 46ch) minmax(0, 1fr);
+  gap: clamp(32px, 5vw, 96px);
 }
-.stage .timeline-item {
-  display: block;
-  border: none;
+.stage .archive-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 24vh;
 }
-.stage .timeline-item::before {
-  display: none;
+.stage .archive-item {
+  min-height: 34vh;
+  padding: 28px 0;
+  border-top: 1px solid rgba(244, 241, 234, 0.12);
+  transition: opacity 0.4s ease;
 }
-.stage .year-frame {
-  position: relative;
+.stage .archive-list.is-live .archive-item:not(.is-on) {
+  opacity: 0.32;
+}
+.stage .archive-years {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--hot);
+}
+.stage .archive-name {
+  margin: 14px 0 12px;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(28px, 3vw, 42px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.stage .archive-name a:hover {
+  color: var(--hot);
+}
+.stage .archive-line {
+  margin: 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 300;
+  font-size: clamp(16px, 1.5vw, 20px);
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+.stage .archive-year-col {
   container-type: inline-size;
-  min-height: 78vh;
+}
+.stage .archive-year {
+  position: sticky;
+  top: 0;
   display: flex;
   align-items: flex-end;
-  overflow: hidden;
-  padding: 0;
-}
-.stage .year-giant {
-  display: block; max-width: 100%; font-family: var(--font-wide), sans-serif; font-weight: 500;
-  font-size: 26cqi; line-height: 0.82; letter-spacing: -0.06em;
-  color: rgba(244, 241, 234, 0.82); user-select: none;
-}
-@supports (animation-timeline: view()) {
-  .stage .year-giant {
-    animation: year-pass linear both;
-    animation-timeline: view();
-    animation-range: entry 0% exit 100%;
-  }
-}
-@keyframes year-pass {
-  from { transform: translate3d(0, 6vh, 0); }
-  to { transform: translate3d(0, -8vh, 0); }
-}
-.stage .year-caption {
-  position: absolute; left: 0; top: 6vh; margin: 0; max-width: 42ch;
-  display: flex; flex-direction: column; gap: 8px;
-}
-.stage .year-caption .timeline-years {
-  font-family: var(--font-mono), ui-monospace, monospace; font-size: 11px; letter-spacing: 0.16em; color: var(--hot);
-}
-.stage .year-caption .timeline-line {
-  font-family: var(--font-serif), Georgia, serif; font-size: clamp(16px, 1.6vw, 20px); line-height: 1.4; color: var(--ink);
+  height: 100vh;
+  padding-bottom: 14vh;
+  font-family: var(--font-wide), sans-serif;
+  font-weight: 500;
+  font-size: 30cqi;
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  user-select: none;
 }
 
 .stage .zone-shb {
@@ -428,7 +484,9 @@ html:has(.stage) body {
   letter-spacing: -0.03em;
 }
 .stage .colo {
-  background: transparent;
+  position: relative;
+  z-index: 3;
+  background: var(--paper);
   border-top: none;
   scroll-snap-align: none;
   padding-bottom: calc(var(--floor) + 28px);
@@ -460,7 +518,7 @@ html:has(.stage) body {
 @media (prefers-reduced-motion: reduce) {
   #field,
   .passage,
-  .stage .year-giant,
+  .stage .plate-hero,
   .stage [data-glitch].glitch::before {
     transition: none;
     animation: none;
