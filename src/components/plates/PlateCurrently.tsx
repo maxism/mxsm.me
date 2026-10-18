@@ -12,7 +12,6 @@ export function PlateCurrently({ dict }: PlateCurrentlyProps) {
     <section className="plate" id="plate-02" aria-labelledby="h-02">
       <PlateHead
         title={p.heading}
-        titleGlitch={p.headingGlitch}
         titleId="h-02"
         minimal
       />

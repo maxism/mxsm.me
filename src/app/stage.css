@@ -29,12 +29,6 @@ html:has(.stage) body {
   --ink-3: rgba(244, 241, 234, 0.5);
   --ink-4: rgba(244, 241, 234, 0.22);
   --rule: transparent;
-  --floor: 8px;
-  --stem: 8px;
-  --tab: 22px;
-  --src-top: 40vh;
-  --src: 46vh;
-  --run: 78vw;
 
   /* Grid: content starts past the rail; the right column holds facts. */
   --g-left: clamp(156px, 16vw, 220px);
@@ -82,7 +76,8 @@ html:has(.stage) body {
   justify-content: center;
   gap: 13px;
   padding: 28px 0 28px 22px;
-  background: #0c0b09;
+  background: var(--paper);
+  border-right: 1px solid rgba(244, 241, 234, 0.06);
   color: #f4f1ea;
 }
 .rail-link {
@@ -92,52 +87,73 @@ html:has(.stage) body {
   font-size: 12px;
   letter-spacing: 0.04em;
   text-transform: lowercase;
-  color: inherit;
-  opacity: 0.55;
+  color: var(--ink);
+  opacity: 0.5;
   min-height: 32px;
   display: flex;
   align-items: center;
-  transition: color 0.45s ease, opacity 0.45s ease;
+  padding-left: 0;
+  transition: opacity 0.4s ease, padding-left 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* The current block gets a short cut in the hour's colour; nothing else moves. */
+.rail-link::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 14px;
+  height: 1px;
+  background: var(--hot);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.rail-link:hover {
+  opacity: 0.85;
 }
 .rail-link[aria-current] {
   opacity: 1;
-  color: var(--hot);
+  padding-left: 22px;
 }
-.rail-link.is-past {
-  color: var(--hot);
-  opacity: 0.42;
+.rail-link[aria-current]::before {
+  transform: scaleX(1);
 }
-.rail-meter {
-  position: fixed; z-index: 21; left: 0; top: 0; width: 2px; height: 100dvh;
-  background: var(--hot); transform-origin: top center; transform: scaleY(var(--p, 0));
-  pointer-events: none; opacity: 0;
-}
-.passage {
-  position: fixed; inset: 0; z-index: 4; pointer-events: none; background: var(--hot);
-  clip-path: polygon(0 var(--src-top), var(--tab) var(--src-top), var(--tab) var(--src), var(--stem) var(--src), var(--stem) calc(100% - var(--floor)), var(--run) calc(100% - var(--floor)), var(--run) 100%, 0 100%);
-  transition: clip-path 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
-}
-.stage.is-channel .passage,
-.stage.is-portal .passage { opacity: 0; }
-.stage.is-channel .rail-link[aria-current],
-.stage.is-channel .rail-link.is-past { color: inherit; }
-.stage.is-channel .rail-link.is-past { opacity: 0.38; }
 .stage a:focus-visible {
   outline: 1px solid var(--hot);
   outline-offset: 3px;
 }
-.stage.is-channel .rail,
-.stage.is-channel .rail-lang a {
-  color: #14120c;
+.rail-n {
+  margin-right: 10px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  opacity: 0.55;
 }
-.stage.is-channel .rail {
-  background: #f0dc3a;
-}
-.rail-lang {
+/* Separate pages live apart from the blocks, at the foot of the rail. */
+.rail-foot {
   position: absolute;
   z-index: 2;
   left: 22px;
   bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.rail-page {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  opacity: 0.55;
+  transition: opacity 0.3s ease;
+}
+.rail-page:hover,
+.rail-page[aria-current] {
+  opacity: 1;
+}
+.rail-page[aria-current] {
+  color: var(--hot);
+}
+.rail-lang {
   display: flex;
   gap: 6px;
   align-items: baseline;
@@ -535,33 +551,8 @@ html:has(.stage) body {
   max-width: 42ch;
   font-size: var(--t-body);
 }
-.stage .contact-tools {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px 28px;
-  margin-top: 20px;
-}
-.stage .contact-copy {
-  min-height: 40px;
-  padding: 0 16px;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: var(--t-label);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--paper);
-  background: var(--hot);
-  border: none;
-  cursor: pointer;
-}
-.stage .contact-copy:hover {
-  background: var(--ink);
-}
-.stage .contact-copy:focus-visible {
-  outline: 1px solid var(--hot);
-  outline-offset: 3px;
-}
 .stage .contact-time {
+  margin: 20px 0 0;
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: var(--t-label);
   letter-spacing: 0.16em;
@@ -569,57 +560,103 @@ html:has(.stage) body {
   color: var(--ink-3);
 }
 
+/* About: one sheet on the same grid. Section names sit left and stay put; the text reads on the right. */
 .stage .plate-about {
-  max-width: 74ch;
+  max-width: none;
   min-height: auto;
 }
-.stage .about-p {
+.stage .plate-about .plate-h {
+  font-size: clamp(64px, 10.6vw, 200px);
+  margin-bottom: clamp(24px, 4vh, 40px);
+}
+.stage .about-back {
+  margin-bottom: clamp(32px, 6vh, 64px);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--t-label);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.stage .about-back:hover {
+  color: var(--ink);
+}
+.stage .about-lede {
+  max-width: 34ch;
+  margin: 0 0 clamp(56px, 10vh, 112px);
   font-family: var(--font-serif), Georgia, serif;
-  font-size: 17px;
-  line-height: 1.6;
+  font-weight: 300;
+  font-size: var(--t-lead);
+  line-height: 1.35;
   color: var(--ink-2);
 }
+.stage .about-body {
+  gap: 0;
+  max-width: 1180px;
+}
+.stage .about-section {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(0, 60ch) minmax(0, 1fr);
+  column-gap: var(--g-gap);
+  padding: clamp(32px, 5vh, 56px) 0;
+  border-top: 1px solid rgba(244, 241, 234, 0.12);
+}
+.stage .about-section > * {
+  grid-column: 2;
+}
 .stage .about-h {
+  grid-column: 1;
+  grid-row: 1 / span 20;
+  align-self: start;
+  position: sticky;
+  top: 32px;
+  margin: 0;
   font-family: var(--font-wide), sans-serif;
   font-weight: 500;
+  font-size: clamp(22px, 2vw, 30px);
+  line-height: 1;
   letter-spacing: -0.03em;
+  text-transform: lowercase;
+}
+.stage .about-p {
+  margin: 0 0 0.9em;
+  max-width: none;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 300;
+  font-size: var(--t-body);
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.stage .about-p a,
+.stage .about-note a {
+  color: var(--ink);
+  border-bottom: 1px solid rgba(var(--hot-rgb), 0.6);
+}
+.stage .about-p a:hover,
+.stage .about-note a:hover {
+  opacity: 1;
+  color: var(--hot);
+}
+.stage .about-note {
+  margin: 8px 0 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--t-label);
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
 }
 .stage .colo {
   position: relative;
   z-index: 3;
   background: var(--paper);
   border-top: none;
-  padding-bottom: calc(var(--floor) + 28px);
-}
-
-.stage [data-glitch]::before,
-.stage [data-glitch]::after {
-  content: none; color: transparent; mix-blend-mode: normal;
-  opacity: 0; animation: none; transform: none; clip-path: none;
-}
-.stage [data-glitch]::before {
-  content: attr(data-glitch);
-  position: absolute; inset: 0; width: auto; height: auto; background: none;
-  color: var(--hot); font: inherit; letter-spacing: inherit; line-height: inherit;
-  text-transform: inherit; white-space: inherit; pointer-events: none;
-  clip-path: inset(0 0 100% 0);
-}
-.stage .zone-shb [data-glitch]::before { color: #0a0907; }
-.stage [data-glitch].glitch::before {
-  animation: stage-slip 0.45s steps(4, end) 1;
-}
-@keyframes stage-slip {
-  0% { opacity: 1; transform: translate3d(8px, 0, 0); clip-path: inset(14% 0 64% 0); }
-  40% { opacity: 1; transform: translate3d(-6px, 0, 0); clip-path: inset(46% 0 24% 0); }
-  70% { opacity: 1; transform: translate3d(5px, 0, 0); clip-path: inset(8% 0 72% 0); }
-  100% { opacity: 0; transform: none; clip-path: inset(0 0 100% 0); }
+  padding-bottom: 36px;
 }
 
 @media (prefers-reduced-motion: reduce) {
   #field,
-  .passage,
+  .rail-link,
+  .rail-link::before,
   .stage .plate-hero,
-  .stage [data-glitch].glitch::before {
+  .stage .plate {
     transition: none;
     animation: none;
   }

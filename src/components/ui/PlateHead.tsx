@@ -1,11 +1,9 @@
 import type { TitleBlockRow } from "@/lib/shared-data";
-import { GlitchText } from "@/components/ui/GlitchText";
 import { TitleBlock } from "@/components/ui/TitleBlock";
 
 type PlateHeadProps = {
   rows?: readonly TitleBlockRow[];
   title: string;
-  titleGlitch?: string;
   titleId: string;
   as?: "h1" | "h2";
   inverted?: boolean;
@@ -14,13 +12,11 @@ type PlateHeadProps = {
   centered?: boolean;
   minimal?: boolean;
   display?: boolean;
-  glitch?: boolean;
 };
 
 export function PlateHead({
   rows = [],
   title,
-  titleGlitch,
   titleId,
   as: Heading = "h2",
   inverted,
@@ -29,23 +25,12 @@ export function PlateHead({
   centered,
   minimal,
   display,
-  glitch = true,
 }: PlateHeadProps) {
   const headingClass = `plate-h${cyrillic ? " cyr" : ""}${display ? " plate-h--display" : ""}`;
-  const glitchText = titleGlitch ?? title;
-
-  const titleNode = glitch ? (
-    <GlitchText as="span" text={glitchText}>
-      {title}
-    </GlitchText>
-  ) : (
-    title
-  );
-
   const heading = href ? (
     <Heading className={headingClass} id={titleId}>
       <a href={href} rel="noopener noreferrer">
-        {titleNode}
+        {title}
         <span className="plate-h-arrow" aria-hidden="true">
           ↗
         </span>
@@ -53,7 +38,7 @@ export function PlateHead({
     </Heading>
   ) : (
     <Heading className={headingClass} id={titleId}>
-      {titleNode}
+      {title}
     </Heading>
   );
 

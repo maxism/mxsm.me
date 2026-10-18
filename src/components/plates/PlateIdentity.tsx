@@ -13,7 +13,7 @@ export function PlateIdentity({ dict, locale }: PlateIdentityProps) {
   return (
     <section className="plate plate-hero" id="plate-01" aria-labelledby="h-01">
       <div className="hero-sheet">
-        <h1 className="hero-name" id="h-01" data-glitch={dict.masthead.name}>
+        <h1 className="hero-name" id="h-01">
           {dict.masthead.name}
           <span className="hero-name-cut" aria-hidden="true">
             {dict.masthead.name}

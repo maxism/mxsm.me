@@ -262,10 +262,11 @@ void main() {
   float flick = 0.85 + 0.15*sin(uTime*11.0) * sin(uTime*7.3 + 1.0);
   vec3 l = normalize(vec3(0.15, -0.9, 0.55));
   float lit = max(dot(n, l), 0.0)*flick;
-  vec3 col = bone * (0.04 + 1.15*lit);
+  float top = max(dot(n, normalize(vec3(-0.3, 0.8, 0.6))), 0.0);
+  vec3 col = bone * (0.08 + 1.15*lit + 0.35*top);
 
   // everything the light can't reach falls into pitch dark
-  col *= mix(0.25, 1.0, pow(facing, 0.6));
+  col *= mix(0.4, 1.0, pow(facing, 0.6));
 
   // fractures: hairlines eat the bone, wide ones smoulder
   col *= 1.0 - hair*0.7;
@@ -475,6 +476,7 @@ export function MaskExperience({ backHref, copy }: Props) {
 
       const THREE = await import("three");
       const { OBJLoader } = await import("three/examples/jsm/loaders/OBJLoader.js");
+      const { mergeVertices } = await import("three/examples/jsm/utils/BufferGeometryUtils.js");
       const { RoomEnvironment } = await import("three/examples/jsm/environments/RoomEnvironment.js");
       if (stopped) return;
       setLoadPhase("model");
@@ -621,7 +623,12 @@ export function MaskExperience({ backHref, copy }: Props) {
       let outerMesh: ThreeTypes.Mesh | null = null;
       let innerMesh: ThreeTypes.Mesh | null = null;
 
-      const buildFromGeometry = (rawGeo: ThreeTypes.BufferGeometry) => {
+      const buildFromGeometry = (inGeo: ThreeTypes.BufferGeometry) => {
+        // weld shared vertices so computeVertexNormals gives smooth shading, not facets
+        const welded = inGeo.clone();
+        welded.deleteAttribute("normal");
+        welded.deleteAttribute("uv");
+        const rawGeo = welded.index ? welded : mergeVertices(welded, 1e-4);
         if (outerMesh) { root.remove(outerMesh); outerMesh.geometry.dispose(); (outerMesh.material as ThreeTypes.Material).dispose(); }
         if (innerMesh) { root.remove(innerMesh); innerMesh.geometry.dispose(); (innerMesh.material as ThreeTypes.Material).dispose(); }
 
@@ -690,7 +697,7 @@ export function MaskExperience({ backHref, copy }: Props) {
 
       const loadDefaultMask = () => {
         new OBJLoader().load(
-          "/mask/plague-doctor-skull.obj",
+          "/mask/skull-vh.obj",
           (obj) => {
             const meshes: ThreeTypes.Mesh[] = [];
             obj.traverse((c) => {

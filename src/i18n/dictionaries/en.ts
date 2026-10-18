@@ -16,11 +16,12 @@ export const en: Dictionary = {
   },
   nav: {
     primary: "primary",
+    home: "who",
     about: "about",
     plates: {
       currently: "now",
       archive: "before",
-      podcast: "shitbustards",
+      podcast: "podcast",
       signal: "signal",
       mask: "mask",
       contact: "write",
@@ -155,8 +156,6 @@ export const en: Dictionary = {
       heading: "/ write",
       headingGlitch: "// write",
       hint: "Write to me about mentoring, an architecture review, or an audit of engineering costs. I read every email myself, so a reply can take over a week.",
-      copy: "copy",
-      copied: "copied",
       localTime: "{time} in Moscow now",
     },
   },
@@ -195,6 +194,7 @@ export const en: Dictionary = {
       paragraphs: [
         "mxsm/mask is a mask in the browser. Pin art on one side, glass on the other.",
         "Pick a material, scan a face with the camera, or upload an OBJ. Built with Three.js, nothing to install.",
+        "Skull: Visible Human, NLM 3D Anatomy via NIH 3D, CC BY 4.0.",
         "Max Ulianov, 2026.",
       ],
     },

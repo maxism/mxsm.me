@@ -53,15 +53,32 @@
     opacity: 0.4;
     white-space: nowrap;
   }
+  .rail-link::before {
+    display: none;
+  }
   .rail-link[aria-current] {
     opacity: 1;
+    padding-left: 12px;
     background: transparent;
-    box-shadow: inset 0 -2px 0 var(--hot);
+    box-shadow: inset 0 -1px 0 var(--hot);
   }
-  .rail-lang {
+  .rail-foot {
     position: static;
     flex: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
     margin: 0 4px 0 8px;
+  }
+  .rail-n {
+    display: none;
+  }
+  .rail-page {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .rail-lang {
+    flex: none;
     padding-bottom: 0;
   }
   .rail-lang a {
@@ -73,33 +90,10 @@
   .rail-lang a[aria-current] {
     color: #f4f1ea;
   }
-  .stage { --floor: 8px; }
-  .rail-meter {
-    top: auto;
-    bottom: 0;
-    width: 100%;
-    height: 2px;
-    transform-origin: left center;
-    transform: scaleX(var(--p, 0));
-    opacity: 1;
-  }
-  .passage {
-    clip-path: inset(calc(100% - var(--floor)) 0 0 0);
-  }
   .hero-sheet { padding-bottom: 48px; }
   .stage .ticker--shb {
     margin-left: -18px;
     margin-right: -18px;
-  }
-  .stage.is-channel .rail,
-  .stage.is-channel .rail-lang a {
-    color: #14120c;
-  }
-  .stage.is-channel .rail {
-    background: rgba(240, 220, 58, 0.94);
-  }
-  .stage.is-channel .rail-link[aria-current] {
-    box-shadow: inset 0 -2px 0 #14120c;
   }
   .stage .zone-shb {
     padding: calc(64px + env(safe-area-inset-top)) 18px 36px;
@@ -153,5 +147,17 @@
   }
   .stage .plate-about {
     padding-top: calc(72px + env(safe-area-inset-top));
+  }
+  .stage .about-section {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .stage .about-section > *,
+  .stage .about-h {
+    grid-column: 1;
+  }
+  .stage .about-h {
+    grid-row: auto;
+    position: static;
   }
 }

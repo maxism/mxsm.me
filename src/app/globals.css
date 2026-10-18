@@ -1228,34 +1228,6 @@ main {
   color: rgba(232, 226, 210, 0.88);
 }
 
-/* plate-mask heading — dark halo + persistent chromatic fringe */
-.plate-mask .plate-h [data-glitch] {
-  -webkit-text-stroke: 0.5px rgba(6, 5, 8, 0.55);
-  text-shadow:
-    0 0 32px rgba(6, 5, 8, 0.95),
-    0 0 12px rgba(6, 5, 8, 0.85),
-    0 2px 4px rgba(6, 5, 8, 0.7),
-    0 1px 0 rgba(6, 5, 8, 0.5);
-}
-.plate-mask .plate-h [data-glitch]::before {
-  opacity: 0.24;
-  transform: translate(-2px, 0);
-  animation: mask-chroma-idle-r 6s steps(2) infinite;
-}
-.plate-mask .plate-h [data-glitch]::after {
-  opacity: 0.24;
-  transform: translate(2px, 0);
-  animation: mask-chroma-idle-b 6s steps(2) infinite;
-}
-.plate-mask .plate-h [data-glitch].glitch::before {
-  opacity: 0.9;
-  animation: mask-glitch-r 0.5s steps(3) 1;
-}
-.plate-mask .plate-h [data-glitch].glitch::after {
-  opacity: 0.9;
-  animation: mask-glitch-b 0.5s steps(3) 1;
-}
-
 .sig-hint {
   font-family: var(--mono);
   font-size: 10px;
@@ -1450,172 +1422,6 @@ main {
 }
 .colo-link:hover {
   color: var(--hot);
-}
-
-/* ─── glitch — driven by JS, but base RGB-split is CSS ─── */
-[data-glitch] {
-  position: relative;
-  isolation: isolate;
-}
-[data-glitch]::before,
-[data-glitch]::after {
-  content: attr(data-glitch);
-  position: absolute;
-  inset: 0;
-  font: inherit;
-  letter-spacing: inherit;
-  line-height: inherit;
-  text-transform: inherit;
-  white-space: inherit;
-  overflow-wrap: inherit;
-  word-break: inherit;
-  pointer-events: none;
-  mix-blend-mode: screen;
-  opacity: 0;
-}
-.plate-h [data-glitch],
-.mono [data-glitch] {
-  display: block;
-}
-[data-glitch]::before {
-  color: #ff2a45;
-}
-[data-glitch]::after {
-  color: #00d9ff;
-}
-[data-glitch].glitch::before {
-  opacity: 0.85;
-  animation: glitch-r 0.35s steps(2) 1;
-}
-[data-glitch].glitch::after {
-  opacity: 0.85;
-  animation: glitch-b 0.35s steps(2) 1;
-}
-@keyframes glitch-r {
-  0% {
-    transform: translate(0, 0);
-    clip-path: inset(0 0 0 0);
-  }
-  20% {
-    transform: translate(-3px, 1px);
-    clip-path: inset(20% 0 60% 0);
-  }
-  40% {
-    transform: translate(2px, -2px);
-    clip-path: inset(50% 0 20% 0);
-  }
-  60% {
-    transform: translate(-4px, 0);
-    clip-path: inset(10% 0 75% 0);
-  }
-  80% {
-    transform: translate(1px, 1px);
-    clip-path: inset(70% 0 5% 0);
-  }
-  100% {
-    transform: translate(0, 0);
-    clip-path: inset(0 0 0 0);
-  }
-}
-@keyframes glitch-b {
-  0% {
-    transform: translate(0, 0);
-    clip-path: inset(0 0 0 0);
-  }
-  25% {
-    transform: translate(3px, -1px);
-    clip-path: inset(40% 0 35% 0);
-  }
-  50% {
-    transform: translate(-2px, 2px);
-    clip-path: inset(8% 0 80% 0);
-  }
-  75% {
-    transform: translate(4px, 0);
-    clip-path: inset(70% 0 10% 0);
-  }
-  100% {
-    transform: translate(0, 0);
-    clip-path: inset(0 0 0 0);
-  }
-}
-@keyframes mask-chroma-idle-r {
-  0%,
-  100% {
-    transform: translate(-2px, 0);
-    clip-path: inset(0 0 0 0);
-  }
-  50% {
-    transform: translate(-3px, 1px);
-    clip-path: inset(15% 0 70% 0);
-  }
-}
-@keyframes mask-chroma-idle-b {
-  0%,
-  100% {
-    transform: translate(2px, 0);
-    clip-path: inset(0 0 0 0);
-  }
-  50% {
-    transform: translate(3px, -1px);
-    clip-path: inset(60% 0 25% 0);
-  }
-}
-@keyframes mask-glitch-r {
-  0% {
-    transform: translate(-2px, 0);
-    clip-path: inset(0 0 0 0);
-  }
-  15% {
-    transform: translate(-6px, 2px);
-    clip-path: inset(12% 0 72% 0);
-  }
-  30% {
-    transform: translate(4px, -3px);
-    clip-path: inset(45% 0 35% 0);
-  }
-  50% {
-    transform: translate(-5px, 1px);
-    clip-path: inset(5% 0 85% 0);
-  }
-  70% {
-    transform: translate(3px, 2px);
-    clip-path: inset(65% 0 15% 0);
-  }
-  85% {
-    transform: translate(-4px, -1px);
-    clip-path: inset(30% 0 55% 0);
-  }
-  100% {
-    transform: translate(-2px, 0);
-    clip-path: inset(0 0 0 0);
-  }
-}
-@keyframes mask-glitch-b {
-  0% {
-    transform: translate(2px, 0);
-    clip-path: inset(0 0 0 0);
-  }
-  20% {
-    transform: translate(5px, -2px);
-    clip-path: inset(35% 0 45% 0);
-  }
-  40% {
-    transform: translate(-3px, 3px);
-    clip-path: inset(8% 0 82% 0);
-  }
-  60% {
-    transform: translate(6px, 0);
-    clip-path: inset(75% 0 8% 0);
-  }
-  80% {
-    transform: translate(-2px, -2px);
-    clip-path: inset(50% 0 30% 0);
-  }
-  100% {
-    transform: translate(2px, 0);
-    clip-path: inset(0 0 0 0);
-  }
 }
 
 /* ─── reduced motion ───────────────────────────────── */
@@ -2009,4 +1815,57 @@ main {
   transform: translateX(-50%);
   color: rgba(255, 120, 100, 0.75);
   pointer-events: none;
+}
+
+/* ─── 404 · the number cut like the name ──────────── */
+.lost {
+  --lost-size: clamp(120px, 26vw, 420px);
+  --lost-pad: clamp(16px, 4vw, 64px);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 32px var(--lost-pad) clamp(32px, 8vh, 72px);
+  color: #f4f1ea;
+  background: #0c0b09;
+}
+.lost-num {
+  position: relative;
+  margin: 0 calc(-1 * var(--lost-pad));
+  padding: 0 var(--lost-pad) 0.08em;
+  font-family: var(--font-wide), sans-serif;
+  font-weight: 500;
+  font-size: var(--lost-size);
+  line-height: 0.82;
+  letter-spacing: -0.06em;
+  background:
+    linear-gradient(to bottom, #0c0b09 calc(100% - var(--lost-size) * 0.42), transparent 0),
+    radial-gradient(120% 140% at 30% 100%, #fff3c4 0%, var(--hot) 40%, rgba(var(--hot-rgb), 0.3) 100%);
+}
+.lost-num-cut {
+  position: absolute;
+  inset: 0;
+  padding: inherit;
+  color: #0c0b09;
+  clip-path: inset(calc(100% - var(--lost-size) * 0.42) 0 0 0);
+}
+.lost-line {
+  margin: 40px 0 0;
+  max-width: 36ch;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 300;
+  font-size: clamp(18px, 2vw, 26px);
+  line-height: 1.35;
+  color: rgba(244, 241, 234, 0.72);
+}
+.lost-home {
+  margin-top: 16px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.6);
+}
+.lost-home:hover {
+  color: var(--hot);
 }

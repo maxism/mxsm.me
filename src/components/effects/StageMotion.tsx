@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-/** Marks the podcast channel, the hero, and the portals. The name does not shear. */
+/** Marks the rail link of the block in the middle of the screen. Nothing else changes colour. */
 export function StageMotion() {
   const pathname = usePathname();
 
@@ -13,23 +13,18 @@ export function StageMotion() {
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let raf = 0;
+    let last = "";
 
     const apply = () => {
       raf = 0;
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-      document.documentElement.style.setProperty("--p", progress.toFixed(4));
-
       const mid = window.innerHeight * 0.46;
       let current = "";
       document.querySelectorAll<HTMLElement>(".stage .plate[id]").forEach((el) => {
         const rect = el.getBoundingClientRect();
         if (rect.top <= mid && rect.bottom >= mid) current = el.id;
       });
-
-      stage.classList.toggle("is-channel", current === "plate-04");
-      stage.classList.toggle("is-hero", current === "plate-01");
-      stage.classList.toggle("is-portal", current === "plate-05" || current === "plate-06");
+      if (current === last) return;
+      last = current;
 
       const rail = document.querySelector<HTMLElement>(".rail");
       let active: HTMLAnchorElement | null = null;
@@ -39,27 +34,6 @@ export function StageMotion() {
           link.setAttribute("aria-current", "true");
           active = link;
         } else link.removeAttribute("aria-current");
-      });
-
-      const source = document.querySelector<HTMLElement>(".rail-link[aria-current]");
-      if (source) {
-        const box = source.getBoundingClientRect();
-        stage.style.setProperty("--src-top", `${Math.round(box.top)}px`);
-        stage.style.setProperty("--src", `${Math.round(box.bottom)}px`);
-      }
-      if (stage.classList.contains("is-hero")) {
-        const name = document.querySelector(".hero-name");
-        const right = name?.getBoundingClientRect().right ?? 0;
-        if (right > 160) stage.style.setProperty("--run", `${Math.round(right)}px`);
-      }
-      let before = true;
-      document.querySelectorAll<HTMLElement>(".rail-link").forEach((el) => {
-        if (el.getAttribute("aria-current")) {
-          el.classList.remove("is-past");
-          before = false;
-          return;
-        }
-        el.classList.toggle("is-past", before);
       });
 
       if (rail && active && window.matchMedia("(max-width: 760px)").matches) {
@@ -87,7 +61,6 @@ export function StageMotion() {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       if (raf) cancelAnimationFrame(raf);
-      stage.classList.remove("is-channel", "is-hero", "is-portal");
     };
   }, [pathname]);
 

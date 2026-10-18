@@ -16,11 +16,12 @@ export const ru: Dictionary = {
   },
   nav: {
     primary: "primary",
-    about: "about",
+    home: "кто",
+    about: "о себе",
     plates: {
       currently: "сейчас",
       archive: "было",
-      podcast: "шитбастардс",
+      podcast: "подкаст",
       signal: "signal",
       mask: "mask",
       contact: "написать",
@@ -155,8 +156,6 @@ export const ru: Dictionary = {
       heading: "/ написать",
       headingGlitch: "// написать",
       hint: "Пишите про менторство, разбор архитектуры или аудит расходов на разработку. Письма читаю сам, так что ответ иногда идёт больше недели.",
-      copy: "скопировать",
-      copied: "скопировано",
       localTime: "в Москве сейчас {time}",
     },
   },
@@ -195,6 +194,7 @@ export const ru: Dictionary = {
       paragraphs: [
         "mxsm/mask — маска в браузере. С одной стороны пин-арт, с другой стекло.",
         "Можно выбрать материал, отсканировать лицо камерой или загрузить OBJ. Сделано на Three.js, ничего ставить не нужно.",
+        "Череп: Visible Human, NLM 3D Anatomy через NIH 3D, CC BY 4.0.",
         "Макс Ульянов, 2026.",
       ],
     },

@@ -20,11 +20,9 @@ export function PlateSignal({ dict, locale }: PlateSignalProps) {
           <PlateHead
             rows={p.meta}
             title={p.heading}
-            titleGlitch={p.headingGlitch}
             titleId="h-05"
             inverted
             centered
-            glitch
           />
           <p className="sig-hint sig-hint--stage">{p.ctaHint}</p>
         </div>

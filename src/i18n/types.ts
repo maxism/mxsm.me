@@ -31,6 +31,7 @@ export type Dictionary = {
   };
   nav: {
     primary: string;
+    home: string;
     about: string;
     plates: {
       currently: string;
@@ -94,8 +95,6 @@ export type Dictionary = {
       heading: string;
       headingGlitch: string;
       hint: string;
-      copy: string;
-      copied: string;
       localTime: string;
     };
   };

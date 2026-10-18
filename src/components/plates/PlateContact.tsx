@@ -1,5 +1,4 @@
-import { ContactTools } from "@/components/plates/ContactTools";
-import { GlitchText } from "@/components/ui/GlitchText";
+import { MoscowTime } from "@/components/plates/MoscowTime";
 import { PlateHead } from "@/components/ui/PlateHead";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
@@ -17,20 +16,15 @@ export function PlateContact({ dict, locale }: PlateContactProps) {
     <section className="plate" id="plate-07" aria-labelledby="h-07">
       <PlateHead
         title={p.heading}
-        titleGlitch={p.headingGlitch}
         titleId="h-07"
         minimal
       />
 
       <div className="contact-main">
-        <GlitchText as="a" href="mailto:m@mxsm.me" text="m@mxsm.me" className="contact-mail" />
-        <ContactTools
-          email="m@mxsm.me"
-          locale={locale}
-          copyLabel={p.copy}
-          copiedLabel={p.copied}
-          timeTemplate={p.localTime}
-        />
+        <a href="mailto:m@mxsm.me" className="contact-mail">
+          m@mxsm.me
+        </a>
+        <MoscowTime locale={locale} template={p.localTime} />
       </div>
 
       <p className="contact-hint">{p.hint}</p>
