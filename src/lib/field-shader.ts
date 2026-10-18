@@ -16,7 +16,7 @@ uniform vec2 u_mouse;
 uniform float u_pulse;
 uniform float u_shift;
 uniform float u_dpr;
-// 0 riso, 1 moire, 2 topo, 3 one-bit
+// 0 riso, 1 moire, 2 topo, 3 one-bit, 4 ascii
 uniform float u_mode;
 
 float hash(vec2 p) {
@@ -84,6 +84,27 @@ float bayer8(vec2 a) {
   return bayer2(0.25 * a) * 0.0625 + bayer2(0.5 * a) * 0.25 + bayer2(a);
 }
 
+// A 4x5 bitmap font for the ASCII print, darkest glyph last: " .:-=+*#@" and a full block.
+// Rows run top to bottom, four bits each, leftmost pixel in the high bit.
+float glyphBits(float level) {
+  if (level < 0.5) return 0.0;
+  if (level < 1.5) return 4.0;
+  if (level < 2.5) return 16448.0;
+  if (level < 3.5) return 3584.0;
+  if (level < 4.5) return 57568.0;
+  if (level < 5.5) return 20032.0;
+  if (level < 6.5) return 42144.0;
+  if (level < 7.5) return 719610.0;
+  if (level < 8.5) return 433031.0;
+  return 1048575.0;
+}
+
+float glyphPixel(float bits, vec2 cellPos) {
+  // cellPos: column 0..3 from the left, row 0..4 from the top.
+  float bit = (4.0 - cellPos.y) * 4.0 + (3.0 - cellPos.x);
+  return mod(floor(bits / exp2(bit)), 2.0);
+}
+
 void main() {
   vec2 px = gl_FragCoord.xy;
   float t = u_t * 0.03;
@@ -137,6 +158,28 @@ void main() {
     float line = 1.0 - smoothstep(w - 0.7, w + 0.7, dpx);
     vec3 tint = mix(paper, mix(paper, inkA, 0.55), smoothstep(0.35, 0.8, h));
     col = mix(tint, mix(inkB, vec3(0.06), 0.5), line);
+  } else if (u_mode > 3.5) {
+    // ASCII: the field set in a tiny bitmap font. Under the pointer the type darkens;
+    // fast scrolling slips each line sideways like a typewriter carriage.
+    float unit = 3.0 * u_dpr;
+    vec2 cell = vec2(5.0, 7.0) * unit;
+    float row = floor(px.y / cell.y);
+    float slip = u_shift * (hash(vec2(row, 3.7)) - 0.5) * 3.0;
+    vec2 tp = vec2(px.x + slip, px.y);
+    vec2 id = floor(tp / cell);
+    vec2 centre = (id + 0.5) * cell;
+    vec2 pc = (centre - 0.5 * u_res) / u_res.y * 1.4;
+    vec2 qc = vec2(fbm(pc + t), fbm(pc - t + 4.1));
+    float fc = fbm(pc + 2.6 * qc + vec2(1.7, 9.2));
+    float torch = u_mouse.x >= 0.0 ? 0.5 * exp(-pow(distance(centre, m) / (200.0 * u_dpr), 2.0)) : 0.0;
+    float tone = clamp(smoothstep(0.16, 0.72, fc) + torch, 0.0, 0.999);
+    vec2 local = floor(mod(tp, cell) / unit);
+    float on = 0.0;
+    if (local.x < 4.0 && local.y >= 1.0 && local.y <= 5.0) {
+      on = glyphPixel(glyphBits(floor(tone * 10.0)), vec2(local.x, 5.0 - local.y));
+    }
+    vec3 type = hash(id + 0.31) > 0.9 ? inkA : mix(inkB, vec3(0.05), 0.55);
+    col = mix(paper, type, on);
   } else {
     // One-bit: the field and a pool of light under the pointer, dithered to two inks on a fixed grid.
     float pix = 4.0 * u_dpr;

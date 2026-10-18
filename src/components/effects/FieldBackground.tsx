@@ -17,7 +17,7 @@ function readHot(): [number, number, number] {
 }
 
 /** Under-paper variants, picked with ?field=…; the first is the default. */
-const FIELD_MODES = ["riso", "moire", "topo", "bit"] as const;
+const FIELD_MODES = ["riso", "moire", "topo", "bit", "ascii"] as const;
 
 /** Living cut behind the site. One still frame when motion is reduced. */
 export function FieldBackground() {
