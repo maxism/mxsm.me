@@ -49,6 +49,16 @@ export function PlateCurrently({ dict }: PlateCurrentlyProps) {
                 )}
               </p>
             </div>
+            {role.facts && (
+              <dl className="role-facts">
+                {role.facts.map((fact) => (
+                  <div key={fact.key}>
+                    <dt>{fact.key}</dt>
+                    <dd>{fact.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
           </article>
         ))}
       </div>

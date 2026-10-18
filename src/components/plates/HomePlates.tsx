@@ -26,7 +26,7 @@ export function HomePlates({ dict, locale, podcast }: HomePlatesProps) {
       <PlatePodcast dict={dict} podcast={podcast} />
       <PlateSignal dict={dict} locale={locale} />
       <PlateMask dict={dict} locale={locale} />
-      <PlateContact dict={dict} />
+      <PlateContact dict={dict} locale={locale} />
     </>
   );
 }

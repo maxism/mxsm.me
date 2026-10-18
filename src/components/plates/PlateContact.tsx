@@ -1,13 +1,16 @@
+import { ContactTools } from "@/components/plates/ContactTools";
 import { GlitchText } from "@/components/ui/GlitchText";
 import { PlateHead } from "@/components/ui/PlateHead";
+import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 import { contacts } from "@/lib/shared-data";
 
 type PlateContactProps = {
   dict: Dictionary;
+  locale: Locale;
 };
 
-export function PlateContact({ dict }: PlateContactProps) {
+export function PlateContact({ dict, locale }: PlateContactProps) {
   const p = dict.plates.contact;
 
   return (
@@ -21,6 +24,13 @@ export function PlateContact({ dict }: PlateContactProps) {
 
       <div className="contact-main">
         <GlitchText as="a" href="mailto:m@mxsm.me" text="m@mxsm.me" className="contact-mail" />
+        <ContactTools
+          email="m@mxsm.me"
+          locale={locale}
+          copyLabel={p.copy}
+          copiedLabel={p.copied}
+          timeTemplate={p.localTime}
+        />
       </div>
 
       <p className="contact-hint">{p.hint}</p>

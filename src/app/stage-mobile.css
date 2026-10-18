@@ -1,9 +1,6 @@
 /* Phone recomposition: the name is in the flow, the index is words, snap is off. */
 
 @media (max-width: 760px) {
-  html:has(.stage) {
-    scroll-snap-type: none;
-  }
   .stage .plate-hero {
     min-height: 100dvh;
     padding: calc(52px + env(safe-area-inset-top)) 0 0;
@@ -125,6 +122,16 @@
   }
   .stage .plate-hero {
     padding: calc(52px + env(safe-area-inset-top)) 0 0;
+  }
+  .stage .role,
+  .stage .role:hover {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .stage .role-facts {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px 24px;
   }
   .stage .archive {
     display: block;

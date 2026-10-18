@@ -319,7 +319,7 @@ main {
   font-feature-settings: "liga" 1;
 }
 .plate-h--display {
-  font-family: var(--font-display), var(--mono);
+  font-family: var(--font-wide), var(--mono);
   font-weight: 400;
   font-size: clamp(56px, 12vw, 120px);
   letter-spacing: 0.04em;
@@ -826,7 +826,7 @@ main {
   top: 18vh;
   right: -2vw;
   z-index: 0;
-  font-family: var(--font-display), var(--mono);
+  font-family: var(--font-wide), var(--mono);
   font-size: clamp(180px, 40vw, 420px);
   line-height: 0.85;
   letter-spacing: 0.06em;

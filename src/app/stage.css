@@ -13,7 +13,6 @@
 }
 
 html:has(.stage) {
-  scroll-snap-type: y proximity;
   background: #0c0b09;
   color-scheme: dark;
 }
@@ -36,6 +35,18 @@ html:has(.stage) body {
   --src-top: 40vh;
   --src: 46vh;
   --run: 78vw;
+
+  /* Grid: content starts past the rail; the right column holds facts. */
+  --g-left: clamp(156px, 16vw, 220px);
+  --g-right: clamp(24px, 4vw, 64px);
+  --g-gap: clamp(24px, 3vw, 56px);
+
+  /* Type scale: wide for display, serif for reading, mono only for labels. */
+  --t-label: 11px;
+  --t-body: clamp(17px, 1.35vw, 20px);
+  --t-lead: clamp(20px, 2vw, 28px);
+  --t-h3: clamp(28px, 3vw, 44px);
+  --t-h2: clamp(44px, 6.4vw, 104px);
   position: relative;
 }
 
@@ -78,11 +89,11 @@ html:has(.stage) body {
   position: relative;
   z-index: 2;
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.04em;
   text-transform: lowercase;
   color: inherit;
-  opacity: 0.38;
+  opacity: 0.55;
   min-height: 32px;
   display: flex;
   align-items: center;
@@ -144,13 +155,31 @@ html:has(.stage) body {
 .stage .plate {
   min-height: 100vh;
   min-height: 100dvh;
-  padding: clamp(48px, 8vh, 88px) clamp(24px, 4vw, 64px) 12vh clamp(156px, 16vw, 220px);
+  padding: clamp(64px, 10vh, 112px) var(--g-right) 12vh var(--g-left);
   border: none;
-  background: var(--paper);
+  --sheet: var(--paper);
+  background: linear-gradient(to bottom, transparent var(--seam), var(--sheet) var(--seam));
   color: #f4f1ea;
   position: relative;
   z-index: 3;
-  scroll-snap-align: start;
+}
+
+/* Every sheet starts with a seam: the cut opens as the sheet arrives, then narrows to a line. */
+@property --seam {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 6px;
+}
+@supports (animation-timeline: view()) {
+  .stage .plate:not(.plate-hero) {
+    animation: seam-close linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 80%;
+  }
+}
+@keyframes seam-close {
+  from { --seam: 56px; }
+  to { --seam: 6px; }
 }
 
 /* The cut: the paper parts through the lower half of the name and the field shows. */
@@ -203,16 +232,19 @@ html:has(.stage) body {
   display: none;
 }
 .stage .plate-h {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-weight: 400;
-  font-size: 11px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  line-height: 1.2;
-  margin: 0 0 28px;
-  color: var(--ink-3);
+  font-family: var(--font-wide), sans-serif;
+  font-weight: 500;
+  font-size: var(--t-h2);
+  letter-spacing: -0.045em;
+  text-transform: lowercase;
+  line-height: 0.9;
+  margin: 0 0 clamp(32px, 6vh, 64px);
+  color: var(--ink);
 }
 .stage .plate-h::first-letter {
+  color: var(--hot);
+}
+.stage .zone-shb .plate-h::first-letter {
   color: inherit;
 }
 .stage .plate-head {
@@ -273,18 +305,45 @@ html:has(.stage) body {
 }
 
 .stage .roles {
-  max-width: 64ch;
+  max-width: 1180px;
   grid-template-columns: 1fr;
   gap: 0;
 }
 .stage .role,
 .stage .role:hover {
   border: none;
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid rgba(244, 241, 234, 0.12);
   background: none;
-  padding: 28px 0 32px;
-  grid-template-columns: 56px 1fr;
-  gap: 20px;
+  padding: clamp(28px, 4vh, 44px) 0 clamp(32px, 5vh, 56px);
+  grid-template-columns: 56px minmax(0, 46ch) minmax(180px, 1fr);
+  gap: var(--g-gap);
+}
+.stage .role-name {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: var(--t-h3);
+}
+.stage .role-prose {
+  font-size: var(--t-body);
+}
+.stage .role-facts {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 6px;
+}
+.stage .role-facts dt {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--t-label);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.stage .role-facts dd {
+  margin: 4px 0 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: var(--t-body);
+  color: var(--ink);
 }
 .stage .role::before,
 .stage .role-bar {
@@ -368,7 +427,7 @@ html:has(.stage) body {
 }
 
 .stage .zone-shb {
-  background: #f0dc3a; color: #0a0907; overflow: hidden;
+  --sheet: #f0dc3a; color: #0a0907; overflow: hidden;
   --ink: #0a0907; --ink-2: rgba(10, 9, 7, 0.72); --ink-3: rgba(10, 9, 7, 0.5);
   --sb-bg: #f0dc3a; --sb-ink: #0a0907; --sb-hot: #e10600;
 }
@@ -414,7 +473,6 @@ html:has(.stage) body {
   margin-top: 4px;
 }
 .stage .plate-inverted {
-  background: transparent;
   color: #f4f1ea;
   --ink: #f4f1ea;
   --ink-2: rgba(244, 241, 234, 0.72);
@@ -423,7 +481,7 @@ html:has(.stage) body {
 .stage .plate-signal,
 .stage .plate-mask {
   padding: 0;
-  background: #07080c;
+  --sheet: #07080c;
 }
 .stage .sig-stage-ui {
   align-items: flex-start;
@@ -438,8 +496,7 @@ html:has(.stage) body {
 }
 .stage .plate-signal .plate-h,
 .stage .plate-mask .plate-h {
-  font-family: var(--font-wide), sans-serif; font-weight: 500; font-size: clamp(36px, 6vw, 84px);
-  letter-spacing: -0.045em; text-transform: lowercase; line-height: 0.88; color: #f4f1ea;
+  font-size: var(--t-h2); color: #f4f1ea;
 }
 .stage .sig-hint {
   font-family: var(--font-serif), Georgia, serif; font-size: clamp(16px, 1.4vw, 19px); line-height: 1.4;
@@ -463,14 +520,58 @@ html:has(.stage) body {
   max-width: 52ch;
   border: none;
 }
+/* The address is the headline here; the plate name steps back to a label. */
+.stage #plate-07 .plate-h {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 400;
+  font-size: var(--t-label);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  margin-bottom: 24px;
+  color: var(--ink-3);
+}
 .stage .contact-hint {
   max-width: 42ch;
+  font-size: var(--t-body);
+}
+.stage .contact-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 28px;
+  margin-top: 20px;
+}
+.stage .contact-copy {
+  min-height: 40px;
+  padding: 0 16px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--t-label);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--hot);
+  border: none;
+  cursor: pointer;
+}
+.stage .contact-copy:hover {
+  background: var(--ink);
+}
+.stage .contact-copy:focus-visible {
+  outline: 1px solid var(--hot);
+  outline-offset: 3px;
+}
+.stage .contact-time {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--t-label);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
 }
 
 .stage .plate-about {
   max-width: 74ch;
   min-height: auto;
-  scroll-snap-align: none;
 }
 .stage .about-p {
   font-family: var(--font-serif), Georgia, serif;
@@ -488,7 +589,6 @@ html:has(.stage) body {
   z-index: 3;
   background: var(--paper);
   border-top: none;
-  scroll-snap-align: none;
   padding-bottom: calc(var(--floor) + 28px);
 }
 

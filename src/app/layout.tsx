@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { JetBrains_Mono, Spectral, Russo_One, Unbounded } from "next/font/google";
+import { JetBrains_Mono, Spectral, Unbounded } from "next/font/google";
 import { Suspense } from "react";
 import { AnalyticsRouteTracker } from "@/components/analytics/AnalyticsRouteTracker";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
@@ -29,13 +29,6 @@ const jetbrains = JetBrains_Mono({
   display: "swap",
 });
 
-const display = Russo_One({
-  subsets: ["latin", "cyrillic"],
-  weight: "400",
-  variable: "--font-display",
-  display: "swap",
-});
-
 const wide = Unbounded({
   subsets: ["latin", "cyrillic"],
   weight: ["400", "500"],
@@ -51,7 +44,7 @@ export default function RootLayout({
   return (
     <html
       lang="ru"
-      className={`${spectral.variable} ${jetbrains.variable} ${display.variable} ${wide.variable}`}
+      className={`${spectral.variable} ${jetbrains.variable} ${wide.variable}`}
       suppressHydrationWarning
     >
       <body>

@@ -6,6 +6,7 @@ export type Role = {
   href?: string;
   prose: string;
   link?: { href: string; label: string };
+  facts?: { key: string; value: string }[];
 };
 
 export type ArchiveItem = {
@@ -93,6 +94,9 @@ export type Dictionary = {
       heading: string;
       headingGlitch: string;
       hint: string;
+      copy: string;
+      copied: string;
+      localTime: string;
     };
   };
   maskPage: {
@@ -111,8 +115,6 @@ export type Dictionary = {
       glass: string;
       blood: string;
       xray: string;
-      rot: string;
-      void: string;
       skull: string;
     };
     loader: {

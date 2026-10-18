@@ -72,6 +72,9 @@ function formatHomeText(dict: Dictionary, locale: Locale): string {
 
   for (const role of dict.plates.currently.roles) {
     lines.push(`${role.n}. ${role.name} — ${role.prose}`);
+    if (role.facts?.length) {
+      lines.push(`  ${role.facts.map((f) => `${f.key}: ${f.value}`).join(" · ")}`);
+    }
     if (role.link) {
       lines.push(`  ${role.link.label}: ${role.link.href}`);
     }
