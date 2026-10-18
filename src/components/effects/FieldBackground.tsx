@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { hexToRgb, pickFieldPalette } from "@/lib/field-palettes";
 import { FIELD_FS, FIELD_VS, LIFE_FS, MAP_FS } from "@/lib/field-shader";
+import { hypsoRamp } from "@/lib/time-palette";
 import { createProgram } from "@/lib/webgl/create-program";
 import { bindFullscreenQuad } from "@/lib/webgl/fullscreen-quad";
 
@@ -210,6 +211,7 @@ export function FieldBackground() {
       gl.uniform3f(u(prog, "u_paper"), paper[0], paper[1], paper[2]);
       gl.uniform3f(u(prog, "u_ink"), ink[0], ink[1], ink[2]);
       gl.uniform3f(u(prog, "u_spot"), spot[0], spot[1], spot[2]);
+      hypsoRamp().forEach(([r, g, b], i) => gl.uniform3f(u(prog, `u_r${i}`), r, g, b));
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     };
 

@@ -121,7 +121,7 @@ html:has(.stage) body {
   transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .rail-link:hover {
-  opacity: 0.85;
+  opacity: 1;
 }
 .rail-link[aria-current] {
   opacity: 1;
@@ -342,7 +342,7 @@ html:has(.stage) body {
 }
 .stage .hero-about:hover {
   background: none;
-  color: var(--ink);
+  color: var(--hot);
 }
 
 .stage .roles {
@@ -674,6 +674,18 @@ html:has(.stage) body {
   background: var(--paper);
   border-top: none;
   padding-bottom: 36px;
+}
+
+/* One hover for every link: the hour's colour, held while the letters decode.
+   On the podcast's yellow sheet the hour's colour could vanish, so links there keep their ink. */
+.stage a:hover,
+.stage a.is-decoding,
+.stage .colo a:hover {
+  color: var(--hot);
+}
+.stage .zone-shb a:hover,
+.stage .zone-shb a.is-decoding {
+  color: inherit;
 }
 
 @media (prefers-reduced-motion: reduce) {

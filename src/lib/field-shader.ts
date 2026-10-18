@@ -3,7 +3,8 @@
  * A slow height field is drawn as contour lines set in ASCII that follow the line's direction,
  * slopes are shaded with a one-bit dither, and peaks fill up with dense type.
  * Life lives on the same type grid: cells are born on the contours, the pointer sows gliders,
- * live cells print in the spot colour and leave a fading trail. Paper, ink and spot change by the day.
+ * live cells print in the day's ink and leave a fading trail in its spot. The ground is coloured by height
+ * with the hour's spectrum, like a survey map; paper, ink and spot change by the day.
  *
  * Three passes keep it cheap: MAP_FS works out the landscape once per character cell into a small
  * texture, LIFE_FS steps Life on that grid, and FIELD_FS only looks both up and draws glyphs.
@@ -18,7 +19,7 @@ float hash(vec2 p) {
 `;
 
 /**
- * One texel per character cell: red is the kind of cell, green its tone.
+ * One texel per character cell: red is the kind of cell, green its tone, blue the ground height.
  * Kinds: 0 slope (green = dither tone), 1-4 minor contour by direction - / | and backslash,
  * 5-8 index contour by direction, 9 peak (green = density level 0-9).
  */
@@ -97,7 +98,7 @@ void main() {
       tone = floor(clamp(wash, 0.0, 1.0) * 255.0);
     }
   }
-  gl_FragColor = vec4(kind / 255.0, tone / 255.0, 0.0, 1.0);
+  gl_FragColor = vec4(kind / 255.0, tone / 255.0, clamp(h, 0.0, 1.0), 1.0);
 }
 `;
 
@@ -110,6 +111,12 @@ uniform float u_dpr;
 uniform vec3 u_paper;
 uniform vec3 u_ink;
 uniform vec3 u_spot;
+// Hypsometric ramp, lowest ground first: the hour's spectrum from now onward.
+uniform vec3 u_r0;
+uniform vec3 u_r1;
+uniform vec3 u_r2;
+uniform vec3 u_r3;
+uniform vec3 u_r4;
 uniform sampler2D u_map;
 uniform sampler2D u_life;
 uniform vec2 u_grid;
@@ -141,6 +148,14 @@ float strokeBits(float dir) {
 const float CELL_ALIVE = 432534.0; // O
 const float CELL_TRAIL = 4.0; // .
 
+vec3 ramp(float h) {
+  float x = clamp((h - 0.28) / 0.6, 0.0, 1.0) * 4.0;
+  vec3 c = mix(u_r0, u_r1, clamp(x, 0.0, 1.0));
+  c = mix(c, u_r2, clamp(x - 1.0, 0.0, 1.0));
+  c = mix(c, u_r3, clamp(x - 2.0, 0.0, 1.0));
+  return mix(c, u_r4, clamp(x - 3.0, 0.0, 1.0));
+}
+
 float glyphPixel(float bits, vec2 pos) {
   // pos: column 0..3 from the left, row 0..4 from the top.
   float bit = (4.0 - pos.y) * 4.0 + (3.0 - pos.x);
@@ -167,9 +182,10 @@ void main() {
   float tone = floor(here.g * 255.0 + 0.5);
   vec4 life = u_lifeOn > 0.5 ? texture2D(u_life, uv) : vec4(0.0);
 
-  // Three tones of one ink plus the spot: the hierarchy reads before the colour does.
-  vec3 inkLine = mix(u_paper, u_ink, 0.62);
-  vec3 inkWash = mix(u_paper, u_ink, 0.28);
+  // Ground is coloured by height like a survey map; Life stays in the day's ink so it reads on top.
+  vec3 ground = ramp(here.b);
+  vec3 inkLine = mix(u_paper, ground, 0.7);
+  vec3 inkWash = mix(u_paper, ground, 0.32);
 
   vec2 local = floor(mod(px, cell) / unit);
   bool inGlyph = local.x < 4.0 && local.y >= 1.0 && local.y <= 5.0;
@@ -178,14 +194,14 @@ void main() {
   vec3 col = u_paper;
   if (life.r > 0.5) {
     float on = inGlyph ? glyphPixel(CELL_ALIVE, pos) : 0.0;
-    col = mix(col, u_spot, on);
+    col = mix(col, u_ink, on);
   } else if (kind > 0.5 && kind < 8.5) {
     bool major = kind > 4.5;
     float on = inGlyph ? glyphPixel(strokeBits(kind - (major ? 5.0 : 1.0)), pos) : 0.0;
-    col = mix(col, major ? u_ink : inkLine, on);
+    col = mix(col, major ? ground : inkLine, on);
   } else if (kind > 8.5) {
     float on = inGlyph ? glyphPixel(rampBits(tone), pos) : 0.0;
-    col = mix(col, u_ink, on);
+    col = mix(col, ground, on);
   } else {
     float on = step(bayer8(floor(px / unit)), tone / 255.0);
     col = mix(col, inkWash, on);

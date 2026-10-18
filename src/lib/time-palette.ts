@@ -116,3 +116,24 @@ export function getLivePalette(): TimePalette {
 export function timePaletteInitScript(): string {
   return `(function(){try{var m=window.mxsmPalette;if(m){m.applyCss(m.at());return}}catch(e){}})();`;
 }
+
+/** Hours between the colours of the map's hypsometric ramp: five stops cover twenty hours of the spectrum. */
+const RAMP_STEP_HOURS = 5;
+/** Brightest a ramp colour may be, so it stays legible on the light paper. */
+const RAMP_MAX_LUMA = 0.42;
+
+/**
+ * Colours for the map under the cut, lowest ground first: the spectrum from the current hour onward,
+ * deepened to ink so it reads on light paper. It turns with the hour like every other accent.
+ */
+export function hypsoRamp(nowMs = Date.now()): [number, number, number][] {
+  const hour = getPaletteHour(nowMs);
+  return [0, 1, 2, 3, 4].map((stop) => {
+    const { h, s, l } = sampleHsl(hour + stop * RAMP_STEP_HOURS);
+    const [r, g, b] = hslToRgb(h, Math.min(90, s + 12), Math.min(l, 40)).map((n) => n / 255);
+    // HSL lightness lies about yellows; cap perceived brightness so every stop reads as ink.
+    const luma = 0.299 * r! + 0.587 * g! + 0.114 * b!;
+    const k = luma > RAMP_MAX_LUMA ? RAMP_MAX_LUMA / luma : 1;
+    return [r! * k, g! * k, b! * k];
+  });
+}

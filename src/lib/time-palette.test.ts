@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getPaletteHour, PALETTE_CYCLE_MS, paletteAt } from "@/lib/time-palette";
+import { getPaletteHour, hypsoRamp, PALETTE_CYCLE_MS, paletteAt } from "@/lib/time-palette";
 
 describe("time-palette", () => {
   it("cycles virtual hour over PALETTE_CYCLE_MS", () => {
@@ -20,5 +20,14 @@ describe("time-palette", () => {
     const a = paletteAt(0).hot;
     const b = paletteAt(PALETTE_CYCLE_MS / 4).hot;
     expect(a).not.toBe(b);
+  });
+
+  it("hypsoRamp gives five ink-dark colours that turn with the hour", () => {
+    const ramp = hypsoRamp(0);
+    expect(ramp).toHaveLength(5);
+    for (const [r, g, b] of ramp) {
+      expect(0.299 * r + 0.587 * g + 0.114 * b).toBeLessThan(0.55);
+    }
+    expect(hypsoRamp(PALETTE_CYCLE_MS / 4)[0]).not.toEqual(ramp[0]);
   });
 });
