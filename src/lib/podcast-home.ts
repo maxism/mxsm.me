@@ -32,6 +32,15 @@ function formatSinceMonthYear(date: Date, locale: Locale): string {
   return `${month} ${date.getFullYear()}`;
 }
 
+/** "с марта 2024" / "since March 2024": a day-month format yields the genitive in Russian. */
+function formatSinceInSentence(date: Date, locale: Locale): string {
+  const tag = locale === "ru" ? "ru-RU" : "en-US";
+  const month = date
+    .toLocaleDateString(tag, { day: "numeric", month: "long" })
+    .replace(/[\d\s]/g, "");
+  return `${month} ${date.getFullYear()}`;
+}
+
 function getFeedStats(episodes: Episode[]) {
   const sorted = [...episodes].sort((a, b) => a.publishDate.getTime() - b.publishDate.getTime());
   const oldest = sorted[0]?.publishDate ?? new Date("2024-03-01");
@@ -82,7 +91,7 @@ export async function getPodcastHomeData(
   try {
     const raw = await getEpisodes();
     const stats = getFeedStats(raw);
-    const since = formatSinceMonthYear(stats.oldest, locale);
+    const since = formatSinceInSentence(stats.oldest, locale);
 
     const sorted = [...raw].sort((a, b) => b.publishDate.getTime() - a.publishDate.getTime());
     const latest = sorted[0];

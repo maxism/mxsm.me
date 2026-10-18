@@ -6,7 +6,7 @@ type NameGlassProps = {
   name: string;
 };
 
-/** Paper above the seam, the name sliced on the line, the field below. */
+/** Paper above the seam, the name sitting on it, the field below. */
 export function NameGlass({ name }: NameGlassProps) {
   const pathname = usePathname();
   const home = pathname === "/" || pathname === "/en";

@@ -8,7 +8,7 @@ export function StageMotion() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const stage = document.querySelector(".stage");
+    const stage = document.querySelector<HTMLElement>(".stage");
     if (!stage) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -19,13 +19,6 @@ export function StageMotion() {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       const progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
       document.documentElement.style.setProperty("--p", progress.toFixed(4));
-
-      const hero = document.getElementById("plate-01");
-      const heroSeen = hero
-        ? Math.min(1, Math.max(0, -hero.getBoundingClientRect().top / window.innerHeight))
-        : 0;
-      const seam = 0.66 - heroSeen * 0.2;
-      document.documentElement.style.setProperty("--seam", seam.toFixed(4));
 
       const mid = window.innerHeight * 0.46;
       let current = "";
@@ -46,6 +39,27 @@ export function StageMotion() {
           link.setAttribute("aria-current", "true");
           active = link;
         } else link.removeAttribute("aria-current");
+      });
+
+      const source = document.querySelector<HTMLElement>(".rail-link[aria-current]");
+      if (source) {
+        const box = source.getBoundingClientRect();
+        stage.style.setProperty("--src-top", `${Math.round(box.top)}px`);
+        stage.style.setProperty("--src", `${Math.round(box.bottom)}px`);
+      }
+      if (stage.classList.contains("is-hero")) {
+        const name = document.querySelector(".hero-name");
+        const right = name?.getBoundingClientRect().right ?? 0;
+        if (right > 160) stage.style.setProperty("--run", `${Math.round(right)}px`);
+      }
+      let before = true;
+      document.querySelectorAll<HTMLElement>(".rail-link").forEach((el) => {
+        if (el.getAttribute("aria-current")) {
+          el.classList.remove("is-past");
+          before = false;
+          return;
+        }
+        el.classList.toggle("is-past", before);
       });
 
       if (rail && active && window.matchMedia("(max-width: 760px)").matches) {

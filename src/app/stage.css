@@ -1,4 +1,4 @@
-/* Шов — paper above, the field inside the lower half of the name. */
+/* Contact sheet — one full-bleed frame per plate. The first frame is the name. */
 
 .sr-only {
   position: absolute;
@@ -14,23 +14,28 @@
 
 html:has(.stage) {
   scroll-snap-type: y proximity;
-  background: #efeae0;
-  color-scheme: light;
+  background: #0c0b09;
+  color-scheme: dark;
 }
 html:has(.stage) body {
-  background: #efeae0;
-  color: #16140f;
+  background: #0c0b09;
+  color: #f4f1ea;
 }
 
 .stage {
-  --bg: #efeae0;
-  --paper: #efeae0;
-  --ink: #16140f;
-  --ink-2: rgba(22, 20, 15, 0.72);
-  --ink-3: rgba(22, 20, 15, 0.5);
-  --ink-4: rgba(22, 20, 15, 0.22);
+  --bg: #0c0b09;
+  --paper: #0c0b09;
+  --ink: #f4f1ea;
+  --ink-2: rgba(244, 241, 234, 0.72);
+  --ink-3: rgba(244, 241, 234, 0.5);
+  --ink-4: rgba(244, 241, 234, 0.22);
   --rule: transparent;
-  --seam: 0.66;
+  --floor: 8px;
+  --stem: 8px;
+  --tab: 22px;
+  --src-top: 40vh;
+  --src: 46vh;
+  --run: 78vw;
   position: relative;
 }
 
@@ -42,11 +47,6 @@ html:has(.stage) body {
   height: 100%;
   max-width: none;
   pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.45s ease;
-}
-.stage.is-hero:has(.name-cut) #field {
-  opacity: 1;
 }
 
 .stage main {
@@ -54,38 +54,9 @@ html:has(.stage) body {
   z-index: 2;
 }
 
-.seam-paper {
-  position: fixed;
-  z-index: 2;
-  top: 0;
-  left: 148px;
-  right: 0;
-  height: calc(var(--seam) * 100dvh + 1px);
-  background: var(--paper);
-  border-bottom: 1px solid var(--hot);
-  pointer-events: none;
-}
+.seam-paper,
 .name-cut {
-  position: fixed;
-  z-index: 6;
-  left: clamp(168px, 16vw, 228px);
-  right: 4vw;
-  top: calc(var(--seam) * 100dvh);
-  margin: 0;
-  transform: translateY(-50%);
-  pointer-events: none;
-  font-family: var(--font-wide), sans-serif;
-  font-weight: 500;
-  font-size: clamp(48px, 7.2vw, 120px);
-  line-height: 0.84;
-  letter-spacing: -0.055em;
-  white-space: nowrap;
-  color: #16140f;
-  clip-path: inset(0 0 50% 0);
-}
-.stage:not(.is-hero) .seam-paper,
-.stage:not(.is-hero) .name-cut {
-  visibility: hidden;
+  display: none;
 }
 
 .rail {
@@ -100,10 +71,12 @@ html:has(.stage) body {
   justify-content: center;
   gap: 13px;
   padding: 28px 0 28px 22px;
-  background: var(--paper);
-  color: #16140f;
+  background: #0c0b09;
+  color: #f4f1ea;
 }
 .rail-link {
+  position: relative;
+  z-index: 2;
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 11px;
   letter-spacing: 0.04em;
@@ -113,23 +86,31 @@ html:has(.stage) body {
   min-height: 32px;
   display: flex;
   align-items: center;
+  transition: color 0.45s ease, opacity 0.45s ease;
 }
 .rail-link[aria-current] {
   opacity: 1;
+  color: var(--hot);
+}
+.rail-link.is-past {
+  color: var(--hot);
+  opacity: 0.42;
 }
 .rail-meter {
-  position: fixed;
-  z-index: 21;
-  left: 0;
-  top: 0;
-  width: 2px;
-  height: 100vh;
-  height: 100dvh;
-  background: var(--hot);
-  transform-origin: top center;
-  transform: scaleY(var(--p, 0));
-  pointer-events: none;
+  position: fixed; z-index: 21; left: 0; top: 0; width: 2px; height: 100dvh;
+  background: var(--hot); transform-origin: top center; transform: scaleY(var(--p, 0));
+  pointer-events: none; opacity: 0;
 }
+.passage {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; background: var(--hot);
+  clip-path: polygon(0 var(--src-top), var(--tab) var(--src-top), var(--tab) var(--src), var(--stem) var(--src), var(--stem) calc(100% - var(--floor)), var(--run) calc(100% - var(--floor)), var(--run) 100%, 0 100%);
+  transition: clip-path 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
+}
+.stage.is-channel .passage,
+.stage.is-portal .passage { opacity: 0; }
+.stage.is-channel .rail-link[aria-current],
+.stage.is-channel .rail-link.is-past { color: inherit; }
+.stage.is-channel .rail-link.is-past { opacity: 0.38; }
 .stage a:focus-visible {
   outline: 1px solid var(--hot);
   outline-offset: 3px;
@@ -143,8 +124,9 @@ html:has(.stage) body {
 }
 .rail-lang {
   position: absolute;
+  z-index: 2;
   left: 22px;
-  bottom: 22px;
+  bottom: 40px;
   display: flex;
   gap: 6px;
   align-items: baseline;
@@ -153,18 +135,19 @@ html:has(.stage) body {
   letter-spacing: 0.12em;
 }
 .rail-lang a {
-  color: rgba(22, 20, 15, 0.45);
+  color: rgba(244, 241, 234, 0.45);
 }
 .rail-lang a[aria-current] {
-  color: #16140f;
+  color: #f4f1ea;
 }
 
 .stage .plate {
   min-height: 100vh;
   min-height: 100dvh;
-  padding: clamp(64px, 12vh, 120px) clamp(24px, 4vw, 64px) 28vh clamp(156px, 16vw, 220px);
+  padding: clamp(48px, 8vh, 88px) clamp(24px, 4vw, 64px) 12vh clamp(156px, 16vw, 220px);
   border: none;
-  background: var(--paper);
+  background: transparent;
+  color: #f4f1ea;
   position: relative;
   z-index: 3;
   scroll-snap-align: start;
@@ -172,9 +155,20 @@ html:has(.stage) body {
 .stage .plate-hero {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
+  align-items: stretch;
+  min-height: 100dvh;
   background: transparent;
+  padding: 28px 0 0 148px;
+  overflow: hidden;
+}
+.hero-sheet {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  flex: 1;
+  min-height: calc(100dvh - 28px);
+  background: transparent;
+  padding: 12px 32px 64px 28px;
 }
 .stage .plate-hero::before,
 .stage .plate-hero::after,
@@ -198,24 +192,26 @@ html:has(.stage) body {
   margin: 0;
 }
 .hero-name {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  order: 3;
+  margin: auto 0 0;
+  font-family: var(--font-wide), sans-serif;
+  font-weight: 500;
+  font-size: clamp(64px, 10.6vw, 200px);
+  line-height: 0.92;
+  letter-spacing: -0.06em;
   white-space: nowrap;
-  border: 0;
+  color: #f4f1ea;
 }
 .stage .hero-foot {
-  margin-top: 28px;
+  order: 2;
+  margin-top: 22px;
 }
 
 .live-caption {
+  order: 1;
   position: relative;
   z-index: 3;
-  margin: 10vh 0 0;
+  margin: 0;
   max-width: 28ch;
 }
 .live-bio {
@@ -231,25 +227,6 @@ html:has(.stage) body {
   font-style: italic;
   color: var(--ink-3);
 }
-.live-track {
-  display: block;
-  font-family: var(--font-wide), sans-serif;
-  font-weight: 500;
-  font-size: clamp(42px, 7vw, 108px);
-  line-height: 0.88;
-  letter-spacing: -0.05em;
-  color: var(--ink);
-  max-width: 14ch;
-}
-.live-artist {
-  display: block;
-  margin-top: 14px;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--hot);
-}
 .stage .hero-about {
   border: none;
   padding: 0;
@@ -260,31 +237,32 @@ html:has(.stage) body {
   color: var(--ink);
 }
 
-.stage .now-playing {
-  border: none;
-  background: transparent;
-  padding: 0;
-  max-width: 46ch;
+.stage .roles {
+  max-width: 64ch;
+  grid-template-columns: 1fr;
+  gap: 0;
 }
-.stage .now-playing-eq {
+.stage .role,
+.stage .role:hover {
+  border: none;
+  border-top: 1px solid var(--rule);
+  background: none;
+  padding: 28px 0 32px;
+  grid-template-columns: 56px 1fr;
+  gap: 20px;
+}
+.stage .role::before,
+.stage .role-bar {
   display: none;
 }
-.stage .now-playing-art {
-  width: 56px;
-  height: 56px;
-  border: none;
+.stage .role-spine {
+  border-right: none;
+  padding-right: 0;
 }
-.stage .now-playing-body {
-  grid-template-columns: 56px 1fr;
-}
-.stage .now-playing-track {
-  font-family: var(--font-wide), sans-serif;
-  font-weight: 500;
-  letter-spacing: -0.03em;
-}
-
-.stage .roles {
-  max-width: 52ch;
+.stage .role-n {
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  color: var(--hot);
 }
 
 .stage .timeline {
@@ -299,6 +277,7 @@ html:has(.stage) body {
 }
 .stage .year-frame {
   position: relative;
+  container-type: inline-size;
   min-height: 78vh;
   display: flex;
   align-items: flex-end;
@@ -306,13 +285,9 @@ html:has(.stage) body {
   padding: 0;
 }
 .stage .year-giant {
-  font-family: var(--font-wide), sans-serif;
-  font-weight: 500;
-  font-size: 34vw;
-  line-height: 0.78;
-  letter-spacing: -0.06em;
-  color: rgba(22, 20, 15, 0.14);
-  user-select: none;
+  display: block; max-width: 100%; font-family: var(--font-wide), sans-serif; font-weight: 500;
+  font-size: 26cqi; line-height: 0.82; letter-spacing: -0.06em;
+  color: rgba(244, 241, 234, 0.82); user-select: none;
 }
 @supports (animation-timeline: view()) {
   .stage .year-giant {
@@ -322,57 +297,66 @@ html:has(.stage) body {
   }
 }
 @keyframes year-pass {
-  from {
-    transform: translate3d(0, 6vh, 0);
-  }
-  to {
-    transform: translate3d(0, -8vh, 0);
-  }
+  from { transform: translate3d(0, 6vh, 0); }
+  to { transform: translate3d(0, -8vh, 0); }
 }
 .stage .year-caption {
-  position: absolute;
-  left: 0;
-  top: 6vh;
-  margin: 0;
-  max-width: 42ch;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  position: absolute; left: 0; top: 6vh; margin: 0; max-width: 42ch;
+  display: flex; flex-direction: column; gap: 8px;
 }
 .stage .year-caption .timeline-years {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  color: var(--hot);
+  font-family: var(--font-mono), ui-monospace, monospace; font-size: 11px; letter-spacing: 0.16em; color: var(--hot);
 }
 .stage .year-caption .timeline-line {
-  font-family: var(--font-serif), Georgia, serif;
-  font-size: clamp(16px, 1.6vw, 20px);
-  line-height: 1.4;
-  color: var(--ink);
+  font-family: var(--font-serif), Georgia, serif; font-size: clamp(16px, 1.6vw, 20px); line-height: 1.4; color: var(--ink);
 }
 
 .stage .zone-shb {
-  background: #f0dc3a;
-  color: #0a0907;
-  --ink: #0a0907;
-  --ink-2: rgba(10, 9, 7, 0.72);
-  --ink-3: rgba(10, 9, 7, 0.5);
-  --sb-bg: #f0dc3a;
-  --sb-ink: #0a0907;
-  --sb-hot: #e10600;
+  background: #f0dc3a; color: #0a0907; overflow: hidden;
+  --ink: #0a0907; --ink-2: rgba(10, 9, 7, 0.72); --ink-3: rgba(10, 9, 7, 0.5);
+  --sb-bg: #f0dc3a; --sb-ink: #0a0907; --sb-hot: #e10600;
+}
+.stage .zone-shb-inner {
+  container-type: inline-size;
+  padding: 0;
+  overflow: visible;
+}
+.stage .zone-shb-stamp {
+  display: none;
+}
+.stage .ticker--shb {
+  margin: 0 calc(-1 * clamp(24px, 4vw, 64px)) 32px calc(148px - clamp(156px, 16vw, 220px));
+}
+.stage .plate-broadcast .plate-head {
+  padding-top: 0;
+}
+.stage .zone-shb .plate-h,
+.stage .zone-shb .plate-h a {
+  font-family: var(--font-wide), sans-serif; font-weight: 500;
+  font-size: clamp(28px, 7.2cqi, 88px); letter-spacing: -0.045em;
+  text-transform: uppercase; line-height: 0.9; color: #0a0907; max-width: 100%;
 }
 .stage .zone-shb .plate-h {
-  font-family: var(--font-wide), sans-serif;
-  font-weight: 500;
-  font-size: clamp(52px, 11vw, 140px);
-  letter-spacing: -0.045em;
-  text-transform: uppercase;
-  line-height: 0.84;
-  color: #0a0907;
-  margin: 0 0 12px;
+  margin: 0 0 20px;
 }
-
+.stage .zone-shb .pod-quote {
+  max-width: 36ch;
+  margin: 0 0 28px;
+}
+.stage .zone-shb .pod-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.stage .pod-aside--shb {
+  transform: none; box-shadow: none; background: transparent; border: none;
+  padding: 0; min-height: 0; flex-direction: row; flex-wrap: wrap;
+  align-items: center; gap: 12px 16px;
+}
+.stage .zone-shb .pod-foot {
+  flex-basis: 100%;
+  margin-top: 4px;
+}
 .stage .plate-inverted {
   background: transparent;
   color: #f4f1ea;
@@ -398,19 +382,12 @@ html:has(.stage) body {
 }
 .stage .plate-signal .plate-h,
 .stage .plate-mask .plate-h {
-  font-family: var(--font-wide), sans-serif;
-  font-weight: 500;
-  font-size: clamp(36px, 6vw, 84px);
-  letter-spacing: -0.045em;
-  text-transform: lowercase;
-  line-height: 0.88;
-  color: #f4f1ea;
+  font-family: var(--font-wide), sans-serif; font-weight: 500; font-size: clamp(36px, 6vw, 84px);
+  letter-spacing: -0.045em; text-transform: lowercase; line-height: 0.88; color: #f4f1ea;
 }
 .stage .sig-hint {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  color: rgba(244, 241, 234, 0.72);
+  font-family: var(--font-serif), Georgia, serif; font-size: clamp(16px, 1.4vw, 19px); line-height: 1.4;
+  letter-spacing: 0; max-width: 32ch; color: rgba(244, 241, 234, 0.82);
 }
 .stage .sig-hint--stage {
   position: static;
@@ -420,13 +397,8 @@ html:has(.stage) body {
 }
 
 .stage .contact-mail {
-  font-family: var(--font-wide), sans-serif;
-  font-style: normal;
-  font-weight: 500;
-  font-size: clamp(36px, 7vw, 104px);
-  letter-spacing: -0.045em;
-  line-height: 0.9;
-  border-bottom: none;
+  font-family: var(--font-wide), sans-serif; font-style: normal; font-weight: 500;
+  font-size: clamp(36px, 7vw, 104px); letter-spacing: -0.045em; line-height: 0.9; border-bottom: none;
 }
 .stage .contact-list {
   display: flex;
@@ -459,11 +431,37 @@ html:has(.stage) body {
   background: transparent;
   border-top: none;
   scroll-snap-align: none;
+  padding-bottom: calc(var(--floor) + 28px);
+}
+
+.stage [data-glitch]::before,
+.stage [data-glitch]::after {
+  content: none; color: transparent; mix-blend-mode: normal;
+  opacity: 0; animation: none; transform: none; clip-path: none;
+}
+.stage [data-glitch]::before {
+  content: attr(data-glitch);
+  position: absolute; inset: 0; width: auto; height: auto; background: none;
+  color: var(--hot); font: inherit; letter-spacing: inherit; line-height: inherit;
+  text-transform: inherit; white-space: inherit; pointer-events: none;
+  clip-path: inset(0 0 100% 0);
+}
+.stage .zone-shb [data-glitch]::before { color: #0a0907; }
+.stage [data-glitch].glitch::before {
+  animation: stage-slip 0.45s steps(4, end) 1;
+}
+@keyframes stage-slip {
+  0% { opacity: 1; transform: translate3d(8px, 0, 0); clip-path: inset(14% 0 64% 0); }
+  40% { opacity: 1; transform: translate3d(-6px, 0, 0); clip-path: inset(46% 0 24% 0); }
+  70% { opacity: 1; transform: translate3d(5px, 0, 0); clip-path: inset(8% 0 72% 0); }
+  100% { opacity: 0; transform: none; clip-path: inset(0 0 100% 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   #field,
-  .stage .year-giant {
+  .passage,
+  .stage .year-giant,
+  .stage [data-glitch].glitch::before {
     transition: none;
     animation: none;
   }

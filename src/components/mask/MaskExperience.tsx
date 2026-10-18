@@ -13,11 +13,11 @@ type Props = {
 };
 type MaterialKey =
   | "dispersion" | "holo" | "glitch" | "ghost" | "glass"
-  | "blood" | "xray" | "rot" | "void";
+  | "blood" | "xray" | "rot" | "void" | "skull";
 
 const MATERIAL_KEYS: MaterialKey[] = [
   "dispersion", "holo", "glitch", "ghost", "glass",
-  "blood", "xray", "rot", "void",
+  "blood", "xray", "rot", "void", "skull",
 ];
 
 // Which backdrop each material gets
@@ -32,9 +32,10 @@ const MAT_BG: Record<MaterialKey, BgKey> = {
   rot: "veins",
   xray: "morgue",
   void: "abyss",
+  skull: "abyss",
 };
 // Materials that never sample the captured background texture
-const NO_RT = new Set<MaterialKey>(["holo", "blood", "xray", "rot"]);
+const NO_RT = new Set<MaterialKey>(["holo", "blood", "xray", "rot", "skull"]);
 
 // ─── Background animated gradient shader ────────────────────────────────────
 const BG_VERT = `varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.99, 1.0); }`;
@@ -257,6 +258,54 @@ void main() {
   // wriggling specks in the live tissue
   float speck = step(0.985, hash3(floor(vP*40.0) + floor(uTime*8.0)));
   col += vec3(0.38, 0.42, 0.28) * speck * (1.0 - holes);
+
+  gl_FragColor = vec4(col, 1.0);
+}`;
+
+// ─── Skull — cracked bone, embers breathing in the fractures, lit from below ──
+const SKULL_FRAG = `
+precision mediump float;
+uniform float uTime;
+varying vec3 vN;
+varying vec3 vP;
+${NOISE3D}
+void main() {
+  vec3 n = normalize(vN);
+  float facing = abs(dot(n, vec3(0.,0.,1.)));
+
+  // warped ridged noise → jagged fracture lines: thin ones smoulder, hairlines go black
+  vec3 w = vP + 0.35*vec3(fbm3(vP*3.0), fbm3(vP*3.0 + 7.0), fbm3(vP*3.0 + 13.0));
+  float rid  = 1.0 - abs(noise3(w*5.0)*2.0 - 1.0);
+  float crack = smoothstep(0.975, 0.997, rid);
+  float hair  = smoothstep(0.955, 0.985, 1.0 - abs(noise3(w*21.0)*2.0 - 1.0));
+
+  // yellowed bone, mottled, grime packed into grazing angles
+  float mottle = fbm3(vP*7.0);
+  vec3 bone = mix(vec3(0.66, 0.59, 0.44), vec3(0.90, 0.85, 0.72), mottle);
+  float grime = smoothstep(0.30, 0.95, fbm3(vP*5.0 + 3.0)) * (1.0 - facing*0.6);
+  bone = mix(bone, vec3(0.12, 0.08, 0.04), grime*0.6);
+
+  // old stains running down from the crown
+  float drip = noise3(vec3(vP.x*22.0, vP.y*1.6 + uTime*0.01, vP.z*22.0));
+  bone = mix(bone, vec3(0.22, 0.03, 0.02), smoothstep(0.62, 0.8, drip) * smoothstep(-0.2, 0.9, vP.y));
+
+  // under-chin light, flickering like a candle on the floor
+  float flick = 0.85 + 0.15*sin(uTime*11.0) * sin(uTime*7.3 + 1.0);
+  vec3 l = normalize(vec3(0.15, -0.9, 0.55));
+  float lit = max(dot(n, l), 0.0)*flick;
+  vec3 col = bone * (0.04 + 1.15*lit);
+
+  // everything the light can't reach falls into pitch dark
+  col *= mix(0.25, 1.0, pow(facing, 0.6));
+
+  // fractures: hairlines eat the bone, wide ones smoulder
+  col *= 1.0 - hair*0.7;
+  float ember = 0.55 + 0.45*pow(abs(sin(uTime*1.3 + vP.y*3.0)), 3.0);
+  col = mix(col, vec3(0.95, 0.16, 0.02)*ember*1.7, crack);
+
+  // cold sick rim
+  float fr = pow(1.0 - facing, 3.0);
+  col += vec3(0.30, 0.45, 0.30) * fr * 0.35;
 
   gl_FragColor = vec4(col, 1.0);
 }`;
@@ -593,6 +642,9 @@ export function MaskExperience({ backHref, copy }: Props) {
               uniforms: { uTime: { value: 0 } }, transparent: true, depthWrite: false });
           case "rot":
             return new THREE.ShaderMaterial({ vertexShader: MASK_VERT_P, fragmentShader: ROT_FRAG,
+              uniforms: { uTime: { value: 0 } } });
+          case "skull":
+            return new THREE.ShaderMaterial({ vertexShader: MASK_VERT_P, fragmentShader: SKULL_FRAG,
               uniforms: { uTime: { value: 0 } } });
           case "void":
             return new THREE.ShaderMaterial({ vertexShader: DISP_VERT, fragmentShader: VOID_FRAG,

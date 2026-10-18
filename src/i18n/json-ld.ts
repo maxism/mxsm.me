@@ -49,14 +49,19 @@ export function personJsonLd(locale: Locale) {
       width: OG_SIZE.width,
       height: OG_SIZE.height,
     },
-    jobTitle: "Chief Technology Officer",
+    jobTitle: ["Chief Technology Officer", "CTPO"],
     address: {
       "@type": "PostalAddress",
       addressLocality: "Moscow",
       addressCountry: "RU",
     },
     worksFor: [
-      { "@type": "Organization", name: "MTS.ai" },
+      {
+        "@type": "Organization",
+        name: "MWS AI",
+        alternateName: "MTS AI",
+        url: "https://mts.ai/",
+      },
       {
         "@type": "Organization",
         name: "Untitled Team",

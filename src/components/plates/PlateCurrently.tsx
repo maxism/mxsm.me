@@ -1,17 +1,11 @@
-import { NowPlaying } from "@/components/NowPlaying";
 import { PlateHead } from "@/components/ui/PlateHead";
-import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
-
-import type { MusicFeedState } from "@/lib/lastfm";
 
 type PlateCurrentlyProps = {
   dict: Dictionary;
-  locale: Locale;
-  music: MusicFeedState;
 };
 
-export function PlateCurrently({ dict, locale, music }: PlateCurrentlyProps) {
+export function PlateCurrently({ dict }: PlateCurrentlyProps) {
   const p = dict.plates.currently;
 
   return (
@@ -22,8 +16,6 @@ export function PlateCurrently({ dict, locale, music }: PlateCurrentlyProps) {
         titleId="h-02"
         minimal
       />
-
-      <NowPlaying initial={music} locale={locale} copy={p.nowPlaying} />
 
       <div className="roles">
         {p.roles.map((role) => (

@@ -49,15 +49,6 @@ export type Dictionary = {
     currently: {
       heading: string;
       headingGlitch: string;
-      nowPlaying: {
-        label: string;
-        silence: string;
-        lastPlayed: string;
-        recent: string;
-        loading: string;
-        unavailable: string;
-        profile: string;
-      };
       roles: Role[];
     };
     archive: {
@@ -122,6 +113,7 @@ export type Dictionary = {
       xray: string;
       rot: string;
       void: string;
+      skull: string;
     };
     loader: {
       initializing: string;

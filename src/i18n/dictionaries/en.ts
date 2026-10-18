@@ -2,10 +2,10 @@ import type { Dictionary } from "@/i18n/types";
 
 export const en: Dictionary = {
   meta: {
-    title: "Max Ulianov — CTO at MTS.ai",
+    title: "Max Ulianov — CTO at MWS AI",
     description:
-      "Max Ulianov, CTO at MTS.ai. Moscow. Previously built a neobank, worked on payments at OnlyFans, and built satellite SaaS. Co-hosts the Shitbustards podcast.",
-    ogDescription: "CTO at MTS.ai, Moscow.",
+      "Max Ulianov is CTO at MWS AI (formerly MTS AI) and CTPO of its AI Agents Platform, based in Moscow. Before that: a neobank, payments at OnlyFans, satellite SaaS. Co-hosts the Shitbustards podcast.",
+    ogDescription: "CTO at MWS AI and CTPO of its AI Agents Platform. Moscow.",
     ogLocale: "en_US",
   },
   masthead: {
@@ -28,33 +28,24 @@ export const en: Dictionary = {
   },
   plates: {
     identity: {
-      bio: "CTO at MTS.ai. I live in Moscow.",
-      bioEm: "Before that I built a bank of about 150 people, payments at OnlyFans, and satellite SaaS.",
+      bio: "CTO at MWS AI and CTPO of its AI Agents Platform. Based in Moscow.",
+      bioEm: "Before that: payments at OnlyFans, satellite SaaS, and a 150-person bank that closed before it opened.",
       aboutLink: "about ↗",
     },
     currently: {
       heading: "/ now",
       headingGlitch: "// now",
-      nowPlaying: {
-        label: "now playing",
-        silence: "silence",
-        lastPlayed: "last played",
-        recent: "recently",
-        loading: "checking last.fm…",
-        unavailable: "last.fm is temporarily unavailable",
-        profile: "maxismart on last.fm ↗",
-      },
       roles: [
         {
           n: "01",
-          name: "MTS.ai",
+          name: "MWS AI",
           href: "https://mts.ai/",
-          prose: "CTO since December 2025, neural search, Moscow. Details are under NDA.",
+          prose: "CTO since December 2025, working on neural search. Formerly MTS AI, part of the MTS group: Cotype models, speech services, AI Agents Platform. For the platform I'm CTPO, so both technology and product. Details under NDA.",
         },
         {
           n: "02",
           name: "Untitled Team",
-          prose: "Co-founder since 2025. The Untitled Bank team, still together after the bank closed.",
+          prose: "Co-founder since 2025. The bank closed, the Untitled Bank team stayed together and is growing toward the next big project.",
           link: { href: "https://untitlednow.com/", label: "untitlednow.com ↗" },
         },
       ],
@@ -62,46 +53,46 @@ export const en: Dictionary = {
     archive: {
       heading: "/ before",
       headingGlitch: "// before",
-      teaser: "Since 2010. Seven places, five countries.",
+      teaser: "Fifteen years, seven places, five countries: banking, adult, space, IoT, government.",
       aboutLink: "more on about ↗",
       items: [
         {
           years: "2023 — 25",
-          name: "untitled bank",
+          name: "Untitled Bank",
           href: "https://untitlednow.com/",
-          line: "Co-CEO and CTO. A team of about 150, in-house EMV, 3DS and HSM. The licence was pulled before launch. Uzbekistan.",
+          line: "Co-CEO and CTO. The team grew to 150. Our own core banking, plus EMV, 3DS and HSM. The licence was pulled before launch. Uzbekistan.",
         },
         {
           years: "2022 — 23",
-          name: "onlyfans",
-          line: "Head of Engineering. Payments, creator tools, DORA. United Kingdom.",
+          name: "OnlyFans",
+          line: "Head of Engineering. Payments and creator tools. United Kingdom.",
         },
         {
           years: "2021 — 23",
-          name: "precious payload",
+          name: "Precious Payload",
           href: "https://www.linkedin.com/company/preciouspayload",
           line: "Co-founder and CTO. SaaS for satellite missions. UAE.",
         },
         {
           years: "2020 — 21",
-          name: "palebluedot",
-          line: "CTO. Fabble, OneSpace, Codewards. UAE.",
+          name: "Palebluedot",
+          line: "CTO. Mobile apps and habit trackers, among them Fabble, OneSpace, Codewards. UAE.",
         },
         {
           years: "2017 — 18",
-          name: "moeco",
+          name: "Moeco",
           href: "https://moeco.io/",
-          line: "Tech lead, then co-CTO. IoT for logistics. Germany.",
+          line: "Tech lead, then co-CTO. A blockchain network for IoT, a $5M round from Bitfury in 2017. Germany.",
         },
         {
           years: "2015 — 20",
-          name: "rentateam",
+          name: "RentaTeam",
           href: "https://www.rentateam.ru/",
-          line: "Co-founder and CTO. Studio work: Dodo, Volkswagen, VCV, Timepad. Russia.",
+          line: "Co-founder and CTO. A mobile and web studio: Dodo, Volkswagen, VCV, Timepad. Russia.",
         },
         {
           years: "2010 — 15",
-          name: "ministry of digital",
+          name: "Ministry of Digital Development",
           line: "From full-stack developer to team lead. Internal systems. Russia.",
         },
       ],
@@ -111,7 +102,7 @@ export const en: Dictionary = {
       metaWith: "mike zharchev",
       metaEpisodes: "{count} eps · S{season}",
       metaOnAir: "since {since}",
-      footTemplate: "About life and people, not about work. With Mike Zharchev, since {since}.",
+      footTemplate: "An uncivilised conversational podcast about life, tech, music and everything else. Two hosts, zero script. With Mike Zharchev since {since}.",
       metaFallback: [
         { key: "WITH", value: "mike zharchev" },
         { key: "ON AIR", value: "since mar 2024 · S2" },
@@ -121,7 +112,7 @@ export const en: Dictionary = {
       ticker: "★ ON AIR · SHITBUSTARDS · LIFE · PEOPLE · S2 · ",
       tickerBrand: "SHITBUSTARDS",
       onAir: "ON AIR",
-      foot: "About life and people, not about work. With Mike Zharchev, since March 2024.",
+      foot: "An uncivilised conversational podcast about life, tech, music and everything else. Two hosts, zero script. With Mike Zharchev since March 2024.",
     },
     signal: {
       meta: [
@@ -137,7 +128,7 @@ export const en: Dictionary = {
         { key: "session", value: "different each visit" },
       ],
       cta: "open signal ↗",
-      ctaHint: "Fullscreen, with sound. Click or move to start.",
+      ctaHint: "Fullscreen, with sound. It starts on a click or a mouse move.",
       exitLabel: "← mxsm",
     },
     mask: {
@@ -147,13 +138,13 @@ export const en: Dictionary = {
       ],
       heading: "/ mask",
       headingGlitch: "// mask",
-      ctaHint: "Drag to turn it, click to flip it.",
+      ctaHint: "Drag to rotate, click to flip: pin art on one side, glass on the other.",
       exitLabel: "← mxsm",
     },
     contact: {
       heading: "/ write",
       headingGlitch: "// write",
-      hint: "I can talk about mentoring, an architecture review, or engineering costs. I read the mail myself. A reply can take more than a week.",
+      hint: "Write to me about mentoring, an architecture review, or an audit of engineering costs. I read every email myself, so a reply can take over a week.",
     },
   },
   maskPage: {
@@ -174,6 +165,7 @@ export const en: Dictionary = {
       xray: "x-ray",
       rot: "rot",
       void: "void",
+      skull: "skull",
     },
     loader: {
       initializing: "initializing scene…",

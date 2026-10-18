@@ -41,7 +41,7 @@ describe("llms exports", () => {
     const text = buildHomeText("en");
 
     expect(text).toContain("=== before ===");
-    expect(text).toContain("onlyfans");
+    expect(text).toContain("OnlyFans");
     expect(text).toContain("github: https://github.com/maxism");
   });
 });

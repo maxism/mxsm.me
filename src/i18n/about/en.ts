@@ -5,9 +5,9 @@ const [github, linkedin, telegram] = contacts;
 
 export const aboutEn: AboutContent = {
   meta: {
-    title: "Max Ulianov — about · CTO @ MTS.ai",
+    title: "Max Ulianov — about · CTO @ MWS AI",
     description:
-      "Max Ulianov, CTO at MTS.ai. Moscow. What he does now, where he worked, and how to reach him.",
+      "Max Ulianov, CTO at MWS AI and CTPO of its AI Agents Platform. Moscow. What he does now, where he worked, and how to reach him.",
     ogDescription: "Who I am, what I do, and where I worked.",
   },
   plate: {
@@ -38,10 +38,10 @@ export const aboutEn: AboutContent = {
       id: "now",
       heading: "/ now",
       paragraphs: [
-        "CTO at MTS.ai since December 2025. Neural search. Details are under NDA.",
+        "CTO at MWS AI (formerly MTS AI, part of the MTS group) since December 2025. Neural search. CTPO of the MWS AI Agents Platform product: technology and product. Details are under NDA.",
         "Co-founder of Untitled Team since 2025, with Mike Zharchev and Artem Kharchenko. This is the Untitled Bank team. We stayed together after the bank closed.",
         [
-          "Shitbustards podcast, since March 2024. About life and people, not about work. Co-host Mike Zharchev, on air as Mikos. ",
+          "Shitbustards podcast, since March 2024: uncivilised and conversational, about life, tech, music and everything else. Co-host Mike Zharchev. ",
           { href: SHITBUSTARDS_ORIGIN, label: "shitbustards.ru" },
           ".",
         ],
@@ -76,7 +76,7 @@ export const aboutEn: AboutContent = {
       heading: "/ talks",
       paragraphs: [
         "PLUS-Forum Digital Uzbekistan, May 2025, Tashkent. With Mike Zharchev, on how we built Untitled Bank.",
-        "Conversations that aren't about work are on the Shitbustards podcast.",
+        "Conversations about everything else are on the Shitbustards podcast.",
       ],
     },
     {

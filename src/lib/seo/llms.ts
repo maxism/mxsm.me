@@ -152,7 +152,7 @@ export function buildLlmsTxt(): string {
     "",
     `> ${enSummary}`,
     "",
-    "Personal site of Max Ulianov (@maxism): CTO at MTS.ai, co-founder of Untitled Team,",
+    "Personal site of Max Ulianov (@maxism): CTO at MWS AI (formerly MTS AI) and CTPO of its AI Agents Platform, co-founder of Untitled Team,",
     "co-host of SHITBUSTARDS podcast, author of mxsm/signal. Moscow.",
     "",
     "## Primary sources",
