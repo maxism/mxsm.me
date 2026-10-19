@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import "./rug.css";
+import { RugCanvas } from "./RugCanvas";
 import type { Dictionary } from "@/i18n/types";
 import {
   generateRug,
+  normalizeSeed,
   randomSeed,
-  rugAsciiHtml,
   rugSvg,
   SCHOOLS,
   type Density,
@@ -55,20 +56,50 @@ export function RugStudio({ backHref, path, copy, initialSeed, initialSchool }: 
   const [density, setDensity] = useState<Density>(1);
   const [flash, setFlash] = useState(false);
 
+  // The rug is drawn in the browser only: its ASCII is thousands of nodes and the SVG hundreds of
+  // kilobytes, and sending them in the server HTML would slow every phone down for nothing.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   // typing a seed stays instant; the rug follows when the browser has a moment
   const liveSeed = useDeferredValue(seed);
-  const rug = useMemo(() => generateRug(liveSeed, school, density), [liveSeed, school, density]);
-  const html = useMemo(() => rugAsciiHtml(rug, glyphs), [rug, glyphs]);
-  const caption = `${copy.sheetCaption} · ${copy.schools[school].name} · ${rug.seed}`;
-  const svg = useMemo(() => rugSvg(rug, caption), [rug, caption]);
+  const rug = useMemo(
+    () => (mounted ? generateRug(liveSeed, school, density) : null),
+    [mounted, liveSeed, school, density],
+  );
+  const shownSeed = rug?.seed ?? normalizeSeed(seed);
+  const caption = `${copy.sheetCaption} · ${copy.schools[school].name} · ${shownSeed}`;
+
+  // the vector sheet is only built when someone prints
+  const [printing, setPrinting] = useState(false);
+  const svg = useMemo(
+    () => (printing && rug ? rugSvg(rug, caption) : ""),
+    [printing, rug, caption],
+  );
+  const [printAsked, setPrintAsked] = useState(false);
+  useEffect(() => {
+    if (!printAsked || !svg) return;
+    const id = window.requestAnimationFrame(() => {
+      window.print();
+      setPrintAsked(false);
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, [printAsked, svg]);
 
   // the address bar always names the rug on screen, so any state can be sent as a link
   useEffect(() => {
     const url = new URL(window.location.href);
-    url.searchParams.set("seed", rug.seed);
+    url.searchParams.set("seed", shownSeed);
     url.searchParams.set("school", school);
     window.history.replaceState(null, "", url);
-  }, [rug.seed, school]);
+  }, [shownSeed, school]);
+
+  // on a phone the school chips scroll sideways; keep the chosen one in view
+  const schoolsRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = schoolsRef.current?.querySelector<HTMLElement>('[aria-selected="true"]');
+    el?.scrollIntoView({ inline: "center", block: "nearest" });
+  }, [school]);
 
   useEffect(() => {
     if (!flash) return;
@@ -86,7 +117,8 @@ export function RugStudio({ backHref, path, copy, initialSeed, initialSchool }: 
   };
 
   const saveSvg = () => {
-    const blob = new Blob([svg], { type: "image/svg+xml" });
+    if (!rug) return;
+    const blob = new Blob([rugSvg(rug, caption)], { type: "image/svg+xml" });
     const href = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = href;
@@ -107,7 +139,7 @@ export function RugStudio({ backHref, path, copy, initialSeed, initialSchool }: 
           <h1 className="rug-title">/ rug</h1>
         </div>
 
-        <div className="rug-schools" role="tablist" aria-label="school">
+        <div ref={schoolsRef} className="rug-schools" role="tablist" aria-label="school">
           {SCHOOLS.map((id) => (
             <button
               key={id}
@@ -137,30 +169,39 @@ export function RugStudio({ backHref, path, copy, initialSeed, initialSchool }: 
             {copy.roll}
           </button>
         </div>
-        <p className="rug-variant">{rug.variant}</p>
+        <p className="rug-variant">{rug?.variant ?? ""}</p>
 
-        <Segment
-          value={glyphs}
-          onChange={setGlyphs}
-          options={[
-            { id: "blocks", label: copy.glyphs.blocks },
-            { id: "ascii", label: copy.glyphs.ascii },
-          ]}
-        />
-        <Segment
-          value={String(density) as "1" | "2"}
-          onChange={(id) => setDensity(Number(id) as Density)}
-          options={[
-            { id: "1", label: "1×" },
-            { id: "2", label: "2×" },
-          ]}
-        />
+        <div className="rug-segs">
+          <Segment
+            value={glyphs}
+            onChange={setGlyphs}
+            options={[
+              { id: "blocks", label: copy.glyphs.blocks },
+              { id: "ascii", label: copy.glyphs.ascii },
+            ]}
+          />
+          <Segment
+            value={String(density) as "1" | "2"}
+            onChange={(id) => setDensity(Number(id) as Density)}
+            options={[
+              { id: "1", label: "1×" },
+              { id: "2", label: "2×" },
+            ]}
+          />
+        </div>
         <p className="rug-hint">
           {copy.detail}: {copy.detailHint}
         </p>
 
         <div className="rug-buttons">
-          <button type="button" className="rug-primary" onClick={() => window.print()}>
+          <button
+            type="button"
+            className="rug-primary"
+            onClick={() => {
+              setPrinting(true);
+              setPrintAsked(true);
+            }}
+          >
             {copy.print}
           </button>
           <button type="button" onClick={saveSvg}>
@@ -170,7 +211,7 @@ export function RugStudio({ backHref, path, copy, initialSeed, initialSchool }: 
             type="button"
             onClick={() =>
               copyToClipboard(
-                `${window.location.origin}${path}?seed=${encodeURIComponent(rug.seed)}&school=${school}`,
+                `${window.location.origin}${path}?seed=${encodeURIComponent(shownSeed)}&school=${school}`,
               )
             }
           >
@@ -180,12 +221,15 @@ export function RugStudio({ backHref, path, copy, initialSeed, initialSchool }: 
         <p className="rug-hint">{copy.printHint}</p>
       </aside>
 
-      <main className="rug-stage" style={{ "--rw": rug.w, "--rh": rug.h } as React.CSSProperties}>
-        <pre
-          className="rug-ascii"
-          aria-label={caption}
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
+      <main
+        className="rug-stage"
+        style={
+          { "--rw": rug?.w ?? 80 * density, "--rh": rug?.h ?? 112 * density } as React.CSSProperties
+        }
+      >
+        <div className="rug-canvas-box">
+          {rug && <RugCanvas rug={rug} glyphs={glyphs} className="rug-canvas" label={caption} />}
+        </div>
         <div className="rug-sheet" dangerouslySetInnerHTML={{ __html: svg }} />
         <span className="rug-flash" data-on={flash} aria-live="polite">
           {flash ? copy.copied : ""}

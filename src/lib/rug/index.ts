@@ -73,5 +73,6 @@ export function randomSeed(): string {
   return Math.random().toString(36).slice(2, 8);
 }
 
-export { rugAscii, rugAsciiHtml, rugSvg } from "./render";
+export { glyphsFor, rugAscii, rugSvg, tint } from "./render";
 export type { AsciiRun, GlyphSet } from "./render";
+export { paintRug } from "./canvas";

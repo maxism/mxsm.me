@@ -17,7 +17,7 @@ function luminance(hex: string): number {
 }
 
 /** Brighter colour, denser glyph. */
-function glyphsFor(palette: readonly string[], set: GlyphSet): string[] {
+export function glyphsFor(palette: readonly string[], set: GlyphSet): string[] {
   const ramp = RAMPS[set];
   const order = palette
     .map((c, i) => ({ i, l: luminance(c) }))
@@ -50,28 +50,13 @@ export function rugAscii(rug: Rug, set: GlyphSet): AsciiRun[][] {
   return rows;
 }
 
-function tint(hex: string, k: number): string {
+export function tint(hex: string, k: number): string {
   const n = parseInt(hex.slice(1), 16);
   const ch = (shift: number) =>
     Math.max(0, Math.min(255, Math.round(((n >> shift) & 255) * k)))
       .toString(16)
       .padStart(2, "0");
   return `#${ch(16)}${ch(8)}${ch(0)}`;
-}
-
-/** The whole rug as one HTML string: each run is a glyph in a lighter tone over a darker cell,
- *  so the palette stays true and the glyphs read as the grain of the weave. */
-export function rugAsciiHtml(rug: Rug, set: GlyphSet): string {
-  return rugAscii(rug, set)
-    .map((row) =>
-      row
-        .map(
-          (r) =>
-            `<i style="color:${tint(r.color, 1.1)};background:${tint(r.color, 0.88)}">${r.text}</i>`,
-        )
-        .join(""),
-    )
-    .join("\n");
 }
 
 const f = (n: number) => Math.round(n * 1000) / 1000;

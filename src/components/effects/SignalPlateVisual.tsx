@@ -76,9 +76,10 @@ export function SignalPlateVisual({ href, ctaHint }: SignalPlateVisualProps) {
     fit();
 
     let running = true;
+    let visible = true;
 
     const tick = () => {
-      if (!running) return;
+      if (!running || !visible) return;
       const now = performance.now();
       const t = (now - t0) / 1000;
 
@@ -115,9 +116,21 @@ export function SignalPlateVisual({ href, ctaHint }: SignalPlateVisualProps) {
     fit();
     tick();
 
+    // the shader only runs while the plate is on (or near) the screen
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry?.isIntersecting ?? true;
+        cancelAnimationFrame(frame);
+        if (visible) tick();
+      },
+      { rootMargin: "20% 0px" },
+    );
+    io.observe(canvas);
+
     return () => {
       running = false;
       cancelAnimationFrame(frame);
+      io.disconnect();
       ro.disconnect();
     };
   }, []);

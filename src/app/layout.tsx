@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Viewport } from "next";
 import Script from "next/script";
 import { JetBrains_Mono, Spectral, Unbounded } from "next/font/google";
 import { Suspense } from "react";
@@ -10,8 +10,13 @@ import { TimePalette } from "@/components/effects/TimePalette";
 import { timePaletteInitScript } from "@/lib/time-palette";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  other: { "theme-color": "#0a0907" },
+/** `cover` lets the page run under the status bar and home indicator; the layout paints those
+ *  strips itself (the rail covers the top one), instead of leaving content showing through. */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0c0b09",
 };
 
 const spectral = Spectral({

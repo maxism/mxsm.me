@@ -138,9 +138,20 @@
     var uMote = gl.getUniformLocation(prog, "u_mote");
     var uGlow = gl.getUniformLocation(prog, "u_glow");
 
-    var dpr = Math.min(global.devicePixelRatio || 1, 1.5);
+    // phones: one device pixel per CSS pixel and every other frame, the dust is soft anyway
+    var coarse = global.matchMedia && global.matchMedia("(pointer: coarse)").matches;
+    var dpr = coarse ? 1 : Math.min(global.devicePixelRatio || 1, 1.5);
+    var lastW = global.innerWidth;
+    var lastH = global.innerHeight;
+    var skip = false;
 
     onResize = function fit() {
+      // iOS fires resize whenever the toolbar slides in or out; reallocating the canvas then makes scrolling stutter
+      var w = global.innerWidth;
+      var h = global.innerHeight;
+      if (cnv.width > 1 && w === lastW && Math.abs(h - lastH) < 160) return;
+      lastW = w;
+      lastH = h;
       cnv.width = Math.max(1, Math.floor(global.innerWidth * dpr));
       cnv.height = Math.max(1, Math.floor(global.innerHeight * dpr));
       gl.viewport(0, 0, cnv.width, cnv.height);
@@ -186,6 +197,10 @@
 
     function tick() {
       if (!active) return;
+      if (global.document.hidden || (coarse && (skip = !skip))) {
+        rafId = global.requestAnimationFrame(tick);
+        return;
+      }
       mx += (tmx - mx) * 0.08;
       my += (tmy - my) * 0.08;
       var pal = palette();

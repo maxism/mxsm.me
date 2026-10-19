@@ -105,6 +105,11 @@ export function MaskPlateVisual({ href, ctaHint, loader }: Props) {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let stopped = false;
     let cleanup: (() => void) | null = null;
+    // phones: fewer pixels, no multisampling; the model also waits until the plate is near the screen
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    let visible = false;
+    let resume: (() => void) | null = null;
+    let booted = false;
 
     const boot = async () => {
       const THREE = await import("three");
@@ -115,8 +120,8 @@ export function MaskPlateVisual({ href, ctaHint, loader }: Props) {
       const W = container.clientWidth;
       const H = container.clientHeight;
 
-      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      const renderer = new THREE.WebGLRenderer({ antialias: !coarse, alpha: false });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, coarse ? 1.5 : 2));
       renderer.setSize(W, H);
       renderer.domElement.className = "sig-stage-canvas";
       renderer.domElement.setAttribute("aria-hidden", "true");
@@ -129,7 +134,9 @@ export function MaskPlateVisual({ href, ctaHint, loader }: Props) {
       camera.position.set(0, 0, 3.5);
 
       const rtSize = () => renderer.getDrawingBufferSize(new THREE.Vector2());
-      let bgTarget = new THREE.WebGLRenderTarget(rtSize().x, rtSize().y, { samples: 2 });
+      let bgTarget = new THREE.WebGLRenderTarget(rtSize().x, rtSize().y, {
+        samples: coarse ? 0 : 2,
+      });
       const bgUniforms = {
         u_res: { value: new THREE.Vector2(W, H) },
         u_t: { value: 0 },
@@ -272,13 +279,17 @@ export function MaskPlateVisual({ href, ctaHint, loader }: Props) {
         renderer.setSize(w, h);
         bgTarget.dispose();
         const buf = rtSize();
-        bgTarget = new THREE.WebGLRenderTarget(buf.x, buf.y, { samples: 2 });
+        bgTarget = new THREE.WebGLRenderTarget(buf.x, buf.y, { samples: coarse ? 0 : 2 });
         maskUniforms.uBg.value = bgTarget.texture;
         syncRes();
       };
 
       const tick = (t: number) => {
         if (stopped) return;
+        if (!visible) {
+          raf = 0;
+          return;
+        }
         raf = requestAnimationFrame(tick);
         const time = (t - t0) / 1000;
         bgUniforms.u_t.value = time;
@@ -303,6 +314,9 @@ export function MaskPlateVisual({ href, ctaHint, loader }: Props) {
       const ro = new ResizeObserver(resize);
       ro.observe(container);
       resize();
+      resume = () => {
+        if (!raf && !stopped) raf = requestAnimationFrame(tick);
+      };
       tick(performance.now());
 
       cleanup = () => {
@@ -317,10 +331,22 @@ export function MaskPlateVisual({ href, ctaHint, loader }: Props) {
       };
     };
 
-    void boot();
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry?.isIntersecting ?? false;
+        if (!visible) return;
+        if (!booted) {
+          booted = true;
+          void boot();
+        } else resume?.();
+      },
+      { rootMargin: "30% 0px" },
+    );
+    io.observe(container);
 
     return () => {
       stopped = true;
+      io.disconnect();
       cleanup?.();
     };
   }, []);

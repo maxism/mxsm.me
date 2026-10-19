@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { RugCanvas } from "@/components/rug/RugCanvas";
+import type { Rug } from "@/lib/rug";
 
 type Props = {
   href: string;
@@ -10,7 +12,7 @@ type Props = {
   names: Record<string, string>;
 };
 
-type Frame = { key: number; html: string; label: string; query: string };
+type Frame = { key: number; rug: Rug; label: string; query: string };
 
 /** one rug is woven, then shown, then the next one is woven over it */
 const WEAVE_MS = 2600;
@@ -57,7 +59,7 @@ export function RugPlateVisual({ href, ctaHint, names }: Props) {
         const rug = lib.generateRug(lib.randomSeed(), school);
         const frame: Frame = {
           key: n++,
-          html: lib.rugAsciiHtml(rug, "blocks"),
+          rug,
           label: `${namesRef.current[school] ?? school} · ${rug.seed}`,
           query: `?seed=${encodeURIComponent(rug.seed)}&school=${school}`,
         };
@@ -82,17 +84,19 @@ export function RugPlateVisual({ href, ctaHint, names }: Props) {
       <div ref={rootRef} className="rug-art-wrap" aria-hidden="true">
         <div className="rug-art" style={{ "--weave": `${WEAVE_MS}ms` } as React.CSSProperties}>
           {back && (
-            <pre
+            <RugCanvas
               key={`b${back.key}`}
+              rug={back.rug}
+              glyphs="blocks"
               className="rug-art-layer"
-              dangerouslySetInnerHTML={{ __html: back.html }}
             />
           )}
           {front && (
-            <pre
+            <RugCanvas
               key={`f${front.key}`}
+              rug={front.rug}
+              glyphs="blocks"
               className="rug-art-layer rug-art-layer--weave"
-              dangerouslySetInnerHTML={{ __html: front.html }}
             />
           )}
           {front && <span key={`s${front.key}`} className="rug-art-shuttle" />}
