@@ -44,10 +44,10 @@ export const ru: Dictionary = {
           href: "https://mts.ai/",
           facts: [
             { key: "с", value: "декабря 2025" },
-            { key: "роль", value: "CTO, CTPO платформы" },
+            { key: "отвечаю за", value: "Искру и AI Agents Platform" },
             { key: "группа", value: "МТС Веб Сервисы" },
           ],
-          prose: "Нейропоиск. Бывшая MTS AI: модели Cotype, речевые сервисы, AI Agents Platform. За платформу отвечаю как CTPO — и за технологии, и за продукт. Детали под NDA.",
+          prose: "Бывшая MTS AI: модели Cotype, речевые сервисы, платформа агентов. Сейчас отвечаю за Искру и MWS AI Agents Platform — и за технологии, и за продукт. Детали под NDA.",
         },
         {
           n: "02",

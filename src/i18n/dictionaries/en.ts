@@ -44,10 +44,10 @@ export const en: Dictionary = {
           href: "https://mts.ai/",
           facts: [
             { key: "since", value: "December 2025" },
-            { key: "role", value: "CTO, platform CTPO" },
+            { key: "in charge of", value: "Iskra and AI Agents Platform" },
             { key: "group", value: "MTS Web Services" },
           ],
-          prose: "Neural search. Formerly MTS AI: Cotype models, speech services, AI Agents Platform. For the platform I'm CTPO, so both technology and product. Details under NDA.",
+          prose: "Formerly MTS AI: Cotype models, speech services, an agents platform. These days I look after Iskra and the MWS AI Agents Platform, both technology and product. Details under NDA.",
         },
         {
           n: "02",

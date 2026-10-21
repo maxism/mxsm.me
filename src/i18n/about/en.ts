@@ -38,7 +38,7 @@ export const aboutEn: AboutContent = {
       id: "now",
       heading: "/ now",
       paragraphs: [
-        "CTO at MWS AI (formerly MTS AI, part of the MTS group) since December 2025. Neural search. CTPO of the MWS AI Agents Platform product: technology and product. Details are under NDA.",
+        "At MWS AI (formerly MTS AI, part of the MTS group) since December 2025. These days I look after Iskra and the MWS AI Agents Platform: technology and product. Details are under NDA.",
         "Co-founder of Untitled Team since 2025, with Mike Zharchev and Artem Kharchenko. This is the Untitled Bank team. We stayed together after the bank closed.",
         [
           "Shitbustards podcast, since March 2024: uncivilised and conversational, about life, tech, music and everything else. Co-host Mike Zharchev. ",
