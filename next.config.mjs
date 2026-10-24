@@ -63,6 +63,10 @@ const securityHeaders = [
   },
 ];
 
+/** Heavy static files keep their names between releases, so they are cached for a week and
+ *  revalidated in the background rather than marked immutable. */
+const assetCache = "public, max-age=604800, stale-while-revalidate=2592000";
+
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   experimental: {
@@ -74,6 +78,10 @@ const nextConfig = {
         source: "/(.*)",
         headers: securityHeaders,
       },
+      ...["/mediapipe/:path*", "/mask/:path*", "/signal/samples/:path*"].map((source) => ({
+        source,
+        headers: [{ key: "Cache-Control", value: assetCache }],
+      })),
     ];
   },
 };
