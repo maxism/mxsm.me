@@ -24,7 +24,9 @@ export function RugPlateVisual({ href, ctaHint, names }: Props) {
   const [back, setBack] = useState<Frame | null>(null);
   const frontRef = useRef<Frame | null>(null);
   const namesRef = useRef(names);
-  namesRef.current = names;
+  useEffect(() => {
+    namesRef.current = names;
+  });
 
   useEffect(() => {
     const root = rootRef.current;

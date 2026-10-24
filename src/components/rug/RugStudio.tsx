@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import "./rug.css";
 import { RugCanvas } from "./RugCanvas";
+import { useIsClient } from "@/hooks/use-is-client";
 import type { Dictionary } from "@/i18n/types";
 import {
   generateRug,
@@ -58,8 +59,7 @@ export function RugStudio({ backHref, path, copy, initialSeed, initialSchool }: 
 
   // The rug is drawn in the browser only: its ASCII is thousands of nodes and the SVG hundreds of
   // kilobytes, and sending them in the server HTML would slow every phone down for nothing.
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useIsClient();
 
   // typing a seed stays instant; the rug follows when the browser has a moment
   const liveSeed = useDeferredValue(seed);

@@ -34,6 +34,32 @@ export function MaskScanner({ labels, onCapture, onClose }: ScannerProps) {
   const stopRef = useRef(false);
   const tessellationRef = useRef<Edge[] | null>(null);
 
+  const drawOverlay = (landmarks: FaceLandmark[] | null) => {
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
+    if (!canvas || !video) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!landmarks) return;
+
+    const tess = tessellationRef.current;
+    if (!tess) return;
+    ctx.strokeStyle = "rgba(200, 190, 170, 0.35)";
+    ctx.lineWidth = 0.8;
+    for (const [a, b] of tess) {
+      const lA = landmarks[a],
+        lB = landmarks[b];
+      if (!lA || !lB) continue;
+      ctx.beginPath();
+      ctx.moveTo(lA.x * canvas.width, lA.y * canvas.height);
+      ctx.lineTo(lB.x * canvas.width, lB.y * canvas.height);
+      ctx.stroke();
+    }
+  };
+
   useEffect(() => {
     stopRef.current = false;
     let stream: MediaStream | null = null;
@@ -116,32 +142,6 @@ export function MaskScanner({ labels, onCapture, onClose }: ScannerProps) {
       stream?.getTracks().forEach((t) => t.stop());
     };
   }, []);
-
-  const drawOverlay = (landmarks: FaceLandmark[] | null) => {
-    const canvas = canvasRef.current;
-    const video = videoRef.current;
-    if (!canvas || !video) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (!landmarks) return;
-
-    const tess = tessellationRef.current;
-    if (!tess) return;
-    ctx.strokeStyle = "rgba(200, 190, 170, 0.35)";
-    ctx.lineWidth = 0.8;
-    for (const [a, b] of tess) {
-      const lA = landmarks[a],
-        lB = landmarks[b];
-      if (!lA || !lB) continue;
-      ctx.beginPath();
-      ctx.moveTo(lA.x * canvas.width, lA.y * canvas.height);
-      ctx.lineTo(lB.x * canvas.width, lB.y * canvas.height);
-      ctx.stroke();
-    }
-  };
 
   const handleCapture = async () => {
     const landmarks = lastLandmarks.current;

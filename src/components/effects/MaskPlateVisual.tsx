@@ -97,9 +97,6 @@ export function MaskPlateVisual({ href, ctaHint, loader }: Props) {
   const [progress, setProgress] = useState<number | null>(null);
 
   useEffect(() => {
-    setLoading(true);
-    setPhase("init");
-    setProgress(null);
     const container = mountRef.current;
     if (!container) return;
 

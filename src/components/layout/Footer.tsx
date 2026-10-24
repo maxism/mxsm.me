@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { localeAboutPath, localePath } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
@@ -11,14 +11,26 @@ type FooterProps = {
   locale: Locale;
 };
 
-export function Footer({ dict, locale }: FooterProps) {
-  const [line, setLine] = useState(dict.footer.lines[0] ?? "");
+const subscribe = () => () => {};
+const picked = new WeakMap<readonly string[], string>();
 
-  useEffect(() => {
-    const lines = dict.footer.lines;
-    if (lines.length <= 1) return;
-    setLine(lines[Math.floor(Math.random() * lines.length)]!);
-  }, [dict.footer.lines]);
+/** One random line per page load; the server HTML and hydration always show the first. */
+function pickLine(lines: readonly string[]): string {
+  let line = picked.get(lines);
+  if (line === undefined) {
+    line = lines[Math.floor(Math.random() * lines.length)] ?? "";
+    picked.set(lines, line);
+  }
+  return line;
+}
+
+export function Footer({ dict, locale }: FooterProps) {
+  const lines = dict.footer.lines;
+  const line = useSyncExternalStore(
+    subscribe,
+    () => pickLine(lines),
+    () => lines[0] ?? "",
+  );
 
   return (
     <footer className="colo">
