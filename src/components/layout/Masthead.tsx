@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useSelectedLayoutSegment } from "next/navigation";
 import { localeAboutPath, localeHref, localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/types";
 import { navPlates } from "@/lib/shared-data";
@@ -12,9 +12,9 @@ type MastheadProps = {
 };
 
 export function Masthead({ locale, dict }: MastheadProps) {
-  const pathname = usePathname();
   const aboutHref = localeAboutPath(locale);
-  const onAbout = pathname === aboutHref;
+  // by route segment, not pathname: the server sees the rewritten "/ru/about", the browser "/about"
+  const onAbout = useSelectedLayoutSegment() === "about";
 
   return (
     <nav className="rail" aria-label={dict.nav.primary}>
