@@ -14,18 +14,17 @@ export const aboutEn: AboutContent = {
     rows: [
       { key: "DOC", value: "ABOUT · MAX ULIANOV" },
       { key: "ISSUED", value: "may 2026" },
-      { key: "LOC", value: "moscow · utc+3" },
     ],
     heading: "/\u2009about",
     headingGlitch: "// about",
-    lede: "A bit more than the home page: who I am, what I do, and where I worked.",
+    lede: "A bit more than the home page.",
   },
   sections: [
     {
       id: "who",
       heading: "/ who",
       paragraphs: [
-        "Max Ulianov, @maxism. Moscow, UTC+3.",
+        "Max Ulianov, @maxism.",
         "I'm an engineer. For fifteen years I've worked on software, product, and teams.",
         [
           { href: "mailto:m@mxsm.me", label: "m@mxsm.me" },
@@ -54,10 +53,10 @@ export const aboutEn: AboutContent = {
       heading: "/ work",
       paragraphs: [
         "Most of the time I hire people, keep the team together, and follow work through to production.",
-        "People: ladders, reviews, conversations with leads, who covers for whom.",
+        "People: career levels, reviews, conversations with leads, who covers for whom.",
         "Process: pace of work, budgets, incidents, DORA metrics.",
         "Systems: distributed systems, data, mobile, cloud.",
-        "Stack depends on the job: Go, Java, Kotlin, Python, TypeScript, React, Vue, Docker, Kubernetes, Postgres, Redis, Kafka. Whatever else the work needs.",
+        "Stack depends on the job: Go, Java, Kotlin, Python, TypeScript, React, Vue, Docker, Kubernetes, Postgres, Redis, Kafka.",
       ],
     },
     {

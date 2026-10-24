@@ -46,14 +46,14 @@ async function loadGoogleFont(
 
 function copyFor(page: OgPage, locale: Locale): OgCopy {
   const dict = getDictionary(locale);
-  const place = dict.footer.lines[0] ?? "";
+  const email = dict.footer.lines[0] ?? "";
 
   switch (page) {
     case "home":
       return { title: dict.masthead.name, lead: dict.meta.ogDescription, kicker: "@maxism" };
     case "about": {
       const about = getAboutContent(locale);
-      return { title: "/ about", lead: about.meta.ogDescription, kicker: place };
+      return { title: "/ about", lead: about.meta.ogDescription, kicker: email };
     }
     case "signal":
       return {

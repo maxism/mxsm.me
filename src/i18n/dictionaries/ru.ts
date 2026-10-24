@@ -230,9 +230,9 @@ export const ru: Dictionary = {
     },
     scanner: {
       loading: "загрузка mediapipe…",
-      aimFace: "наведи камеру на лицо",
+      aimFace: "наведите камеру на лицо",
       faceFound: "лицо обнаружено",
-      cameraDenied: "нет доступа к камере — проверь настройки браузера",
+      cameraDenied: "нет доступа к камере: проверьте настройки браузера",
       cancel: "✕ отмена",
       capture: "● capture",
     },
@@ -259,10 +259,7 @@ export const ru: Dictionary = {
     },
   },
   footer: {
-    lines: [
-      "Москва, UTC+3",
-      "m@mxsm.me",
-    ],
+    lines: ["m@mxsm.me"],
     home: "главная",
     about: "about",
   },

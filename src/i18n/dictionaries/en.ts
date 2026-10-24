@@ -232,7 +232,7 @@ export const en: Dictionary = {
       loading: "loading mediapipe…",
       aimFace: "point the camera at your face",
       faceFound: "face detected",
-      cameraDenied: "camera access denied — check browser settings",
+      cameraDenied: "camera access denied: check browser settings",
       cancel: "✕ cancel",
       capture: "● capture",
     },
@@ -259,10 +259,7 @@ export const en: Dictionary = {
     },
   },
   footer: {
-    lines: [
-      "Moscow, UTC+3",
-      "m@mxsm.me",
-    ],
+    lines: ["m@mxsm.me"],
     home: "home",
     about: "about",
   },

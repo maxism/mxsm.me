@@ -14,18 +14,17 @@ export const aboutRu: AboutContent = {
     rows: [
       { key: "DOC", value: "ABOUT · MAX ULIANOV" },
       { key: "ISSUED", value: "may 2026" },
-      { key: "LOC", value: "moscow · utc+3" },
     ],
     heading: "/\u2009about",
     headingGlitch: "// about",
-    lede: "Здесь чуть подробнее, чем на главной: кто я, чем занят и где работал.",
+    lede: "Чуть подробнее, чем на главной.",
   },
   sections: [
     {
       id: "who",
       heading: "/ кто",
       paragraphs: [
-        "Макс Ульянов, @maxism. Москва, UTC+3.",
+        "Макс Ульянов, @maxism.",
         "Инженер. Пятнадцать лет занимаюсь разработкой, продуктом и командами.",
         [
           { href: "mailto:m@mxsm.me", label: "m@mxsm.me" },
@@ -57,7 +56,7 @@ export const aboutRu: AboutContent = {
         "По людям: грейды, ревью, разговоры с лидами, кто кого подменяет.",
         "По процессу: ритм работы, бюджеты, инциденты, метрики DORA.",
         "По системам: распределённые системы, данные, мобильная разработка, облако.",
-        "Стек под задачу: Go, Java, Kotlin, Python, TypeScript, React, Vue, Docker, Kubernetes, Postgres, Redis, Kafka. Остальное по необходимости.",
+        "Стек под задачу: Go, Java, Kotlin, Python, TypeScript, React, Vue, Docker, Kubernetes, Postgres, Redis, Kafka.",
       ],
     },
     {
