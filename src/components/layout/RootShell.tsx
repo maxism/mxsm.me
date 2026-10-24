@@ -1,4 +1,3 @@
-import type { Viewport } from "next";
 import Script from "next/script";
 import { JetBrains_Mono, Spectral, Unbounded } from "next/font/google";
 import { Suspense } from "react";
@@ -8,16 +7,7 @@ import { YandexMetrika } from "@/components/analytics/YandexMetrika";
 import { analyticsEnabled } from "@/lib/analytics/config";
 import { TimePalette } from "@/components/effects/TimePalette";
 import { timePaletteInitScript } from "@/lib/time-palette";
-import "./globals.css";
-
-/** `cover` lets the page run under the status bar and home indicator; the layout paints those
- *  strips itself (the rail covers the top one), instead of leaving content showing through. */
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  viewportFit: "cover",
-  themeColor: "#0c0b09",
-};
+import "@/app/globals.css";
 
 const spectral = Spectral({
   subsets: ["latin", "cyrillic"],
@@ -41,14 +31,17 @@ const wide = Unbounded({
   display: "swap",
 });
 
-export default function RootLayout({
+/** The one `<html>` of the site; `lang` comes from the route so the server HTML is already right. */
+export function RootShell({
+  lang,
   children,
 }: Readonly<{
+  lang: string;
   children: React.ReactNode;
 }>) {
   return (
     <html
-      lang="ru"
+      lang={lang}
       className={`${spectral.variable} ${jetbrains.variable} ${wide.variable}`}
       suppressHydrationWarning
     >

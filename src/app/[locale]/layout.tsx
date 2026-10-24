@@ -1,5 +1,16 @@
+import type { Viewport } from "next";
 import { notFound } from "next/navigation";
+import { RootShell } from "@/components/layout/RootShell";
 import { isLocale, locales } from "@/i18n/config";
+
+/** `cover` lets the page run under the status bar and home indicator; the layout paints those
+ *  strips itself (the rail covers the top one), instead of leaving content showing through. */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0c0b09",
+};
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -15,14 +26,5 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   if (!isLocale(raw)) notFound();
   const locale = raw;
 
-  return (
-    <>
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `document.documentElement.lang="${locale}";`,
-        }}
-      />
-      {children}
-    </>
-  );
+  return <RootShell lang={locale}>{children}</RootShell>;
 }
