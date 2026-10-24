@@ -1,7 +1,7 @@
 import { parseLastFmProfileHtml, tracksToMusicFeed } from "@/lib/lastfm-profile";
 
-export const LASTFM_USER = "maxismart";
-export const LASTFM_PROFILE_URL = `https://www.last.fm/user/${LASTFM_USER}`;
+const LASTFM_USER = "maxismart";
+const LASTFM_PROFILE_URL = `https://www.last.fm/user/${LASTFM_USER}`;
 
 const LASTFM_API_URL = "https://ws.audioscrobbler.com/2.0/";
 const PROFILE_USER_AGENT =
@@ -24,10 +24,6 @@ export type NowPlayingTrack = {
   isPlaying: boolean;
   playedAt: number | null;
 };
-
-export type NowPlayingState =
-  | { ok: true; data: NowPlayingTrack | null }
-  | { ok: false; data: null; error: string };
 
 type LastFmImage = { "#text": string; size: string };
 type LastFmTrack = {
@@ -110,12 +106,6 @@ function mapLastFmError(payload: LastFmErrorResponse, status: number): string {
   return `http_${status}`;
 }
 
-export type { LastFmErrorResponse };
-
-export function mapLastFmErrorForClient(payload: LastFmErrorResponse): string {
-  return mapLastFmError(payload, 200);
-}
-
 async function fetchMusicFeedFromApi(): Promise<MusicFeedState> {
   const apiKey = readLastFmApiKey();
   if (!apiKey) {
@@ -183,14 +173,6 @@ async function fetchMusicFeedFromProfile(): Promise<MusicFeedState | null> {
   } catch {
     return null;
   }
-}
-
-export async function fetchNowPlaying(): Promise<NowPlayingState> {
-  const feed = await fetchMusicFeed();
-  if (!feed.ok) {
-    return { ok: false, data: null, error: feed.error };
-  }
-  return { ok: true, data: feed.current };
 }
 
 export async function fetchMusicFeed(): Promise<MusicFeedState> {

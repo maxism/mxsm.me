@@ -1,4 +1,4 @@
-export function compileShader(
+function compileShader(
   gl: WebGLRenderingContext,
   type: number,
   source: string,

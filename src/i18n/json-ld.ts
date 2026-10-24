@@ -193,7 +193,7 @@ export function creativeWorkJsonLd(locale: Locale) {
   };
 }
 
-export function breadcrumbJsonLd(items: readonly BreadcrumbItem[]) {
+function breadcrumbJsonLd(items: readonly BreadcrumbItem[]) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",

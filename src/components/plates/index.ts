@@ -1,4 +1,3 @@
-export { HomePlates } from "@/components/plates/HomePlates";
 export { PlateArchive } from "@/components/plates/PlateArchive";
 export { PlateContact } from "@/components/plates/PlateContact";
 export { PlateCurrently } from "@/components/plates/PlateCurrently";

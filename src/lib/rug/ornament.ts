@@ -179,7 +179,7 @@ export function alternating(
 
 // ─── Frieze groups: borders ─────────────────────────────────────────────────
 
-export const FRIEZE_GROUPS = ["p1", "p11g", "p1m1", "pm11", "p2", "p2mg", "p2mm"] as const;
+const FRIEZE_GROUPS = ["p1", "p11g", "p1m1", "pm11", "p2", "p2mg", "p2mm"] as const;
 export type FriezeGroup = (typeof FRIEZE_GROUPS)[number];
 
 function friezeOps(group: FriezeGroup, P: number): Op[] {
@@ -240,39 +240,5 @@ export function friezeMotif(
       }
       return color;
     },
-  };
-}
-
-// ─── Dihedral rosettes: medallion interiors ─────────────────────────────────
-
-/** A rosette with D_n symmetry: fold the angle into one sector (mirror at each end), then read a
- *  radial profile. Returns a colour for a normalised radius and an angle in [0, π/2]. */
-export function dihedralRosette(
-  rng: Rng,
-  n: number,
-  colors: readonly number[],
-): (r: number, theta: number) => number {
-  const layers = rng.int(4, 6);
-  const profile = Array.from({ length: layers }, (_, i) => ({
-    radius: 1 - (i / layers) * rng.float(0.8, 1),
-    amp: rng.float(0.1, 0.5),
-    shape: rng.pick([0, 1, 2]),
-    color: colors[i % colors.length]!,
-  })).sort((a, b) => b.radius - a.radius);
-  return (r, theta) => {
-    let t = theta % ((2 * Math.PI) / n);
-    if (t > Math.PI / n) t = (2 * Math.PI) / n - t;
-    const u = (t * n) / Math.PI;
-    let color = -1;
-    for (const p of profile) {
-      const f =
-        p.shape === 0
-          ? Math.cos(Math.PI * u)
-          : p.shape === 1
-            ? -Math.cos(Math.PI * u)
-            : 1 - 2 * Math.abs(u - 0.5);
-      if (r <= p.radius * (1 + p.amp * f * 0.5)) color = p.color;
-    }
-    return color;
   };
 }

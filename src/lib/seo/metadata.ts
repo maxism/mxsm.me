@@ -22,7 +22,7 @@ export function pageAlternates(
   };
 }
 
-export function ogImageUrl(page: OgPage, locale: Locale): string {
+function ogImageUrl(page: OgPage, locale: Locale): string {
   return absoluteUrl(`/og/${locale}/${page}`);
 }
 

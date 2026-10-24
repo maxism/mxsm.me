@@ -1,6 +1,6 @@
 import type { TitleBlockRow } from "@/lib/shared-data";
 
-export type Role = {
+type Role = {
   n: string;
   name: string;
   href?: string;
@@ -9,7 +9,7 @@ export type Role = {
   facts?: { key: string; value: string }[];
 };
 
-export type ArchiveItem = {
+type ArchiveItem = {
   years: string;
   name: string;
   href?: string;
