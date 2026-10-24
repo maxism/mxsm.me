@@ -1,12 +1,12 @@
 import { NextRequest } from "next/server";
 import { describe, expect, it } from "vitest";
-import { middleware } from "@/middleware";
+import { proxy } from "@/proxy";
 
 function run(pathname: string) {
-  return middleware(new NextRequest(new URL(`https://mxsm.me${pathname}`)));
+  return proxy(new NextRequest(new URL(`https://mxsm.me${pathname}`)));
 }
 
-describe("middleware", () => {
+describe("proxy", () => {
   it("rewrites / with ru locale", () => {
     const res = run("/");
     expect(res.headers.get("x-mxsm-locale")).toBe("ru");

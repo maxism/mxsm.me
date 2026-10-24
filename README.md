@@ -27,7 +27,7 @@ Optional: copy `.env.example` → `.env.local` and set `NEXT_PUBLIC_SITE_URL` fo
 | `src/lib/palette-stops.json` | Single source for palette stops + cycle duration              |
 | `src/lib/time-palette.ts`    | TS palette API (`paletteAt`, `getLivePalette`)                |
 | `src/i18n/dictionaries/`     | RU / EN copy                                                  |
-| `src/middleware.ts`          | `/` → ru, `/en` → en (rewrite)                                |
+| `src/proxy.ts`          | `/` → ru, `/en` → en (rewrite)                                |
 | `src/signal/`                | mxsm/signal runtime (`boot` / `dispose`)                      |
 
 ## Scripts
