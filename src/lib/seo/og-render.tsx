@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { getAboutContent } from "@/i18n/about/get-about";
 import type { Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { asciiMap, MAP_GLYPHS, type MapTone } from "@/lib/seo/og-field";
+import { DEFAULT_SEED, generateRug, rugSvg, type School } from "@/lib/rug";
 import { OG, OG_SIZE } from "@/lib/seo/og-theme";
 
 export const OG_PAGES = ["home", "about", "signal", "mask"] as const;
@@ -16,18 +16,7 @@ type OgCopy = {
   title: string;
   lead: string;
   kicker: string;
-  /** Where on the landscape this card's slit looks, so each page shows its own stretch of map. */
-  offset: number;
 };
-
-const MAP_COLOR: Record<MapTone, string> = {
-  ink: OG.mapInk,
-  line: OG.mapLine,
-  wash: OG.mapWash,
-  spot: OG.mapSpot,
-};
-const MAP_FONT = 14;
-const MAP_LINE = 18;
 
 type OgFont = {
   name: string;
@@ -61,48 +50,53 @@ function copyFor(page: OgPage, locale: Locale): OgCopy {
 
   switch (page) {
     case "home":
-      return { title: dict.masthead.name, lead: dict.meta.ogDescription, kicker: "@maxism", offset: 0 };
+      return { title: dict.masthead.name, lead: dict.meta.ogDescription, kicker: "@maxism" };
     case "about": {
       const about = getAboutContent(locale);
-      return { title: "/ about", lead: about.meta.ogDescription, kicker: place, offset: 160 };
+      return { title: "/ about", lead: about.meta.ogDescription, kicker: place };
     }
     case "signal":
       return {
         title: "/ signal",
         lead: dict.signalPage.ogDescription,
         kicker: dict.plates.signal.meta.find((row) => row.key === "STACK")?.value ?? "",
-        offset: 320,
       };
     case "mask":
       return {
         title: "/ mask",
         lead: dict.maskPage.description,
         kicker: dict.plates.mask.meta.find((row) => row.key === "STACK")?.value ?? "",
-        offset: 480,
       };
   }
 }
 
 const PAD = 64;
-const BOTTOM = 64;
 
-/** Paper above, the field in a slit through the lower half of the title, paper again below. */
-function OgCut({ title, lead, kicker, offset }: OgCopy) {
-  const size = title.length > 9 ? 112 : 168;
-  const top = OG_SIZE.height - BOTTOM - size;
-  const cut = Math.round(size * 0.5);
-  const slitTop = top + cut;
-  const slitBottom = OG_SIZE.height;
+/** Each page weaves its own rug; same seed, same rug, so the card never changes between deploys. */
+const PAGE_RUG: Record<OgPage, { school: School; seed: string }> = {
+  home: { school: "medallion", seed: DEFAULT_SEED },
+  about: { school: "caucasus", seed: DEFAULT_SEED },
+  signal: { school: "kursk", seed: DEFAULT_SEED },
+  mask: { school: "turkmen", seed: DEFAULT_SEED },
+};
 
-  const titleStyle = {
-    display: "flex",
-    fontFamily: "Unbounded",
-    fontWeight: 500,
-    fontSize: size,
-    lineHeight: 1,
-    letterSpacing: -0.06 * size,
-    whiteSpace: "nowrap" as const,
+function rugDataUri(page: OgPage): { src: string; ratio: number } {
+  const { school, seed } = PAGE_RUG[page];
+  const rug = generateRug(seed, school);
+  const svg = rugSvg(rug);
+  const [, w, h] = svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/)!.map(Number);
+  return {
+    src: `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`,
+    ratio: w! / h!,
   };
+}
+
+/** Text on the left, the page's rug full-height on the right. */
+function OgCard({ page, title, lead, kicker }: OgCopy & { page: OgPage }) {
+  const rug = rugDataUri(page);
+  const rugWidth = Math.round(OG_SIZE.height * rug.ratio);
+  const textWidth = OG_SIZE.width - rugWidth - PAD * 2;
+  const size = Math.min(152, Math.floor(textWidth / (title.length * 0.62)));
 
   return (
     <div
@@ -110,51 +104,17 @@ function OgCut({ title, lead, kicker, offset }: OgCopy) {
         width: "100%",
         height: "100%",
         display: "flex",
-        position: "relative",
         background: OG.paper,
         color: OG.ink,
       }}
     >
       <div
         style={{
-          position: "absolute",
-          left: 0,
-          right: 0,
-          top: slitTop,
-          height: slitBottom - slitTop,
           display: "flex",
           flexDirection: "column",
-          overflow: "hidden",
-          padding: "2px 0 0 4px",
-          background: OG.mapPaper,
-          fontFamily: "JetBrains Mono",
-          fontWeight: 400,
-          fontSize: MAP_FONT,
-          lineHeight: `${MAP_LINE}px`,
-        }}
-      >
-        {asciiMap(
-          Math.ceil(OG_SIZE.width / (MAP_FONT * 0.6)),
-          Math.ceil((slitBottom - slitTop) / MAP_LINE) + 1,
-          offset,
-        ).map((runs, r) => (
-          <div key={r} style={{ display: "flex", height: MAP_LINE, whiteSpace: "pre" }}>
-            {runs.map((run, i) => (
-              <span key={i} style={{ color: MAP_COLOR[run.tone] }}>
-                {run.text}
-              </span>
-            ))}
-          </div>
-        ))}
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 28,
-          padding: `56px ${PAD}px 0`,
-          width: "100%",
+          justifyContent: "space-between",
+          flex: 1,
+          padding: `${PAD - 8}px ${PAD}px ${PAD}px`,
         }}
       >
         <div
@@ -172,56 +132,37 @@ function OgCut({ title, lead, kicker, offset }: OgCopy) {
           <span style={{ display: "flex", color: OG.mapSpot }}>mxsm.me</span>
           <span style={{ display: "flex" }}>{kicker}</span>
         </div>
-        <div
-          style={{
-            display: "flex",
-            maxWidth: 980,
-            fontFamily: "Spectral",
-            fontWeight: 300,
-            fontSize: 34,
-            lineHeight: 1.3,
-            color: OG.inkMuted,
-          }}
-        >
-          {lead}
+        <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+          <div
+            style={{
+              display: "flex",
+              fontFamily: "Unbounded",
+              fontWeight: 500,
+              fontSize: size,
+              lineHeight: 1,
+              letterSpacing: -0.02 * size,
+              whiteSpace: "nowrap",
+            }}
+          >
+            {title}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              maxWidth: 620,
+              fontFamily: "Spectral",
+              fontWeight: 300,
+              fontSize: 30,
+              lineHeight: 1.3,
+              color: OG.inkMuted,
+            }}
+          >
+            {lead}
+          </div>
         </div>
       </div>
-
-      <div
-        style={{
-          position: "absolute",
-          left: PAD,
-          top,
-          width: OG_SIZE.width - PAD,
-          height: size + 24,
-          display: "flex",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 0,
-            height: cut,
-            display: "flex",
-            overflow: "hidden",
-          }}
-        >
-          <div style={{ ...titleStyle, color: OG.ink }}>{title}</div>
-        </div>
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: cut,
-            height: size + 24 - cut,
-            display: "flex",
-            overflow: "hidden",
-          }}
-        >
-          <div style={{ ...titleStyle, color: OG.paper, marginTop: -cut }}>{title}</div>
-        </div>
-      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
+      <img src={rug.src} width={rugWidth} height={OG_SIZE.height} style={{ display: "flex" }} />
     </div>
   );
 }
@@ -232,11 +173,11 @@ export async function renderOgImage(page: OgPage, locale: Locale) {
     await Promise.all([
       loadGoogleFont("Unbounded", 500, copy.title),
       loadGoogleFont("Spectral", 300, copy.lead),
-      loadGoogleFont("JetBrains Mono", 400, `MXSM.ME${copy.kicker.toUpperCase()}${MAP_GLYPHS}`),
+      loadGoogleFont("JetBrains Mono", 400, `MXSM.ME${copy.kicker.toUpperCase()}`),
     ])
   ).filter((font): font is OgFont => font !== null);
 
-  const img = new ImageResponse(<OgCut {...copy} />, { ...OG_SIZE, fonts });
+  const img = new ImageResponse(<OgCard page={page} {...copy} />, { ...OG_SIZE, fonts });
   img.headers.set("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
   return img;
 }
