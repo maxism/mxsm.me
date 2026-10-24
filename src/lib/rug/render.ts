@@ -66,15 +66,14 @@ function shade(hex: string, keep: number): string {
   return tint(hex, keep);
 }
 
-/** A vector rug: one path per colour, fringe at both ends, a caption underneath. Sizes are in
+/** A vector rug: one path per colour, fringe at both ends. Sizes are in
  *  knots, so it scales to any paper; the viewBox is the rug plus a margin. */
-export function rugSvg(rug: Rug, caption: string): string {
+export function rugSvg(rug: Rug): string {
   const k = 1;
   const margin = rug.w * 0.09;
   const fringe = rug.w * 0.03;
-  const captionH = rug.w * 0.06;
   const W = rug.w + margin * 2;
-  const H = rug.h + margin * 2 + fringe * 2 + captionH;
+  const H = rug.h + margin * 2 + fringe * 2;
   const ox = margin;
   const oy = margin + fringe;
   const overlap = 0.05;
@@ -103,14 +102,12 @@ export function rugSvg(rug: Rug, caption: string): string {
   const body = rug.palette
     .map((color, i) => (paths[i] ? `<path fill="${color}" d="${paths[i]}"/>` : ""))
     .join("");
-  const safe = caption.replace(/&/g, "&amp;").replace(/</g, "&lt;");
 
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${f(W)} ${f(H)}" shape-rendering="crispEdges">` +
     `<rect width="${f(W)}" height="${f(H)}" fill="#f6f1e4"/>` +
     `<path d="${tassels.join("")}" stroke="${shade(rug.fringe, 0.72)}" stroke-width="${f(rug.w * 0.0035)}" fill="none" shape-rendering="geometricPrecision"/>` +
     body +
-    `<text x="${f(W / 2)}" y="${f(H - margin * 0.55)}" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="${f(rug.w * 0.034)}" letter-spacing="${f(rug.w * 0.008)}" fill="#6b6454">${safe}</text>` +
     `</svg>`
   );
 }

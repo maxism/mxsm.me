@@ -93,13 +93,13 @@ describe("rendering", () => {
   });
 
   it("svg is a vector with a viewBox, no paper size", () => {
-    const svg = rugSvg(rug, "x");
+    const svg = rugSvg(rug);
     expect(svg).toContain("viewBox=");
     expect(svg).not.toContain("mm");
   });
 
-  it("svg escapes the caption", () => {
-    expect(rugSvg(rug, "<b>&")).toContain("&lt;b>&amp;");
+  it("svg carries no caption", () => {
+    expect(rugSvg(rug)).not.toContain("<text");
   });
 });
 

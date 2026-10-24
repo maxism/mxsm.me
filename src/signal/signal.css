@@ -35,34 +35,9 @@
 
 .signal-exit {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: calc(14px + env(safe-area-inset-top));
+  left: 18px;
   z-index: 10;
-  display: flex;
-  padding: calc(14px + env(safe-area-inset-top)) 18px 14px;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.72) 0%, transparent 100%);
-}
-
-.signal-exit a {
-  pointer-events: auto;
-  font-family: ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: lowercase;
-  color: rgba(232, 226, 210, 0.55);
-  text-decoration: none;
-  padding: 6px 10px;
-  border: 1px solid rgba(232, 226, 210, 0.12);
-  transition:
-    color 0.15s,
-    border-color 0.15s;
-}
-
-.signal-exit a:hover {
-  color: var(--hot, #e8c547);
-  border-color: rgba(var(--hot-rgb, 232, 197, 71), 0.45);
 }
 
 .signal-seo {

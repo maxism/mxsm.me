@@ -109,18 +109,13 @@ export type Dictionary = {
     title: string;
     description: string;
     exitLabel: string;
-    schools: Record<"medallion" | "turkmen" | "caucasus" | "kursk" | "girih" | "scene", { name: string; note: string }>;
-    seedLabel: string;
+    schools: Record<"medallion" | "turkmen" | "caucasus" | "kursk" | "girih" | "scene", { name: string }>;
     roll: string;
     glyphs: { blocks: string; ascii: string };
-    detail: string;
-    detailHint: string;
     print: string;
     saveSvg: string;
     copyLink: string;
     copied: string;
-    printHint: string;
-    sheetCaption: string;
   };
   notFound: {
     line: string;

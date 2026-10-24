@@ -68,13 +68,13 @@ export function RugStudio({ backHref, path, copy, initialSeed, initialSchool }: 
     [mounted, liveSeed, school, density],
   );
   const shownSeed = rug?.seed ?? normalizeSeed(seed);
-  const caption = `${copy.sheetCaption} · ${copy.schools[school].name} · ${shownSeed}`;
+  const label = `${copy.schools[school].name} · ${shownSeed}`;
 
   // the vector sheet is only built when someone prints
   const [printing, setPrinting] = useState(false);
   const svg = useMemo(
-    () => (printing && rug ? rugSvg(rug, caption) : ""),
-    [printing, rug, caption],
+    () => (printing && rug ? rugSvg(rug) : ""),
+    [printing, rug],
   );
   const [printAsked, setPrintAsked] = useState(false);
   useEffect(() => {
@@ -118,7 +118,7 @@ export function RugStudio({ backHref, path, copy, initialSeed, initialSchool }: 
 
   const saveSvg = () => {
     if (!rug) return;
-    const blob = new Blob([rugSvg(rug, caption)], { type: "image/svg+xml" });
+    const blob = new Blob([rugSvg(rug)], { type: "image/svg+xml" });
     const href = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = href;
@@ -131,15 +131,24 @@ export function RugStudio({ backHref, path, copy, initialSeed, initialSchool }: 
     <div className="rug-page">
       <style>{`@media print { @page { margin: 0; } }`}</style>
 
-      <aside className="rug-side">
-        <div className="rug-head">
-          <Link href={backHref} className="rug-back">
-            {copy.exitLabel}
-          </Link>
-          <h1 className="rug-title">/ rug</h1>
-        </div>
+      <Link href={backHref} className="exp-back rug-back">
+        {copy.exitLabel}
+      </Link>
 
-        <div ref={schoolsRef} className="rug-schools" role="tablist" aria-label="school">
+      <main
+        className="rug-stage"
+        style={
+          { "--rw": rug?.w ?? 80 * density, "--rh": rug?.h ?? 112 * density } as React.CSSProperties
+        }
+      >
+        <div className="rug-canvas-box">
+          {rug && <RugCanvas rug={rug} glyphs={glyphs} className="rug-canvas" label={label} />}
+        </div>
+        <div className="rug-sheet" dangerouslySetInnerHTML={{ __html: svg }} />
+      </main>
+
+      <div className="rug-bar">
+        <div ref={schoolsRef} className="rug-row rug-schools" role="tablist" aria-label="school">
           {SCHOOLS.map((id) => (
             <button
               key={id}
@@ -152,26 +161,19 @@ export function RugStudio({ backHref, path, copy, initialSeed, initialSchool }: 
             </button>
           ))}
         </div>
-        <p className="rug-note">{copy.schools[school].note}</p>
-
-        <div className="rug-seedrow">
-          <label className="rug-seed">
-            <span>{copy.seedLabel}</span>
-            <input
-              value={seed}
-              maxLength={24}
-              spellCheck={false}
-              autoComplete="off"
-              onChange={(e) => setSeed(e.target.value)}
-            />
-          </label>
-          <button type="button" className="rug-roll" onClick={() => setSeed(randomSeed())}>
+        <div className="rug-row">
+          <input
+            aria-label="seed"
+            value={seed}
+            maxLength={24}
+            spellCheck={false}
+            autoComplete="off"
+            onChange={(e) => setSeed(e.target.value)}
+          />
+          <button type="button" onClick={() => setSeed(randomSeed())}>
             {copy.roll}
           </button>
-        </div>
-        <p className="rug-variant">{rug?.variant ?? ""}</p>
-
-        <div className="rug-segs">
+          <span className="rug-gap" />
           <Segment
             value={glyphs}
             onChange={setGlyphs}
@@ -188,15 +190,9 @@ export function RugStudio({ backHref, path, copy, initialSeed, initialSchool }: 
               { id: "2", label: "2×" },
             ]}
           />
-        </div>
-        <p className="rug-hint">
-          {copy.detail}: {copy.detailHint}
-        </p>
-
-        <div className="rug-buttons">
+          <span className="rug-gap" />
           <button
             type="button"
-            className="rug-primary"
             onClick={() => {
               setPrinting(true);
               setPrintAsked(true);
@@ -209,32 +205,17 @@ export function RugStudio({ backHref, path, copy, initialSeed, initialSchool }: 
           </button>
           <button
             type="button"
+            aria-live="polite"
             onClick={() =>
               copyToClipboard(
                 `${window.location.origin}${path}?seed=${encodeURIComponent(shownSeed)}&school=${school}`,
               )
             }
           >
-            {copy.copyLink}
+            {flash ? copy.copied : copy.copyLink}
           </button>
         </div>
-        <p className="rug-hint">{copy.printHint}</p>
-      </aside>
-
-      <main
-        className="rug-stage"
-        style={
-          { "--rw": rug?.w ?? 80 * density, "--rh": rug?.h ?? 112 * density } as React.CSSProperties
-        }
-      >
-        <div className="rug-canvas-box">
-          {rug && <RugCanvas rug={rug} glyphs={glyphs} className="rug-canvas" label={caption} />}
-        </div>
-        <div className="rug-sheet" dangerouslySetInnerHTML={{ __html: svg }} />
-        <span className="rug-flash" data-on={flash} aria-live="polite">
-          {flash ? copy.copied : ""}
-        </span>
-      </main>
+      </div>
     </div>
   );
 }

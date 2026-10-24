@@ -846,7 +846,7 @@ export function MaskExperience({ backHref, copy }: Props) {
         <MaskLoadOverlay labels={copy.loader} phase={loadPhase} progress={loadProgress} />
       )}
       <div className="mask-ui">
-        <Link href={backHref} className="mask-back">{copy.exitLabel}</Link>
+        <Link href={backHref} className="exp-back mask-back">{copy.exitLabel}</Link>
         <div className="mask-mat-row">
           {MATERIAL_KEYS.map((key) => (
             <button key={key}

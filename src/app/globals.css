@@ -1565,6 +1565,20 @@ main {
   }
 }
 
+/* The way out of an experiment page: the same quiet link on every one of them. */
+.exp-back {
+  pointer-events: auto;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(232, 226, 210, 0.5);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.exp-back:hover {
+  color: rgba(232, 226, 210, 0.9);
+}
+
 /* ── Mask experience (full page) ── */
 .mask-exp {
   position: fixed;
@@ -1590,21 +1604,10 @@ main {
   pointer-events: none;
   display: flex;
   flex-direction: column;
-  padding: calc(clamp(16px, 3vh, 32px) + env(safe-area-inset-top)) clamp(16px, 3vw, 40px)
-    env(safe-area-inset-bottom);
+  padding: calc(14px + env(safe-area-inset-top)) 18px env(safe-area-inset-bottom);
 }
 .mask-back {
-  pointer-events: auto;
   align-self: flex-start;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  color: rgba(232, 226, 210, 0.5);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.mask-back:hover {
-  color: rgba(232, 226, 210, 0.9);
 }
 .mask-controls {
   pointer-events: auto;
