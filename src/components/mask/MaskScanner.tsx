@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type * as ThreeTypes from "three";
+import type { FaceLandmarker } from "@mediapipe/tasks-vision";
 import type { Dictionary } from "@/i18n/types";
 
 type ScannerLabels = Dictionary["maskPage"]["scanner"];
@@ -14,39 +15,14 @@ type ScannerProps = {
 
 type FaceLandmark = { x: number; y: number; z: number };
 
-type FaceMeshResults = {
-  multiFaceLandmarks?: FaceLandmark[][];
-};
-
 type ScannerStatus = "loading" | "scanning" | "camera-error";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyWin = Window & { FaceMesh?: any; FACEMESH_TESSELATION?: any };
 
 const MP_BASE = "/mediapipe";
 
-function loadScript(src: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (document.querySelector(`script[src="${src}"]`)) {
-      const poll = setInterval(() => {
-        if ((window as AnyWin).FaceMesh) {
-          clearInterval(poll);
-          resolve();
-        }
-      }, 50);
-      setTimeout(() => {
-        clearInterval(poll);
-        reject(new Error("FaceMesh timeout"));
-      }, 8000);
-      return;
-    }
-    const s = document.createElement("script");
-    s.src = src;
-    s.onload = () => resolve();
-    s.onerror = reject;
-    document.head.appendChild(s);
-  });
-}
+/** The first 468 landmarks are the face mesh; the model adds 10 iris points after them. */
+const MESH_POINTS = 468;
+
+type Edge = [number, number];
 
 export function MaskScanner({ labels, onCapture, onClose }: ScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -56,53 +32,40 @@ export function MaskScanner({ labels, onCapture, onClose }: ScannerProps) {
   const lastLandmarks = useRef<FaceLandmark[] | null>(null);
   const faceDetectedRef = useRef(false);
   const stopRef = useRef(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const tessellationRef = useRef<any>(null);
+  const tessellationRef = useRef<Edge[] | null>(null);
 
   useEffect(() => {
     stopRef.current = false;
     let stream: MediaStream | null = null;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let faceMeshInst: any = null;
+    let landmarker: FaceLandmarker | null = null;
 
     const run = async () => {
-      try {
-        await loadScript(`${MP_BASE}/face_mesh.js`);
-      } catch {
-        if (!stopRef.current) setStatus("camera-error");
-        return;
-      }
+      const { FaceLandmarker, FilesetResolver } = await import("@mediapipe/tasks-vision");
       if (stopRef.current) return;
 
-      const w = window as AnyWin;
-      const FaceMesh = w.FaceMesh;
-      if (!FaceMesh) {
-        if (!stopRef.current) setStatus("camera-error");
+      tessellationRef.current = FaceLandmarker.FACE_LANDMARKS_TESSELATION.map((c): Edge => [
+        c.start,
+        c.end,
+      ]);
+
+      const vision = await FilesetResolver.forVisionTasks(MP_BASE);
+      const create = (delegate: "GPU" | "CPU") =>
+        FaceLandmarker.createFromOptions(vision, {
+          baseOptions: { modelAssetPath: `${MP_BASE}/face_landmarker.task`, delegate },
+          runningMode: "VIDEO",
+          numFaces: 1,
+          minFaceDetectionConfidence: 0.5,
+          minTrackingConfidence: 0.5,
+        });
+      try {
+        landmarker = await create("GPU");
+      } catch {
+        landmarker = await create("CPU");
+      }
+      if (stopRef.current) {
+        landmarker.close();
         return;
       }
-
-      tessellationRef.current = w.FACEMESH_TESSELATION;
-
-      faceMeshInst = new FaceMesh({
-        locateFile: (f: string) => `${MP_BASE}/${f}`,
-      });
-      faceMeshInst.setOptions({
-        maxNumFaces: 1,
-        refineLandmarks: false,
-        minDetectionConfidence: 0.5,
-        minTrackingConfidence: 0.5,
-      });
-      faceMeshInst.onResults((results: FaceMeshResults) => {
-        if (stopRef.current) return;
-        const landmarks = results.multiFaceLandmarks?.[0] ?? null;
-        lastLandmarks.current = landmarks;
-        const found = !!landmarks;
-        if (found !== faceDetectedRef.current) {
-          faceDetectedRef.current = found;
-          setFaceDetected(found);
-        }
-        drawOverlay(landmarks);
-      });
 
       try {
         stream = await navigator.mediaDevices.getUserMedia({
@@ -123,12 +86,24 @@ export function MaskScanner({ labels, onCapture, onClose }: ScannerProps) {
       video.srcObject = stream;
       await video.play();
 
-      const sendFrame = async () => {
-        if (stopRef.current) return;
-        if (video.readyState >= 2) await faceMeshInst.send({ image: video });
-        if (!stopRef.current) requestAnimationFrame(sendFrame);
+      let lastTime = -1;
+      const detect = () => {
+        if (stopRef.current || !landmarker) return;
+        if (video.readyState >= 2 && video.currentTime !== lastTime) {
+          lastTime = video.currentTime;
+          const all = landmarker.detectForVideo(video, performance.now()).faceLandmarks[0];
+          const landmarks = all ? all.slice(0, MESH_POINTS) : null;
+          lastLandmarks.current = landmarks;
+          const found = !!landmarks;
+          if (found !== faceDetectedRef.current) {
+            faceDetectedRef.current = found;
+            setFaceDetected(found);
+          }
+          drawOverlay(landmarks);
+        }
+        requestAnimationFrame(detect);
       };
-      requestAnimationFrame(sendFrame);
+      requestAnimationFrame(detect);
     };
 
     run().catch(() => {
@@ -137,7 +112,7 @@ export function MaskScanner({ labels, onCapture, onClose }: ScannerProps) {
 
     return () => {
       stopRef.current = true;
-      faceMeshInst?.close?.();
+      landmarker?.close();
       stream?.getTracks().forEach((t) => t.stop());
     };
   }, []);
@@ -207,7 +182,7 @@ export function MaskScanner({ labels, onCapture, onClose }: ScannerProps) {
     const geo = new THREE.BufferGeometry();
     geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
 
-    const tess = tessellationRef.current as [number, number][] | null;
+    const tess = tessellationRef.current;
     if (tess && tess.length % 3 === 0) {
       const indices = new Uint32Array((tess.length / 3) * 3);
       for (let i = 0; i < tess.length; i += 3) {
@@ -232,7 +207,7 @@ export function MaskScanner({ labels, onCapture, onClose }: ScannerProps) {
         </div>
       </div>
       <div className="scanner-ui">
-        <button className="mask-back scanner-close" onClick={onClose}>
+        <button className="exp-back scanner-close" onClick={onClose}>
           {labels.cancel}
         </button>
         <div className="scanner-status">
