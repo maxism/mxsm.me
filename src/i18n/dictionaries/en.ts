@@ -158,8 +158,8 @@ export const en: Dictionary = {
         { key: "TYPE", value: "pile · gul · girih" },
         { key: "STACK", value: "symmetry groups · svg" },
       ],
-      heading: "/ his rugship",
-      headingGlitch: "// his rugship",
+      heading: "/ rug",
+      headingGlitch: "// rug",
       ctaHint: "A new rug is woven every few seconds: one of six schools, its own seed. Click to open the one on screen, reweave it and print it.",
     },
     contact: {
