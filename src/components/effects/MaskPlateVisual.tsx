@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { MaskLoadOverlay } from "@/components/mask/MaskLoadOverlay";
+import { loadMaskGeometry } from "@/lib/mask/load-geometry";
 import type * as ThreeTypes from "three";
 
 type LoaderLabels = {
@@ -113,7 +114,6 @@ export function MaskPlateVisual({ href, ctaHint, loader }: Props) {
 
     const boot = async () => {
       const THREE = await import("three");
-      const { OBJLoader } = await import("three/examples/jsm/loaders/OBJLoader.js");
       if (stopped || !mountRef.current) return;
       setPhase("model");
 
@@ -240,26 +240,15 @@ export function MaskPlateVisual({ href, ctaHint, loader }: Props) {
         if (!stopped) setLoading(false);
       };
 
-      new OBJLoader().load(
-        "/mask/plague-doctor-skull-lite.obj",
-        (obj) => {
-          const meshes: ThreeTypes.Mesh[] = [];
-          obj.traverse((child) => {
-            if (child instanceof THREE.Mesh) meshes.push(child as ThreeTypes.Mesh);
-          });
-          if (meshes.length) buildFromGeometry(meshes[0].geometry.clone());
+      loadMaskGeometry("/mask/plague-doctor-skull-lite.glb", (f) => {
+        if (!stopped) setProgress(f === null ? null : f * 100);
+      })
+        .catch(() => null)
+        .then((geo) => {
+          if (geo) buildFromGeometry(geo);
           else buildPlaceholder();
           finishLoad();
-        },
-        (xhr) => {
-          if (stopped) return;
-          setProgress(xhr.total > 0 ? (xhr.loaded / xhr.total) * 100 : null);
-        },
-        () => {
-          buildPlaceholder();
-          finishLoad();
-        },
-      );
+        });
 
       let rotY = 0;
       let raf = 0;

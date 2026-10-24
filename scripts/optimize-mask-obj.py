@@ -2,8 +2,10 @@
 """Decimate a mask OBJ for web use. Requires: pip install trimesh fast_simplification
 
 Typical outputs:
-  homepage (/mask plate): -f 80000  -o public/mask/plague-doctor-skull-lite.obj
-  /mask page:             -f 150000 -o public/mask/plague-doctor-skull.obj
+  homepage (/mask plate): -f 80000  -o plague-doctor-skull-lite.obj
+  /mask page:             -f 150000 -o plague-doctor-skull.obj
+
+The site loads .glb, not .obj: pack the result with scripts/pack-mask-glb.mjs.
 """
 
 from __future__ import annotations

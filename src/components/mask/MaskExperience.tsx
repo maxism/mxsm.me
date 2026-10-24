@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import type * as ThreeTypes from "three";
 import { MaskLoadOverlay } from "@/components/mask/MaskLoadOverlay";
 import { MaskScanner } from "@/components/mask/MaskScanner";
+import { loadMaskGeometry } from "@/lib/mask/load-geometry";
 import type { Dictionary } from "@/i18n/types";
 
 type Props = {
@@ -690,26 +691,15 @@ export function MaskExperience({ backHref, copy }: Props) {
       };
 
       const loadDefaultMask = () => {
-        new OBJLoader().load(
-          "/mask/plague-doctor-skull.obj",
-          (obj) => {
-            const meshes: ThreeTypes.Mesh[] = [];
-            obj.traverse((c) => {
-              if (c instanceof THREE.Mesh) meshes.push(c as ThreeTypes.Mesh);
-            });
-            if (meshes.length) buildFromGeometry(meshes[0].geometry.clone());
+        loadMaskGeometry("/mask/plague-doctor-skull.glb", (f) => {
+          if (!stopped) setLoadProgress(f === null ? null : f * 100);
+        })
+          .catch(() => null)
+          .then((geo) => {
+            if (geo) buildFromGeometry(geo);
             else buildPlaceholder();
             finishModelLoad();
-          },
-          (xhr) => {
-            if (stopped) return;
-            setLoadProgress(xhr.total > 0 ? (xhr.loaded / xhr.total) * 100 : null);
-          },
-          () => {
-            buildPlaceholder();
-            finishModelLoad();
-          },
-        );
+          });
       };
       loadDefaultMask();
 
