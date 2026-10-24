@@ -269,7 +269,16 @@ export function FieldBackground() {
       window.addEventListener("scroll", onScroll, { passive: true });
       window.addEventListener("pointermove", onPointer, { passive: true });
     }
+    // iOS fires resize every time the address bar folds during a scroll; rebuilding the canvas
+    // and reseeding Life then is the visible jump. Height-only wobbles just stretch the canvas.
+    let fitW = window.innerWidth;
+    let fitH = window.innerHeight;
     const onResize = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      if (coarse && w === fitW && Math.abs(h - fitH) < fitH * 0.25) return;
+      fitW = w;
+      fitH = h;
       fit();
       draw(reducedMotion ? 18 : (performance.now() - t0) / 1000);
     };

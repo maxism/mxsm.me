@@ -1,6 +1,24 @@
 /* Phone recomposition: the name is in the flow, the index is words, snap is off. */
 
 @media (max-width: 760px) {
+  /* Scrolling must stay on the compositor: no full-screen blend layer, and the paper seams stop
+     animating gradients per frame (the scroll-driven --seam / --open are held at rest). */
+  .stage::after {
+    display: none;
+  }
+  .stage .plate:not(.plate-hero),
+  .stage .plate-hero {
+    animation: none;
+  }
+  .stage .plate-hero {
+    --open: 0px;
+  }
+  .stage .plate:not(.plate-hero) {
+    --seam: 6px;
+  }
+  #field {
+    height: 100lvh;
+  }
   .stage .plate-hero {
     min-height: 100svh;
     padding: calc(52px + env(safe-area-inset-top)) 0 0;
