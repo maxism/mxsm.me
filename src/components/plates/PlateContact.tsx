@@ -15,6 +15,7 @@ export function PlateContact({ dict, locale }: PlateContactProps) {
   return (
     <section className="plate" id="plate-08" aria-labelledby="h-08">
       <PlateHead
+        titleGlitch={p.headingGlitch}
         title={p.heading}
         titleId="h-08"
         minimal

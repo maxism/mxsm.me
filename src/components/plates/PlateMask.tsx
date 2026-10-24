@@ -20,9 +20,11 @@ export function PlateMask({ dict, locale }: PlateMaskProps) {
           <PlateHead
             rows={p.meta}
             title={p.heading}
+            titleGlitch={p.headingGlitch}
             titleId="h-06"
             inverted
             centered
+            glitch
           />
           <p className="sig-hint sig-hint--stage">{p.ctaHint}</p>
         </div>

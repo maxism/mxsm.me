@@ -697,6 +697,12 @@ html:has(.stage) body {
 .stage .zone-shb a:hover {
   color: inherit;
 }
+.stage .zone-shb .plate-h a:hover {
+  color: var(--sb-hot);
+}
+.stage .zone-shb .pod-plat--shb li a:hover {
+  color: var(--sb-bg);
+}
 .stage .zone-shb .pod-cta--shb:hover {
   color: var(--sb-paper);
 }

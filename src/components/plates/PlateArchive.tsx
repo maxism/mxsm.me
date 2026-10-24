@@ -20,6 +20,7 @@ export function PlateArchive({ dict, locale }: PlateArchiveProps) {
     <section className="plate" id="plate-03" aria-labelledby="h-03">
       <PlateHead
         title={p.heading}
+        titleGlitch={p.headingGlitch}
         titleId="h-03"
         minimal
       />

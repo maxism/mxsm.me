@@ -33,10 +33,12 @@ export function PlatePodcast({ dict, podcast }: PlatePodcastProps) {
 
         <PlateHead
           title={p.heading}
+          titleGlitch={p.headingGlitch}
           titleId="h-04"
           cyrillic
           href={SHITBUSTARDS_ORIGIN}
           display
+          glitch
           minimal
         />
 

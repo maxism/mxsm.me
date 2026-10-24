@@ -1432,6 +1432,93 @@ main {
   color: var(--hot);
 }
 
+/* ─── glitch — driven by JS, but base RGB-split is CSS ─── */
+[data-glitch] {
+  position: relative;
+  isolation: isolate;
+}
+[data-glitch]::before,
+[data-glitch]::after {
+  content: attr(data-glitch);
+  position: absolute;
+  inset: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  text-transform: inherit;
+  white-space: inherit;
+  overflow-wrap: inherit;
+  word-break: inherit;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+.plate-h [data-glitch] {
+  display: block;
+}
+[data-glitch]::before {
+  color: #ff2a45;
+}
+[data-glitch]::after {
+  color: #00d9ff;
+}
+[data-glitch].glitch::before {
+  opacity: 0.85;
+  animation: glitch-r 0.35s steps(2) 1;
+}
+[data-glitch].glitch::after {
+  opacity: 0.85;
+  animation: glitch-b 0.35s steps(2) 1;
+}
+@keyframes glitch-r {
+  0% {
+    transform: translate(0, 0);
+    clip-path: inset(0 0 0 0);
+  }
+  20% {
+    transform: translate(-3px, 1px);
+    clip-path: inset(20% 0 60% 0);
+  }
+  40% {
+    transform: translate(2px, -2px);
+    clip-path: inset(50% 0 20% 0);
+  }
+  60% {
+    transform: translate(-4px, 0);
+    clip-path: inset(10% 0 75% 0);
+  }
+  80% {
+    transform: translate(1px, 1px);
+    clip-path: inset(70% 0 5% 0);
+  }
+  100% {
+    transform: translate(0, 0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes glitch-b {
+  0% {
+    transform: translate(0, 0);
+    clip-path: inset(0 0 0 0);
+  }
+  25% {
+    transform: translate(3px, -1px);
+    clip-path: inset(40% 0 35% 0);
+  }
+  50% {
+    transform: translate(-2px, 2px);
+    clip-path: inset(8% 0 80% 0);
+  }
+  75% {
+    transform: translate(4px, 0);
+    clip-path: inset(70% 0 10% 0);
+  }
+  100% {
+    transform: translate(0, 0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
 /* ─── reduced motion ───────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,

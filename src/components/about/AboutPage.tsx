@@ -65,6 +65,7 @@ export function AboutPage({ content, locale }: AboutPageProps) {
       <PlateHead
         rows={plate.rows}
         title={plate.heading}
+        titleGlitch={plate.headingGlitch}
         titleId="about-h"
         as="h1"
       />
