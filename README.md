@@ -20,7 +20,7 @@ Optional: copy `.env.example` → `.env.local` and set `NEXT_PUBLIC_SITE_URL` fo
 | `src/app/`                   | Root layout, metadata, global styles                          |
 | `src/app/[locale]/(site)/`   | Home + about (dust background, plates)                        |
 | `src/app/[locale]/signal/`   | Full-screen signal experience (separate layout)               |
-| `src/components/plates/`     | Content blocks (01–06); plate 05 = signal stage               |
+| `src/components/plates/`     | Content blocks (01–07): signal, mask, rug, …                  |
 | `src/components/effects/`    | `BackgroundLayers`, `SignalPlateVisual`, `TimePalette`        |
 | `public/palette-runtime.js`  | Generated palette cycle for browser (`npm run build:palette`) |
 | `public/dust-init.js`        | Background WebGL dust (`window.mxsmDust`)                     |
@@ -29,7 +29,6 @@ Optional: copy `.env.example` → `.env.local` and set `NEXT_PUBLIC_SITE_URL` fo
 | `src/i18n/dictionaries/`     | RU / EN copy                                                  |
 | `src/middleware.ts`          | `/` → ru, `/en` → en (rewrite)                                |
 | `src/signal/`                | mxsm/signal runtime (`boot` / `dispose`)                      |
-| `legacy/`                    | Original static site archive                                  |
 
 ## Scripts
 
@@ -52,7 +51,7 @@ Deploy as a standard Next.js app (Vercel, Node, etc.).
 
 ## SEO / OG
 
-- Dynamic OG: `app/[locale]/(site)/opengraph-image.tsx`, `app/[locale]/signal/opengraph-image.tsx`
+- Dynamic OG: `src/app/og/[locale]/[page]/route.tsx` (renders `/og/<locale>/<page>`)
 - `app/sitemap.ts`, `app/robots.ts` — use `SITE_ORIGIN` from `NEXT_PUBLIC_SITE_URL`
 - `app/icon.png`, `app/apple-icon.png` — favicon (from `public/signal-favicon.png`, signal slash)
 
