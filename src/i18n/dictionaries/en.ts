@@ -211,6 +211,12 @@ export const en: Dictionary = {
     printHint: "The sheet fits the page. Pick the paper size in the print dialog and turn off headers and footers.",
     sheetCaption: "mxsm.me/rug",
   },
+  notFound: {
+    line: "There is no such page: it went into the pile.",
+    loom: "While you were looking, the loom wove this.",
+    openRug: "reweave this rug →",
+    home: "← mxsm.me",
+  },
   maskPage: {
     title: "mxsm / mask",
     description: "A mask in the browser: pin art on one side, glass on the other.",

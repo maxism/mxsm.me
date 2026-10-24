@@ -32,7 +32,10 @@ export function proxy(request: NextRequest) {
   const url = request.nextUrl.clone();
   url.pathname = rewritePath;
 
-  const response = NextResponse.rewrite(url);
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-mxsm-locale", locale);
+
+  const response = NextResponse.rewrite(url, { request: { headers: requestHeaders } });
   response.headers.set("x-mxsm-locale", locale);
 
   const isSignalPath =

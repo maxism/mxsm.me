@@ -17,6 +17,11 @@ describe("proxy", () => {
     expect(res.headers.get("x-mxsm-locale")).toBe("en");
   });
 
+  it("hands the locale to the render as a request header", () => {
+    const res = run("/en/nope");
+    expect(res.headers.get("x-middleware-request-x-mxsm-locale")).toBe("en");
+  });
+
   it("redirects /ru prefix", () => {
     const res = run("/ru");
     expect(res.status).toBe(307);

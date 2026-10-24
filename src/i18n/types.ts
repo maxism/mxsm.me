@@ -122,6 +122,12 @@ export type Dictionary = {
     printHint: string;
     sheetCaption: string;
   };
+  notFound: {
+    line: string;
+    loom: string;
+    openRug: string;
+    home: string;
+  };
   maskPage: {
     title: string;
     description: string;

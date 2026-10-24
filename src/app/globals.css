@@ -1887,8 +1887,55 @@ main {
 .lost-foot {
   display: flex;
   flex-direction: column;
+  gap: 40px;
   padding: 40px var(--lost-pad) clamp(32px, 8vh, 72px);
   background: #0c0b09;
+}
+.lost-text {
+  display: flex;
+  flex-direction: column;
+}
+.lost-loom {
+  margin: 12px 0 0;
+  max-width: 36ch;
+  font-family: var(--font-serif), Georgia, serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(15px, 1.5vw, 19px);
+  line-height: 1.4;
+  color: rgba(244, 241, 234, 0.46);
+}
+.lost-rug {
+  --art-h: clamp(170px, 30svh, 360px);
+  flex: none;
+  min-height: var(--art-h);
+}
+.lost-rug .rug-art {
+  height: var(--art-h);
+}
+.lost-rug-open {
+  display: block;
+  margin-top: 12px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: rgba(244, 241, 234, 0.46);
+}
+.lost-rug-open:hover {
+  color: var(--hot);
+}
+@media (min-width: 760px) {
+  .lost-foot {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+  .lost-rug {
+    text-align: right;
+  }
+  .lost-rug .rug-art {
+    margin-left: auto;
+  }
 }
 .lost-line {
   margin: 0;
